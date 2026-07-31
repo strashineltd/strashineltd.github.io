@@ -21,6 +21,7 @@ import { useState } from "react";
 
 const installerName = "Stellara Work-Setup-0.9.0.exe";
 const sha256 = "78DBC0D14441E1FE98164C88BC5A57027BE126DD5EF0C00C5AC636F7C1580037";
+const assetBasePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 export function DownloadPanel() {
   const [copied, setCopied] = useState(false);
@@ -54,7 +55,14 @@ export function DownloadPanel() {
 
         <div className="download-card">
           <div className="download-card__top">
-            <Image src="/stellara-icon.png" alt="Stellara Work 图标" width={88} height={88} priority />
+            <Image
+              src={`${assetBasePath}/stellara-icon.png`}
+              alt="Stellara Work 图标"
+              width={88}
+              height={88}
+              priority
+              unoptimized
+            />
             <div><strong>Stellara Work</strong><span>Windows 桌面 Agent</span></div>
           </div>
           <dl>

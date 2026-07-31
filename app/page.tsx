@@ -15,6 +15,8 @@ import { HomeDemo } from "./components/HomeDemo";
 import { SiteFooter } from "./components/SiteFooter";
 import { SiteHeader } from "./components/SiteHeader";
 
+export const dynamic = "force-static";
+
 export const metadata: Metadata = {
   title: "Stellara Work — 把复杂工作，留在本地完成。",
   description:

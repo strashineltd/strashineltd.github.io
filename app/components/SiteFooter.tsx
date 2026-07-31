@@ -1,12 +1,20 @@
 import Image from "next/image";
 import Link from "next/link";
 
+const assetBasePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
 export function SiteFooter() {
   return (
     <footer className="site-footer">
       <div className="site-footer__inner">
         <div className="site-footer__brand">
-          <Image src="/stellara-icon.png" alt="" width={32} height={32} />
+          <Image
+            src={`${assetBasePath}/stellara-icon.png`}
+            alt=""
+            width={32}
+            height={32}
+            unoptimized
+          />
           <div>
             <strong>Stellara Work</strong>
             <span>本地优先的 Windows 桌面 Agent</span>

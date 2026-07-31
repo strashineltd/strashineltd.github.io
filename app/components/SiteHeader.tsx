@@ -12,6 +12,8 @@ const navigation = [
   { href: "/download", label: "下载" },
 ];
 
+const assetBasePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
 export function SiteHeader() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -24,11 +26,12 @@ export function SiteHeader() {
         <Link className="brand" href="/" aria-label="Stellara Work 首页">
           <Image
             className="brand__mark"
-            src="/stellara-icon.png"
+            src={`${assetBasePath}/stellara-icon.png`}
             alt=""
             width={36}
             height={36}
             priority
+            unoptimized
           />
           <span className="brand__name">Stellara Work</span>
         </Link>
