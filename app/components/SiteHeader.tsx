@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Download, Menu, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const navigation = [
   { href: "/", label: "首页" },
@@ -18,12 +18,10 @@ export function SiteHeader() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
-  useEffect(() => setOpen(false), [pathname]);
-
   return (
     <header className="site-header">
       <div className="site-header__inner">
-        <Link className="brand" href="/" aria-label="Stellara Work 首页">
+        <Link className="brand" href="/" aria-label="Stellara Work 首页" onClick={() => setOpen(false)}>
           <Image
             className="brand__mark"
             src={`${assetBasePath}/stellara-icon.png`}
@@ -46,6 +44,7 @@ export function SiteHeader() {
                 className={`nav-link${active ? " nav-link--active" : ""}`}
                 href={item.href}
                 aria-current={active ? "page" : undefined}
+                onClick={() => setOpen(false)}
               >
                 {item.label}
               </Link>
@@ -81,6 +80,7 @@ export function SiteHeader() {
                 className={`mobile-nav__link${active ? " mobile-nav__link--active" : ""}`}
                 href={item.href}
                 aria-current={active ? "page" : undefined}
+                onClick={() => setOpen(false)}
               >
                 {item.label}
               </Link>

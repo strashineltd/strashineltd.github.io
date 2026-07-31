@@ -2,195 +2,96 @@
 
 import {
   BookOpen,
+  CalendarDays,
   Check,
+  ChevronLeft,
   ChevronRight,
+  CircleCheckBig,
+  CircleHelp,
   Clipboard,
+  Clock3,
   Command,
-  FileKey2,
-  FolderOpen,
+  Cpu,
+  Database,
+  FolderKanban,
+  Gauge,
+  Info,
+  Keyboard,
+  LayoutPanelLeft,
+  LifeBuoy,
+  Link2,
+  ListChecks,
+  MessageSquareText,
+  PanelRight,
+  Rocket,
   Search,
   Settings2,
   ShieldCheck,
-  SlidersHorizontal,
-  Sparkles,
+  TriangleAlert,
+  WandSparkles,
+  Wrench,
   X,
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  docArticles,
+  getArticleSearchText,
+  getDocArticle,
+  type DocIconName,
+  type DocNote,
+} from "../content/docs";
 
-type DocArticle = {
-  id: string;
-  group: string;
-  title: string;
-  summary: string;
-  icon: typeof BookOpen;
-  sections: Array<{
-    title: string;
-    body: string;
-    code?: string;
-    note?: string;
-    steps?: string[];
-  }>;
+const iconMap: Record<DocIconName, typeof BookOpen> = {
+  rocket: Rocket,
+  message: MessageSquareText,
+  layout: LayoutPanelLeft,
+  folders: FolderKanban,
+  plan: ListChecks,
+  workspace: PanelRight,
+  tools: Wrench,
+  models: Cpu,
+  context: Gauge,
+  settings: Settings2,
+  skills: WandSparkles,
+  shield: ShieldCheck,
+  database: Database,
+  keyboard: Keyboard,
+  command: Command,
+  lifebuoy: LifeBuoy,
+  help: CircleHelp,
 };
 
-const articles: DocArticle[] = [
-  {
-    id: "quick-start",
-    group: "开始使用",
-    title: "快速开始",
-    summary: "安装、首次启动，并在几分钟内完成第一个任务。",
-    icon: Sparkles,
-    sections: [
-      {
-        title: "安装 Stellara Work",
-        body: "下载 Windows x64 安装包并按向导完成安装。首次打开时，应用会引导你选择模型和工作目录。",
-        steps: ["下载 v0.9 安装包", "选择一个模型服务", "选择要处理的项目目录", "输入第一条任务说明"],
-      },
-      {
-        title: "写好第一条任务",
-        body: "说明目标、期望结果和边界。Stellara Work 会先读取上下文，再展示计划与工具调用。",
-        code: "阅读当前项目的 README 和入口文件，\n说明项目结构、运行方式和最值得优先处理的三个问题。",
-        note: "如果只想分析、不希望修改文件，可以开启“计划模式”。",
-      },
-    ],
-  },
-  {
-    id: "models",
-    group: "配置",
-    title: "配置模型",
-    summary: "使用内置预设，或连接任意 OpenAI 兼容服务。",
-    icon: SlidersHorizontal,
-    sections: [
-      {
-        title: "内置模型预设",
-        body: "当前内置 GLM-5.2、DeepSeek-v4-Pro、Kimi-K3 与 MiniMax-M3。你可以在设置中添加多个配置，并从聊天顶部快速切换。",
-      },
-      {
-        title: "添加自定义模型",
-        body: "打开“设置 → 模型 → 添加模型”，填写显示名称、Base URL、模型 ID 和 API Key。服务需兼容 OpenAI API 协议。",
-        code: "Base URL  https://example.com/v1\n模型 ID    your-model-name\nAPI Key    sk-••••••••",
-        note: "API Key 保存在主进程配置中，渲染界面不会直接读取密钥。",
-      },
-    ],
-  },
-  {
-    id: "workspace",
-    group: "核心概念",
-    title: "项目与工作区",
-    summary: "理解工作目录、项目分组和右侧工作区面板。",
-    icon: FolderOpen,
-    sections: [
-      {
-        title: "工作目录是安全边界",
-        body: "Agent 会以你选择的目录作为主要工作范围。明确的目录能减少无关扫描，也让文件变更更容易复查。",
-      },
-      {
-        title: "项目与会话",
-        body: "左侧栏可按项目组织会话。每个会话保存独立上下文，可重命名、搜索、导出或继续执行。",
-        steps: ["创建或选择项目", "在项目内新建会话", "从历史会话继续任务", "需要时导出 JSON 记录"],
-      },
-      {
-        title: "右侧工作区",
-        body: "工作区同步显示当前目标、计划步骤、完成进度、交付物与本次触碰的文件。",
-      },
-    ],
-  },
-  {
-    id: "approvals",
-    group: "安全与控制",
-    title: "操作审批",
-    summary: "在写文件和执行命令前，清楚看到将要发生什么。",
-    icon: ShieldCheck,
-    sections: [
-      {
-        title: "哪些操作需要确认",
-        body: "读取与搜索通常可直接进行；写文件、编辑文件和运行可能改变系统状态的命令会进入审批流程。",
-      },
-      {
-        title: "审批顶部条",
-        body: "待确认操作会出现在消息流上方，并展示工具名、目标与摘要。选择“同意”后执行，选择“拒绝”则继续对话但不做修改。",
-        note: "按 Esc 可以快速拒绝当前审批。",
-      },
-    ],
-  },
-  {
-    id: "shortcuts",
-    group: "效率",
-    title: "快捷键与命令面板",
-    summary: "用键盘切换面板、模型和常用动作。",
-    icon: Command,
-    sections: [
-      {
-        title: "常用快捷键",
-        body: "快捷键可在“设置 → 快捷键”中重新录制或恢复默认。",
-        code: "Ctrl + K        打开命令面板\nCtrl + B        切换会话侧栏\nCtrl + Shift + W 切换右侧工作区\nCtrl + Enter    发送消息\nCtrl + ,        打开设置",
-      },
-      {
-        title: "命令面板",
-        body: "命令面板集中提供导航、会话、模型、主题和界面操作。输入关键词即可筛选，无需离开键盘。",
-      },
-    ],
-  },
-  {
-    id: "local-data",
-    group: "安全与控制",
-    title: "本地数据与密钥",
-    summary: "了解会话、设置和 API Key 在本机的保存方式。",
-    icon: FileKey2,
-    sections: [
-      {
-        title: "本地存储",
-        body: "会话与设置使用本地数据库和配置文件保存。应用不要求你先创建云端账号。",
-      },
-      {
-        title: "渲染进程隔离",
-        body: "应用关闭 Node 集成并启用上下文隔离与沙箱。API Key 留在主进程，界面通过受控 IPC 发起请求。",
-        note: "本地优先并不等于离线模型；调用在线模型时，请同时遵守对应服务商的数据政策。",
-      },
-    ],
-  },
-  {
-    id: "settings",
-    group: "配置",
-    title: "设置与技能",
-    summary: "管理模型、会话、应用偏好、Skills 和快捷键。",
-    icon: Settings2,
-    sections: [
-      {
-        title: "统一设置中心",
-        body: "设置窗口按模型、会话、应用、Skills 与快捷键组织。你可以调整主题、工作区模式和常用行为。",
-      },
-      {
-        title: "Skills",
-        body: "Skills 让 Agent 了解特定领域的工作流程。技能保存在工作目录中，可在设置里查看并刷新。",
-      },
-    ],
-  },
-];
+const noteIconMap = {
+  info: Info,
+  warning: TriangleAlert,
+  success: CircleCheckBig,
+};
 
 export function DocsExplorer() {
-  const [activeId, setActiveId] = useState(articles[0].id);
+  const [activeId, setActiveId] = useState(docArticles[0].id);
   const [query, setQuery] = useState("");
   const [copied, setCopied] = useState<string | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 
+  const normalizedQuery = query.trim().toLowerCase();
   const filtered = useMemo(() => {
-    const normalized = query.trim().toLowerCase();
-    if (!normalized) return articles;
-    return articles.filter((article) =>
-      [article.title, article.summary, article.group, ...article.sections.flatMap((section) => [section.title, section.body])]
-        .join(" ")
-        .toLowerCase()
-        .includes(normalized),
-    );
-  }, [query]);
+    if (!normalizedQuery) return docArticles;
+    return docArticles.filter((article) => getArticleSearchText(article).includes(normalizedQuery));
+  }, [normalizedQuery]);
 
-  const active = articles.find((article) => article.id === activeId) ?? articles[0];
-  const ActiveIcon = active.icon;
+  const active = getDocArticle(activeId) ?? docArticles[0];
+  const ActiveIcon = iconMap[active.icon];
   const groups = Array.from(new Set(filtered.map((article) => article.group)));
+  const activeIndex = docArticles.findIndex((article) => article.id === active.id);
+  const previous = activeIndex > 0 ? docArticles[activeIndex - 1] : null;
+  const next = activeIndex < docArticles.length - 1 ? docArticles[activeIndex + 1] : null;
+  const sectionCount = docArticles.reduce((count, article) => count + article.sections.length, 0);
 
   useEffect(() => {
     function handleKeydown(event: KeyboardEvent) {
-      if (event.key === "/" && document.activeElement !== searchRef.current) {
+      const target = event.target as HTMLElement | null;
+      const isTyping = target?.tagName === "INPUT" || target?.tagName === "TEXTAREA" || target?.isContentEditable;
+      if (event.key === "/" && !isTyping) {
         event.preventDefault();
         searchRef.current?.focus();
       }
@@ -203,64 +104,110 @@ export function DocsExplorer() {
     return () => window.removeEventListener("keydown", handleKeydown);
   }, []);
 
+  function selectArticle(id: string, scroll = true) {
+    setActiveId(id);
+
+    if (scroll) {
+      window.requestAnimationFrame(() => {
+        const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const articleElement = document.getElementById("docs-article-content");
+        articleElement?.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "start" });
+        articleElement?.focus({ preventScroll: true });
+      });
+    }
+  }
+
+  function updateQuery(value: string) {
+    setQuery(value);
+    const nextQuery = value.trim().toLowerCase();
+    if (!nextQuery) return;
+    const matches = docArticles.filter((article) => getArticleSearchText(article).includes(nextQuery));
+    if (matches.length > 0 && !matches.some((article) => article.id === activeId)) {
+      setActiveId(matches[0].id);
+    }
+  }
+
   async function copyCode(code: string, key: string) {
-    await navigator.clipboard.writeText(code);
-    setCopied(key);
-    window.setTimeout(() => setCopied(null), 1800);
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(key);
+      window.setTimeout(() => setCopied(null), 1800);
+    } catch {
+      setCopied(null);
+    }
   }
 
   return (
     <>
       <section className="docs-hero">
         <div className="page-shell docs-hero__inner">
-          <div>
-            <span className="section-kicker">Stellara Work 文档</span>
-            <h1>从安装到交付，清楚地走完每一步。</h1>
-            <p>查找模型配置、工作区、安全审批和快捷键的使用方法。</p>
+          <div className="docs-hero__copy">
+            <span className="section-kicker">Stellara Work 文档 · v0.9</span>
+            <h1>从首次配置到安全交付，每一步都有依据。</h1>
+            <p>这是一份以当前程序实现为准的完整手册，覆盖模型、项目工作流、工具边界、本地数据与故障排查。</p>
+            <div className="docs-hero__stats" aria-label="文档概况">
+              <span><strong>{docArticles.length}</strong> 个主题</span>
+              <span><strong>{sectionCount}</strong> 个章节</span>
+              <span><strong>v0.9.0</strong> 当前版本</span>
+            </div>
           </div>
-          <label className="docs-search">
-            <Search aria-hidden="true" size={18} />
-            <span className="sr-only">搜索文档</span>
-            <input
-              ref={searchRef}
-              type="search"
-              placeholder="搜索文档…"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-            />
-            {query ? (
-              <button type="button" onClick={() => setQuery("")} aria-label="清除搜索">
-                <X aria-hidden="true" size={16} />
-              </button>
-            ) : <kbd>/</kbd>}
-          </label>
+          <div className="docs-search-wrap">
+            <label className="docs-search">
+              <Search aria-hidden="true" size={18} />
+              <span className="sr-only">搜索全部文档</span>
+              <input
+                ref={searchRef}
+                type="search"
+                placeholder="搜索功能、错误或快捷键…"
+                value={query}
+                onChange={(event) => updateQuery(event.target.value)}
+                aria-describedby="docs-search-status"
+              />
+              {query ? (
+                <button type="button" onClick={() => updateQuery("")} aria-label="清除搜索">
+                  <X aria-hidden="true" size={16} />
+                </button>
+              ) : <kbd>/</kbd>}
+            </label>
+            <p id="docs-search-status" className="docs-search-status" aria-live="polite">
+              {normalizedQuery ? `找到 ${filtered.length} 个相关主题` : "按 / 随时聚焦搜索框"}
+            </p>
+          </div>
         </div>
       </section>
 
       <div className="docs-layout page-shell">
         <aside className="docs-sidebar" aria-label="文档目录">
+          <div className="docs-sidebar__summary">
+            <span>{normalizedQuery ? "搜索结果" : "文档目录"}</span>
+            <strong>{filtered.length} / {docArticles.length}</strong>
+          </div>
           {filtered.length === 0 ? (
             <div className="docs-empty">
               <Search aria-hidden="true" size={20} />
               <strong>没有找到相关内容</strong>
-              <span>换一个关键词试试。</span>
+              <span>尝试“模型”“审批”“429”或“快捷键”。</span>
+              <button type="button" onClick={() => updateQuery("")}>清除搜索</button>
             </div>
           ) : groups.map((group) => (
             <div className="docs-group" key={group}>
               <h2>{group}</h2>
               {filtered.filter((article) => article.group === group).map((article) => {
-                const Icon = article.icon;
+                const Icon = iconMap[article.icon];
                 const selected = article.id === active.id;
                 return (
                   <button
                     key={article.id}
                     type="button"
                     className={`docs-nav-item${selected ? " docs-nav-item--active" : ""}`}
-                    onClick={() => setActiveId(article.id)}
+                    onClick={() => selectArticle(article.id)}
                     aria-current={selected ? "page" : undefined}
                   >
                     <Icon aria-hidden="true" size={16} />
-                    <span>{article.title}</span>
+                    <span className="docs-nav-item__copy">
+                      <strong>{article.title}</strong>
+                      <small>{article.readTime}</small>
+                    </span>
                     <ChevronRight aria-hidden="true" size={14} />
                   </button>
                 );
@@ -269,50 +216,175 @@ export function DocsExplorer() {
           ))}
         </aside>
 
-        <article className="docs-article" key={active.id}>
-          <div className="docs-breadcrumb"><span>文档</span><ChevronRight aria-hidden="true" size={13} /><span>{active.group}</span></div>
-          <div className="docs-article__header">
-            <ActiveIcon aria-hidden="true" size={24} />
-            <div><h2>{active.title}</h2><p>{active.summary}</p></div>
-          </div>
-
-          {active.sections.map((section, sectionIndex) => (
-            <section className="docs-section" id={`${active.id}-${sectionIndex}`} key={section.title}>
-              <h3>{section.title}</h3>
-              <p>{section.body}</p>
-              {section.steps && (
-                <ol className="docs-steps">
-                  {section.steps.map((step, index) => <li key={step}><span>{index + 1}</span><strong>{step}</strong></li>)}
-                </ol>
-              )}
-              {section.code && (
-                <div className="code-block">
-                  <div className="code-block__header"><span>示例</span><button type="button" onClick={() => copyCode(section.code!, `${active.id}-${sectionIndex}`)}>
-                    {copied === `${active.id}-${sectionIndex}` ? <Check aria-hidden="true" size={14} /> : <Clipboard aria-hidden="true" size={14} />}
-                    {copied === `${active.id}-${sectionIndex}` ? "已复制" : "复制"}
-                  </button></div>
-                  <pre><code>{section.code}</code></pre>
+        {filtered.length === 0 ? (
+          <section className="docs-no-result" aria-labelledby="docs-no-result-title">
+            <Search aria-hidden="true" size={26} />
+            <h2 id="docs-no-result-title">没有匹配“{query.trim()}”的文档</h2>
+            <p>搜索会检查标题、正文、表格、示例和排错关键词。可以尝试更短的关键词。</p>
+            <div>
+              {["模型", "工作目录", "审批", "快捷键"].map((term) => (
+                <button key={term} type="button" onClick={() => updateQuery(term)}>{term}</button>
+              ))}
+            </div>
+          </section>
+        ) : (
+          <article id="docs-article-content" className="docs-article" tabIndex={-1} aria-labelledby="docs-article-title">
+            <div className="docs-breadcrumb">
+              <span>文档</span>
+              <ChevronRight aria-hidden="true" size={13} />
+              <span>{active.group}</span>
+              <ChevronRight aria-hidden="true" size={13} />
+              <strong>{active.title}</strong>
+            </div>
+            <header className="docs-article__header">
+              <div className="docs-article__icon"><ActiveIcon aria-hidden="true" size={24} /></div>
+              <div>
+                <h2 id="docs-article-title">{active.title}</h2>
+                <p>{active.summary}</p>
+                <div className="docs-article__meta">
+                  <span><Clock3 aria-hidden="true" size={13} />{active.readTime}</span>
+                  <span><CalendarDays aria-hidden="true" size={13} />更新于 {active.updated}</span>
                 </div>
-              )}
-              {section.note && <aside className="docs-note"><ShieldCheck aria-hidden="true" size={17} /><p>{section.note}</p></aside>}
+              </div>
+            </header>
+
+            {active.sections.map((section, sectionIndex) => {
+              const sectionId = `${active.id}-${section.id}`;
+              const codeKey = `${active.id}-${section.id}`;
+              return (
+                <section className="docs-section" id={sectionId} key={section.id}>
+                  <h3>
+                    <a href={`#${sectionId}`} aria-label={`链接到：${section.title}`}>
+                      {section.title}<Link2 aria-hidden="true" size={15} />
+                    </a>
+                  </h3>
+                  <div className="docs-prose">
+                    {section.body.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+                  </div>
+
+                  {section.steps && (
+                    <ol className="docs-steps">
+                      {section.steps.map((step, index) => (
+                        <li key={step.title}>
+                          <span>{index + 1}</span>
+                          <div><strong>{step.title}</strong><p>{step.detail}</p></div>
+                        </li>
+                      ))}
+                    </ol>
+                  )}
+
+                  {section.bullets && (
+                    <div className="docs-bullet-grid">
+                      {section.bullets.map((item) => (
+                        <div key={item.title}>
+                          <Check aria-hidden="true" size={15} />
+                          <p><strong>{item.title}</strong><span>{item.detail}</span></p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {section.table && (
+                    <div className="docs-table-wrap" tabIndex={0} role="region" aria-label={`${section.title}表格`}>
+                      <table className="docs-table">
+                        <thead><tr>{section.table.headers.map((header) => <th key={header} scope="col">{header}</th>)}</tr></thead>
+                        <tbody>
+                          {section.table.rows.map((row, rowIndex) => (
+                            <tr key={`${section.id}-${rowIndex}`}>
+                              {row.map((cell, cellIndex) => cellIndex === 0
+                                ? <th key={cellIndex} scope="row">{cell}</th>
+                                : <td key={cellIndex}>{cell}</td>)}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+
+                  {section.checklist && (
+                    <ul className="docs-checklist">
+                      {section.checklist.map((item) => <li key={item}><CircleCheckBig aria-hidden="true" size={16} /><span>{item}</span></li>)}
+                    </ul>
+                  )}
+
+                  {section.code && (
+                    <div className="code-block">
+                      <div className="code-block__header">
+                        <span>{section.code.label}</span>
+                        <button type="button" onClick={() => copyCode(section.code!.content, codeKey)}>
+                          {copied === codeKey ? <Check aria-hidden="true" size={14} /> : <Clipboard aria-hidden="true" size={14} />}
+                          {copied === codeKey ? "已复制" : "复制"}
+                        </button>
+                      </div>
+                      <pre><code>{section.code.content}</code></pre>
+                    </div>
+                  )}
+
+                  {section.note && <DocsNote note={section.note} />}
+                  <span className="sr-only">章节 {sectionIndex + 1}，共 {active.sections.length} 章</span>
+                </section>
+              );
+            })}
+
+            <section className="docs-related" aria-labelledby="docs-related-title">
+              <span className="docs-related__eyebrow">继续阅读</span>
+              <h3 id="docs-related-title">相关主题</h3>
+              <div>
+                {active.related.map((id) => {
+                  const article = getDocArticle(id);
+                  if (!article) return null;
+                  const Icon = iconMap[article.icon];
+                  return (
+                    <button key={id} type="button" onClick={() => selectArticle(id)}>
+                      <Icon aria-hidden="true" size={17} />
+                      <span><strong>{article.title}</strong><small>{article.summary}</small></span>
+                      <ChevronRight aria-hidden="true" size={15} />
+                    </button>
+                  );
+                })}
+              </div>
             </section>
-          ))}
 
-          <div className="docs-next">
-            <span>下一步</span>
-            {(() => {
-              const currentIndex = articles.findIndex((article) => article.id === active.id);
-              const next = articles[(currentIndex + 1) % articles.length];
-              return <button type="button" onClick={() => setActiveId(next.id)}>{next.title}<ChevronRight aria-hidden="true" size={16} /></button>;
-            })()}
-          </div>
-        </article>
+            <nav className="docs-pager" aria-label="上一篇和下一篇">
+              {previous ? (
+                <button type="button" onClick={() => selectArticle(previous.id)}>
+                  <ChevronLeft aria-hidden="true" size={16} />
+                  <span><small>上一篇</small><strong>{previous.title}</strong></span>
+                </button>
+              ) : <span />}
+              {next && (
+                <button type="button" onClick={() => selectArticle(next.id)}>
+                  <span><small>下一篇</small><strong>{next.title}</strong></span>
+                  <ChevronRight aria-hidden="true" size={16} />
+                </button>
+              )}
+            </nav>
+          </article>
+        )}
 
-        <aside className="docs-on-this-page" aria-label="本文目录">
-          <span>本文内容</span>
-          {active.sections.map((section, index) => <a key={section.title} href={`#${active.id}-${index}`}>{section.title}</a>)}
-        </aside>
+        {filtered.length > 0 && (
+          <aside className="docs-on-this-page" aria-label="本文目录">
+            <span>本文内容</span>
+            {active.sections.map((section) => (
+              <a key={section.id} href={`#${active.id}-${section.id}`}>{section.title}</a>
+            ))}
+            <div className="docs-version-note">
+              <BookOpen aria-hidden="true" size={14} />
+              <span>适用于 Stellara Work v0.9.0</span>
+            </div>
+          </aside>
+        )}
       </div>
     </>
+  );
+}
+
+function DocsNote({ note }: { note: DocNote }) {
+  const Icon = noteIconMap[note.tone];
+  return (
+    <aside className={`docs-note docs-note--${note.tone}`}>
+      <Icon aria-hidden="true" size={18} />
+      <div><strong>{note.title}</strong><p>{note.body}</p></div>
+    </aside>
   );
 }
