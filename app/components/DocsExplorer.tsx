@@ -42,6 +42,7 @@ import {
   type DocIconName,
   type DocNote,
 } from "../content/docs";
+import { calculateReadingProgress } from "../utils/readingProgress";
 
 const iconMap: Record<DocIconName, typeof BookOpen> = {
   rocket: Rocket,
@@ -164,20 +165,39 @@ export function DocsExplorer() {
 
   // Scroll progress tracking
   useEffect(() => {
-    function handleScroll() {
+    let animationFrame = 0;
+
+    function updateProgress() {
+      animationFrame = 0;
       const articleEl = document.getElementById("docs-article-content");
       if (!articleEl) { setScrollProgress(0); return; }
       const rect = articleEl.getBoundingClientRect();
       const articleTop = window.scrollY + rect.top;
-      const articleHeight = articleEl.offsetHeight;
-      const viewportHeight = window.innerHeight;
-      const scrolled = window.scrollY - articleTop + viewportHeight * 0.3;
-      const progress = Math.min(1, Math.max(0, scrolled / articleHeight));
-      setScrollProgress(progress);
+      const root = document.documentElement;
+      const documentHeight = Math.max(root.scrollHeight, document.body?.scrollHeight ?? 0);
+      const progress = calculateReadingProgress({
+        scrollY: window.scrollY,
+        viewportHeight: root.clientHeight,
+        documentHeight,
+        articleTop,
+        articleHeight: articleEl.offsetHeight,
+      });
+      setScrollProgress((current) => Math.abs(current - progress) < 0.001 ? current : progress);
     }
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
+
+    function scheduleProgressUpdate() {
+      if (animationFrame) return;
+      animationFrame = window.requestAnimationFrame(updateProgress);
+    }
+
+    window.addEventListener("scroll", scheduleProgressUpdate, { passive: true });
+    window.addEventListener("resize", scheduleProgressUpdate);
+    scheduleProgressUpdate();
+    return () => {
+      window.removeEventListener("scroll", scheduleProgressUpdate);
+      window.removeEventListener("resize", scheduleProgressUpdate);
+      if (animationFrame) window.cancelAnimationFrame(animationFrame);
+    };
   }, [activeId]);
 
   // Scroll focused item into view
