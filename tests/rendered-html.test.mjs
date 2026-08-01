@@ -41,7 +41,7 @@ test("server-renders the documentation route", async () => {
   assert.equal(response.status, 200);
   const html = await response.text();
   assert.match(html, /Stellara Work 文档/);
-  assert.match(html, /<strong>17<\/strong> 个主题/);
+  assert.match(html, /<strong>21<\/strong> 个主题/);
   assert.match(html, /安装与首次配置/);
   assert.match(html, /公开安装包暂未上传/);
   assert.match(html, /工作目录/);

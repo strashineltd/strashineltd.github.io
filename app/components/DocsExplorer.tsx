@@ -4,6 +4,7 @@ import {
   BookOpen,
   CalendarDays,
   Check,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   CircleCheckBig,
@@ -23,6 +24,7 @@ import {
   ListChecks,
   MessageSquareText,
   PanelRight,
+  Printer,
   Rocket,
   Search,
   Settings2,
@@ -32,7 +34,7 @@ import {
   Wrench,
   X,
 } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   docArticles,
   getArticleSearchText,
@@ -71,13 +73,22 @@ export function DocsExplorer() {
   const [activeId, setActiveId] = useState(docArticles[0].id);
   const [query, setQuery] = useState("");
   const [copied, setCopied] = useState<string | null>(null);
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
+  const [focusedIndex, setFocusedIndex] = useState(-1);
+  const [scrollProgress, setScrollProgress] = useState(0);
   const searchRef = useRef<HTMLInputElement>(null);
+  const sidebarRef = useRef<HTMLDivElement>(null);
 
   const normalizedQuery = query.trim().toLowerCase();
   const filtered = useMemo(() => {
     if (!normalizedQuery) return docArticles;
     return docArticles.filter((article) => getArticleSearchText(article).includes(normalizedQuery));
   }, [normalizedQuery]);
+
+  // Flat list of visible article IDs for keyboard navigation
+  const flatFilteredIds = useMemo(() => {
+    return filtered.filter((a) => !collapsedGroups.has(a.group)).map((a) => a.id);
+  }, [filtered, collapsedGroups]);
 
   const active = getDocArticle(activeId) ?? docArticles[0];
   const ActiveIcon = iconMap[active.icon];
@@ -86,6 +97,98 @@ export function DocsExplorer() {
   const previous = activeIndex > 0 ? docArticles[activeIndex - 1] : null;
   const next = activeIndex < docArticles.length - 1 ? docArticles[activeIndex + 1] : null;
   const sectionCount = docArticles.reduce((count, article) => count + article.sections.length, 0);
+
+  const popularSearchTerms = ["模型", "工作目录", "审批", "快捷键", "429", "工具", "项目", "安全"];
+
+  // Toggle group collapse
+  const toggleGroup = useCallback((group: string) => {
+    setCollapsedGroups((prev) => {
+      const next = new Set(prev);
+      if (next.has(group)) next.delete(group);
+      else next.add(group);
+      return next;
+    });
+  }, []);
+
+  // Get search snippet for an article
+  function getSearchSnippet(article: (typeof docArticles)[number]): string | null {
+    if (!normalizedQuery) return null;
+    const searchText = getArticleSearchText(article);
+    const idx = searchText.indexOf(normalizedQuery);
+    if (idx < 0) return null;
+    const start = Math.max(0, idx - 20);
+    const end = Math.min(searchText.length, idx + normalizedQuery.length + 40);
+    const prefix = start > 0 ? "…" : "";
+    const suffix = end < searchText.length ? "…" : "";
+    return prefix + searchText.slice(start, end) + suffix;
+  }
+
+  // Highlight matched text in a string
+  function highlightText(text: string, q: string): React.ReactNode {
+    if (!q) return text;
+    const lowerText = text.toLowerCase();
+    const lowerQ = q.toLowerCase();
+    const parts: React.ReactNode[] = [];
+    let lastIndex = 0;
+    let idx = lowerText.indexOf(lowerQ);
+    while (idx >= 0) {
+      if (idx > lastIndex) parts.push(text.slice(lastIndex, idx));
+      parts.push(<mark className="docs-highlight" key={`${idx}-${text.slice(idx, idx + lowerQ.length)}`}>{text.slice(idx, idx + lowerQ.length)}</mark>);
+      lastIndex = idx + lowerQ.length;
+      idx = lowerText.indexOf(lowerQ, lastIndex);
+    }
+    if (lastIndex < text.length) parts.push(text.slice(lastIndex));
+    return parts.length > 0 ? parts : text;
+  }
+
+  // Print article
+  function printArticle() {
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) return;
+    const sectionsHtml = active.sections.map((s) => {
+      const bodyHtml = s.body.map((p) => `<p>${p}</p>`).join("");
+      const stepsHtml = s.steps
+        ? `<ol>${s.steps.map((st) => `<li><strong>${st.title}</strong><p>${st.detail}</p></li>`).join("")}</ol>`
+        : "";
+      return `<section><h2>${s.title}</h2>${bodyHtml}${stepsHtml}</section>`;
+    }).join("");
+    printWindow.document.write(`<!DOCTYPE html><html><head><title>${active.title}</title><style>
+      body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",system-ui,sans-serif;max-width:720px;margin:40px auto;padding:0 20px;color:#14171d;line-height:1.7;font-size:14px}
+      h1{font-size:28px;margin-bottom:8px}h2{font-size:20px;margin-top:32px;border-bottom:1px solid #e3e6eb;padding-bottom:8px}
+      p{color:#4e5867}strong{color:#14171d}ol{padding-left:20px}
+      .meta{color:#7d8695;font-size:12px;margin-bottom:24px}
+    </style></head><body><h1>${active.title}</h1><p class="meta">${active.readTime} · 更新于 ${active.updated}</p><p>${active.summary}</p>${sectionsHtml}</body></html>`);
+    printWindow.document.close();
+    printWindow.print();
+  }
+
+  // Scroll progress tracking
+  useEffect(() => {
+    function handleScroll() {
+      const articleEl = document.getElementById("docs-article-content");
+      if (!articleEl) { setScrollProgress(0); return; }
+      const rect = articleEl.getBoundingClientRect();
+      const articleTop = window.scrollY + rect.top;
+      const articleHeight = articleEl.offsetHeight;
+      const viewportHeight = window.innerHeight;
+      const scrolled = window.scrollY - articleTop + viewportHeight * 0.3;
+      const progress = Math.min(1, Math.max(0, scrolled / articleHeight));
+      setScrollProgress(progress);
+    }
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [activeId]);
+
+  // Scroll focused item into view
+  useEffect(() => {
+    if (focusedIndex < 0 || !sidebarRef.current) return;
+    const items = sidebarRef.current.querySelectorAll<HTMLElement>(".docs-nav-item");
+    const visibleIndex = flatFilteredIds.indexOf(filtered[focusedIndex]?.id ?? "");
+    if (visibleIndex >= 0 && items[visibleIndex]) {
+      items[visibleIndex].scrollIntoView({ block: "nearest" });
+    }
+  }, [focusedIndex, flatFilteredIds, filtered]);
 
   useEffect(() => {
     function handleKeydown(event: KeyboardEvent) {
@@ -99,10 +202,31 @@ export function DocsExplorer() {
         setQuery("");
         searchRef.current?.blur();
       }
+      // Arrow navigation in sidebar
+      if (!isTyping && (event.key === "ArrowDown" || event.key === "ArrowUp")) {
+        event.preventDefault();
+        setFocusedIndex((prev) => {
+          if (event.key === "ArrowDown") return Math.min(filtered.length - 1, prev + 1);
+          return Math.max(0, prev - 1);
+        });
+      }
+      if (!isTyping && event.key === "Enter" && focusedIndex >= 0 && focusedIndex < filtered.length) {
+        event.preventDefault();
+        selectArticle(filtered[focusedIndex].id);
+      }
+      // n/p for next/previous article
+      if (!isTyping && event.key === "n") {
+        event.preventDefault();
+        if (next) selectArticle(next.id);
+      }
+      if (!isTyping && event.key === "p") {
+        event.preventDefault();
+        if (previous) selectArticle(previous.id);
+      }
     }
     window.addEventListener("keydown", handleKeydown);
     return () => window.removeEventListener("keydown", handleKeydown);
-  }, []);
+  }, [filtered, focusedIndex, next, previous]);
 
   function selectArticle(id: string, scroll = true) {
     setActiveId(id);
@@ -177,7 +301,7 @@ export function DocsExplorer() {
       </section>
 
       <div className="docs-layout page-shell">
-        <aside className="docs-sidebar" aria-label="文档目录">
+        <aside className="docs-sidebar" ref={sidebarRef} aria-label="文档目录">
           <div className="docs-sidebar__summary">
             <span>{normalizedQuery ? "搜索结果" : "文档目录"}</span>
             <strong>{filtered.length} / {docArticles.length}</strong>
@@ -186,34 +310,57 @@ export function DocsExplorer() {
             <div className="docs-empty">
               <Search aria-hidden="true" size={20} />
               <strong>没有找到相关内容</strong>
-              <span>尝试“模型”“审批”“429”或“快捷键”。</span>
+              <span>尝试以下热门搜索：</span>
+              <div className="docs-empty__chips">
+                {popularSearchTerms.map((term) => (
+                  <button key={term} type="button" className="docs-empty__chip" onClick={() => updateQuery(term)}>{term}</button>
+                ))}
+              </div>
               <button type="button" onClick={() => updateQuery("")}>清除搜索</button>
             </div>
-          ) : groups.map((group) => (
-            <div className="docs-group" key={group}>
-              <h2>{group}</h2>
-              {filtered.filter((article) => article.group === group).map((article) => {
-                const Icon = iconMap[article.icon];
-                const selected = article.id === active.id;
-                return (
-                  <button
-                    key={article.id}
-                    type="button"
-                    className={`docs-nav-item${selected ? " docs-nav-item--active" : ""}`}
-                    onClick={() => selectArticle(article.id)}
-                    aria-current={selected ? "page" : undefined}
-                  >
-                    <Icon aria-hidden="true" size={16} />
-                    <span className="docs-nav-item__copy">
-                      <strong>{article.title}</strong>
-                      <small>{article.readTime}</small>
-                    </span>
-                    <ChevronRight aria-hidden="true" size={14} />
-                  </button>
-                );
-              })}
-            </div>
-          ))}
+          ) : groups.map((group) => {
+            const groupArticles = filtered.filter((article) => article.group === group);
+            const isCollapsed = collapsedGroups.has(group);
+            return (
+              <div className={`docs-group${isCollapsed ? " docs-group--collapsed" : ""}`} key={group}>
+                <button
+                  type="button"
+                  className="docs-group__header"
+                  onClick={() => toggleGroup(group)}
+                  aria-expanded={!isCollapsed}
+                >
+                  <span className="docs-group__title">{group}</span>
+                  <span className="docs-group__badge">{groupArticles.length}</span>
+                  <ChevronDown aria-hidden="true" size={13} className="docs-group__chevron" />
+                </button>
+                {!isCollapsed && groupArticles.map((article) => {
+                  const Icon = iconMap[article.icon];
+                  const selected = article.id === active.id;
+                  const snippet = getSearchSnippet(article);
+                  return (
+                    <button
+                      key={article.id}
+                      type="button"
+                      className={`docs-nav-item${selected ? " docs-nav-item--active" : ""}${focusedIndex >= 0 && filtered[focusedIndex]?.id === article.id ? " docs-nav-item--focused" : ""}`}
+                      onClick={() => { selectArticle(article.id); setFocusedIndex(filtered.findIndex((a) => a.id === article.id)); }}
+                      aria-current={selected ? "page" : undefined}
+                    >
+                      <Icon aria-hidden="true" size={16} />
+                      <span className="docs-nav-item__copy">
+                        <strong>{normalizedQuery ? highlightText(article.title, normalizedQuery) : article.title}</strong>
+                        {snippet ? (
+                          <small className="docs-nav-item__snippet">{snippet}</small>
+                        ) : (
+                          <small>{article.readTime}</small>
+                        )}
+                      </span>
+                      <ChevronRight aria-hidden="true" size={14} />
+                    </button>
+                  );
+                })}
+              </div>
+            );
+          })}
         </aside>
 
         {filtered.length === 0 ? (
@@ -221,26 +368,33 @@ export function DocsExplorer() {
             <Search aria-hidden="true" size={26} />
             <h2 id="docs-no-result-title">没有匹配“{query.trim()}”的文档</h2>
             <p>搜索会检查标题、正文、表格、示例和排错关键词。可以尝试更短的关键词。</p>
-            <div>
-              {["模型", "工作目录", "审批", "快捷键"].map((term) => (
-                <button key={term} type="button" onClick={() => updateQuery(term)}>{term}</button>
+            <div className="docs-no-result__chips">
+              {popularSearchTerms.map((term) => (
+                <button key={term} type="button" className="docs-no-result__chip" onClick={() => updateQuery(term)}>{term}</button>
               ))}
             </div>
           </section>
         ) : (
           <article id="docs-article-content" className="docs-article" tabIndex={-1} aria-labelledby="docs-article-title">
+            <div className="docs-scroll-progress" role="progressbar" aria-valuenow={Math.round(scrollProgress * 100)} aria-valuemin={0} aria-valuemax={100} aria-label="阅读进度">
+              <div className="docs-scroll-progress__bar" style={{ width: `${scrollProgress * 100}%` }} />
+            </div>
             <div className="docs-breadcrumb">
               <span>文档</span>
               <ChevronRight aria-hidden="true" size={13} />
               <span>{active.group}</span>
               <ChevronRight aria-hidden="true" size={13} />
               <strong>{active.title}</strong>
+              <button type="button" className="docs-print-btn" onClick={printArticle} aria-label="打印本文" title="打印本文">
+                <Printer aria-hidden="true" size={14} />
+                <span>打印</span>
+              </button>
             </div>
             <header className="docs-article__header">
               <div className="docs-article__icon"><ActiveIcon aria-hidden="true" size={24} /></div>
               <div>
-                <h2 id="docs-article-title">{active.title}</h2>
-                <p>{active.summary}</p>
+                <h2 id="docs-article-title">{normalizedQuery ? highlightText(active.title, normalizedQuery) : active.title}</h2>
+                <p>{normalizedQuery ? highlightText(active.summary, normalizedQuery) : active.summary}</p>
                 <div className="docs-article__meta">
                   <span><Clock3 aria-hidden="true" size={13} />{active.readTime}</span>
                   <span><CalendarDays aria-hidden="true" size={13} />更新于 {active.updated}</span>
@@ -255,11 +409,11 @@ export function DocsExplorer() {
                 <section className="docs-section" id={sectionId} key={section.id}>
                   <h3>
                     <a href={`#${sectionId}`} aria-label={`链接到：${section.title}`}>
-                      {section.title}<Link2 aria-hidden="true" size={15} />
+                      {normalizedQuery ? highlightText(section.title, normalizedQuery) : section.title}<Link2 aria-hidden="true" size={15} />
                     </a>
                   </h3>
                   <div className="docs-prose">
-                    {section.body.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+                    {section.body.map((paragraph) => <p key={paragraph}>{normalizedQuery ? highlightText(paragraph, normalizedQuery) : paragraph}</p>)}
                   </div>
 
                   {section.steps && (
@@ -267,7 +421,7 @@ export function DocsExplorer() {
                       {section.steps.map((step, index) => (
                         <li key={step.title}>
                           <span>{index + 1}</span>
-                          <div><strong>{step.title}</strong><p>{step.detail}</p></div>
+                          <div><strong>{normalizedQuery ? highlightText(step.title, normalizedQuery) : step.title}</strong><p>{normalizedQuery ? highlightText(step.detail, normalizedQuery) : step.detail}</p></div>
                         </li>
                       ))}
                     </ol>
@@ -278,7 +432,7 @@ export function DocsExplorer() {
                       {section.bullets.map((item) => (
                         <div key={item.title}>
                           <Check aria-hidden="true" size={15} />
-                          <p><strong>{item.title}</strong><span>{item.detail}</span></p>
+                          <p><strong>{normalizedQuery ? highlightText(item.title, normalizedQuery) : item.title}</strong><span>{normalizedQuery ? highlightText(item.detail, normalizedQuery) : item.detail}</span></p>
                         </div>
                       ))}
                     </div>
@@ -303,7 +457,7 @@ export function DocsExplorer() {
 
                   {section.checklist && (
                     <ul className="docs-checklist">
-                      {section.checklist.map((item) => <li key={item}><CircleCheckBig aria-hidden="true" size={16} /><span>{item}</span></li>)}
+                      {section.checklist.map((item) => <li key={item}><CircleCheckBig aria-hidden="true" size={16} /><span>{normalizedQuery ? highlightText(item, normalizedQuery) : item}</span></li>)}
                     </ul>
                   )}
 
