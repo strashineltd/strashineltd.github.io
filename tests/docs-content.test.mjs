@@ -36,7 +36,7 @@ test("documentation covers the complete v0.9 operating model", async () => {
   assert.match(source, /默认等待时间是 60 秒/);
   assert.match(source, /本机受限明文/);
   assert.match(source, /Ctrl\+Shift\+P/);
-  assert.match(source, /公开安装包暂未上传/);
+  assert.match(source, /安装包通过 GitHub Releases 提供/);
   assert.doesNotMatch(source, /Ctrl \+ ,/);
 
   // Verify new article content

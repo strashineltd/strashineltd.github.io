@@ -53,7 +53,7 @@ export function DownloadPanel() {
             <span className="eyebrow"><span className="status-dot" aria-hidden="true" />v0.9 内测版</span>
             <h1>下载 Stellara Work</h1>
             <p className="download-hero__lead">
-              为 Windows x64 打造的本地优先桌面 Agent。安装后选择模型和工作目录，即可开始第一个任务。
+              为 Windows 与 macOS 打造的本地优先桌面 Agent。安装后选择模型和工作目录，即可开始第一个任务。
             </p>
             <div className="download-hero__actions">
               <a

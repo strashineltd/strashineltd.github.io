@@ -56,19 +56,19 @@ export const docArticles: DocArticle[] = [
     summary: "了解当前发布范围，完成模型连接和工作目录设置。",
     icon: "rocket",
     readTime: "12 分钟",
-    updated: "2026-07-31",
-    keywords: ["安装", "Windows", "x64", "首次启动", "引导", "API Key", "工作目录", "连接测试", "NSIS", "快捷方式"],
+    updated: "2026-08-18",
+    keywords: ["安装", "Windows", "x64", "macOS", "首次启动", "引导", "API Key", "工作目录", "连接测试", "NSIS", "快捷方式"],
     sections: [
       {
         id: "requirements",
         title: "发布范围与安装前准备",
         body: [
-          "Stellara Work v0.9 当前面向 Windows x64。安装器采用可选择安装位置的 NSIS 向导，并会创建开始菜单与桌面快捷方式。项目尚未发布明确的最低 Windows 版本，因此文档不会虚构系统版本门槛。",
+          "Stellara Work v0.9 提供 Windows x64 与 macOS（Apple 芯片）安装包。Windows 安装器采用可选择安装位置的 NSIS 向导，并会创建开始菜单与桌面快捷方式；macOS 安装包以 DMG 形式提供，需要 macOS 12 或更高版本。",
           "应用本身不要求注册 Stellara 云端账号，但需要一个受支持模型服务的 API Key，以及一个你允许 Agent 读取和修改的本地工作目录。",
           "安装完成后，应用首次启动时会自动在用户主目录下创建 `.stellara` 数据文件夹。该文件夹用于存放配置、密钥和会话数据库，后续可在设置中心查看其完整路径。",
         ],
         checklist: [
-          "Windows x64 电脑",
+          "Windows x64 或 macOS（Apple 芯片）电脑",
           "GLM、DeepSeek、Kimi、MiniMax 或 OpenAI 兼容服务的 API Key",
           "一个明确、可备份的项目文件夹",
           "可访问所选模型服务的网络连接",
@@ -76,9 +76,9 @@ export const docArticles: DocArticle[] = [
           "关闭可能拦截安装的杀毒软件或防火墙（如有需要）",
         ],
         note: {
-          tone: "warning",
-          title: "当前下载状态",
-          body: "公开安装包暂未上传，下载页会显示\"下载通道准备中\"。在正式开放前，请勿从非官方来源获取同名安装程序。",
+          tone: "success",
+          title: "下载方式",
+          body: "安装包通过 GitHub Releases 提供，下载页可直接跳转。请仅从官方 GitHub 仓库获取安装程序，并核对发布页给出的 SHA-256 校验值。",
         },
       },
       {
@@ -1275,15 +1275,15 @@ export const docArticles: DocArticle[] = [
     summary: "集中回答安装、联网、数据、模型和当前 v0.9 限制。",
     icon: "help",
     readTime: "11 分钟",
-    updated: "2026-07-31",
+    updated: "2026-08-18",
     keywords: ["FAQ", "常见问题", "离线", "账号", "macOS", "Linux", "安装包", "版本"],
     sections: [
       {
         id: "platform",
         title: "支持 macOS 或 Linux 吗？",
         body: [
-          "当前公开产品信息只确认 Windows x64 安装器。文档不会承诺 macOS、Linux、ARM64 或明确的最低 Windows 版本；后续以下载页和正式发布说明为准。",
-          "如果需要在其他平台使用，可以关注官方发布渠道获取最新信息。当前版本的代码架构基于 Electron，理论上具备跨平台潜力，但官方尚未公布具体计划。",
+          "当前公开版本提供 Windows x64 与 macOS（Apple 芯片）安装包；macOS 需要 12.0 或更高版本。Linux 版本尚未提供。",
+          "如果需要在 Linux 等平台使用，可以关注官方发布渠道获取最新信息。",
         ],
       },
       {
@@ -1304,10 +1304,10 @@ export const docArticles: DocArticle[] = [
       },
       {
         id: "installer",
-        title: "为什么下载按钮暂时不可用？",
+        title: "在哪里下载安装包？",
         body: [
-          "安装包尚未上传到公开站点，因此下载页只展示版本、文件名、体积和校验信息，不提供无效链接。通道开放后应从本站下载，并核对发布页给出的 SHA-256。",
-          "在安装包正式发布前，可以从官方渠道获取测试版本。测试版本可能包含未修复的已知问题，不建议在生产环境中使用。",
+          "安装包通过 GitHub Releases 提供：从下载页点击\"前往下载\"即可跳转。下载完成后，建议核对发布页给出的 SHA-256 校验值，确认文件完整。",
+          "请仅从官方 GitHub 仓库获取安装包，避免从非官方来源下载同名文件。当前 v0.9 为内测版本，可能包含未修复的已知问题。",
         ],
       },
       {
@@ -1527,7 +1527,7 @@ export const docArticles: DocArticle[] = [
     summary: "记录各版本的新功能、改进和已知限制。",
     icon: "rocket",
     readTime: "8 分钟",
-    updated: "2026-08-02",
+    updated: "2026-08-18",
     keywords: ["版本", "变更", "更新", "changelog", "发布", "新功能", "限制"],
     sections: [
       {
@@ -1567,10 +1567,10 @@ export const docArticles: DocArticle[] = [
           "v0.9.0 存在以下已知限制，我们将在后续版本中逐步改进。",
         ],
         bullets: [
-          { title: "平台限制", detail: "仅支持 Windows x64，暂无 macOS 和 Linux 版本。" },
+          { title: "平台限制", detail: "Windows 提供 x64 安装包；macOS 提供 Apple 芯片版本；暂无 Linux 版本。" },
           { title: "密钥存储", detail: "API Key 使用明文 `.env` 文件，未使用加密存储。" },
           { title: "云同步", detail: "不支持跨设备云同步，需要用户自行备份和迁移。" },
-          { title: "安装包", detail: "公开安装包尚未发布，下载通道准备中。" },
+          { title: "安装包", detail: "安装包通过 GitHub Releases 发布；下载前请核对 SHA-256 校验值。" },
           { title: "多语言", detail: "界面主要支持中文，部分技术术语使用英文。" },
           { title: "插件系统", detail: "暂不支持第三方插件扩展。" },
         ],
@@ -1583,7 +1583,7 @@ export const docArticles: DocArticle[] = [
           "这些方向不代表正式承诺，仅供参考。实际发布内容以官方更新说明为准。",
         ],
         bullets: [
-          { title: "跨平台支持", detail: "探索 macOS 和 Linux 版本的可能性。" },
+          { title: "跨平台支持", detail: "探索 Linux 版本的可能性。" },
           { title: "安全增强", detail: "改进密钥存储机制，支持加密保险库。" },
           { title: "协作功能", detail: "研究团队协作和会话共享的方案。" },
           { title: "插件生态", detail: "开放插件接口，支持第三方扩展。" },
