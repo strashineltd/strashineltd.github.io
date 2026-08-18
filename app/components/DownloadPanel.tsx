@@ -36,7 +36,11 @@ export function DownloadPanel() {
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
   async function copyHash(key: string, value: string) {
-    await navigator.clipboard.writeText(value);
+    try {
+      await navigator.clipboard.writeText(value);
+    } catch {
+      return;
+    }
     setCopiedKey(key);
     window.setTimeout(() => setCopiedKey(null), 1800);
   }

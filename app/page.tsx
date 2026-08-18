@@ -75,7 +75,7 @@ export default function HomePage() {
             <ul className="hero__proof" aria-label="产品特性摘要">
               <li><Check aria-hidden="true" size={16} />无需账号体系</li>
               <li><Check aria-hidden="true" size={16} />支持自定义模型</li>
-              <li><Check aria-hidden="true" size={16} />安装包 111.8 MiB</li>
+              <li><Check aria-hidden="true" size={16} />安装包 117.3 MiB</li>
             </ul>
           </div>
 

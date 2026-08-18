@@ -58,6 +58,7 @@ test("server-renders the download route with verified release metadata", async (
   assert.match(html, /下载 Windows 版/);
   assert.match(html, /前往 GitHub 下载/);
   assert.match(html, /https:\/\/github\.com\/strashineltd\/stellara-work\/releases/);
+  assert.match(html, /target="_blank" rel="noopener noreferrer"/);
   assert.match(html, /34784C8356B367EDEE1AD07064950272F5BA59EE36D898C5758750411DE52475/);
   assert.match(html, /380826DC0010433A70F3C417616A96CBFA6D8F0F8DE5394F3F0F2E3E428051E7/);
   assert.doesNotMatch(html, /111\.8 MiB/);
