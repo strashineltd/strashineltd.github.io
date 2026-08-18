@@ -1674,7 +1674,7 @@ export const docArticles: DocArticle[] = [
         ],
       },
     ],
-    related: ["models", "local-data", "workdir-tools"],
+    related: ["models", "local-data"],
   },
   {
     id: "faq",
