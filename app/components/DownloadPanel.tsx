@@ -18,6 +18,7 @@ import {
   Terminal,
 } from "lucide-react";
 import { useState } from "react";
+import { DownloadDemo } from "./DownloadDemo";
 
 const installerName = "Stellara Work-Setup-0.9.0.exe";
 const sha256 = "78DBC0D14441E1FE98164C88BC5A57027BE126DD5EF0C00C5AC636F7C1580037";
@@ -72,6 +73,10 @@ export function DownloadPanel() {
             <div><dt>包体积</dt><dd>111.8 MiB</dd></div>
           </dl>
           <div className="download-card__seal"><ShieldCheck aria-hidden="true" size={18} /><span>附带 SHA-256 校验值</span></div>
+        </div>
+
+        <div className="download-hero__demo">
+          <DownloadDemo />
         </div>
       </section>
 

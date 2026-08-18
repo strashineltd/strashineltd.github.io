@@ -56,4 +56,6 @@ test("server-renders the download route with verified release metadata", async (
   assert.match(html, /111\.8 MiB/);
   assert.match(html, /下载通道准备中/);
   assert.match(html, /78DBC0D14441E1FE98164C88BC5A57027BE126DD5EF0C00C5AC636F7C1580037/);
+  assert.match(html, /首次引导/);
+  assert.match(html, /连接测试通过，配置已保存/);
 });
