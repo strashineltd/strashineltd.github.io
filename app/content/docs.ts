@@ -31,7 +31,7 @@ export type DocSection = {
   bullets?: Array<{ title: string; detail: string }>;
   table?: { headers: string[]; rows: string[][] };
   checklist?: string[];
-  code?: { label: string; content: string };
+  code?: { label: string; content: string } | Array<{ label: string; content: string }>;
   note?: DocNote;
 };
 
@@ -1291,14 +1291,16 @@ export const docArticles: DocArticle[] = [
             ["Markdown", "<workDir>/skills/*.md 或子目录/*.md", "frontmatter 中的 name、description；正文作为 prompt"],
           ],
         },
-        code: {
-          label: "JSON 格式示例：skills/code-review.json",
-          content: "{\n  \"name\": \"code-review\",\n  \"description\": \"按项目规范审查当前改动\",\n  \"prompt\": \"先读取贡献指南和 git diff，按严重程度列出可执行问题；不要直接修改文件。\"\n}",
-        },
-        code: {
-          label: "Markdown 格式示例：skills/deploy-check.md",
-          content: "---\nname: deploy-check\ndescription: 部署前的安全检查清单\n---\n\n1. 检查所有环境变量是否已配置\n2. 运行完整测试套件\n3. 检查是否有未提交的敏感信息\n4. 确认构建产物可以正常生成\n5. 输出检查结果报告",
-        },
+        code: [
+          {
+            label: "JSON 格式示例：skills/code-review.json",
+            content: "{\n  \"name\": \"code-review\",\n  \"description\": \"按项目规范审查当前改动\",\n  \"prompt\": \"先读取贡献指南和 git diff，按严重程度列出可执行问题；不要直接修改文件。\"\n}",
+          },
+          {
+            label: "Markdown 格式示例：skills/deploy-check.md",
+            content: "---\nname: deploy-check\ndescription: 部署前的安全检查清单\n---\n\n1. 检查所有环境变量是否已配置\n2. 运行完整测试套件\n3. 检查是否有未提交的敏感信息\n4. 确认构建产物可以正常生成\n5. 输出检查结果报告",
+          },
+        ],
         note: {
           tone: "info",
           title: "格式优先级",
@@ -1458,14 +1460,16 @@ export const docArticles: DocArticle[] = [
             ["tools", "string[]（可选）", "工具白名单，为空则启用服务器所有工具"],
           ],
         },
-        code: {
-          label: "stdio 服务器配置示例",
-          content: "{\n  \"id\": \"filesystem\",\n  \"name\": \"文件系统服务器\",\n  \"transport\": \"stdio\",\n  \"command\": \"node\",\n  \"args\": [\"/path/to/mcp-filesystem/dist/index.js\", \"/allowed/dir\"],\n  \"enabled\": true\n}",
-        },
-        code: {
-          label: "HTTP 服务器配置示例",
-          content: "{\n  \"id\": \"api-tools\",\n  \"name\": \"API 工具服务器\",\n  \"transport\": \"http\",\n  \"url\": \"https://mcp.example.com/tools\",\n  \"headers\": { \"Authorization\": \"Bearer xxx\" },\n  \"enabled\": true,\n  \"tools\": [\"query_db\", \"send_notification\"]\n}",
-        },
+        code: [
+          {
+            label: "stdio 服务器配置示例",
+            content: "{\n  \"id\": \"filesystem\",\n  \"name\": \"文件系统服务器\",\n  \"transport\": \"stdio\",\n  \"command\": \"node\",\n  \"args\": [\"/path/to/mcp-filesystem/dist/index.js\", \"/allowed/dir\"],\n  \"enabled\": true\n}",
+          },
+          {
+            label: "HTTP 服务器配置示例",
+            content: "{\n  \"id\": \"api-tools\",\n  \"name\": \"API 工具服务器\",\n  \"transport\": \"http\",\n  \"url\": \"https://mcp.example.com/tools\",\n  \"headers\": { \"Authorization\": \"Bearer xxx\" },\n  \"enabled\": true,\n  \"tools\": [\"query_db\", \"send_notification\"]\n}",
+          },
+        ],
         steps: [
           { title: "添加服务器", detail: "在设置中点击「添加 MCP 服务器」，填写 ID、名称和连接参数。或通过编辑 config.json 的 mcpServers 数组添加。" },
           { title: "测试连接", detail: "点击「测试连接」验证服务器可达。测试会尝试连接并获取工具列表，返回工具数量或错误信息。" },
@@ -2818,7 +2822,7 @@ export function getArticleSearchText(article: DocArticle) {
       ...(section.table?.headers ?? []),
       ...(section.table?.rows.flat() ?? []),
       ...(section.checklist ?? []),
-      section.code?.content ?? "",
+      ...(Array.isArray(section.code) ? section.code.map(c => c.content) : [section.code?.content ?? ""]),
       section.note?.title ?? "",
       section.note?.body ?? "",
     ]),

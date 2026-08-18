@@ -481,18 +481,24 @@ export function DocsExplorer() {
                     </ul>
                   )}
 
-                  {section.code && (
-                    <div className="code-block">
-                      <div className="code-block__header">
-                        <span>{section.code.label}</span>
-                        <button type="button" onClick={() => copyCode(section.code!.content, codeKey)}>
-                          {copied === codeKey ? <Check aria-hidden="true" size={14} /> : <Clipboard aria-hidden="true" size={14} />}
-                          {copied === codeKey ? "已复制" : "复制"}
-                        </button>
-                      </div>
-                      <pre><code>{section.code.content}</code></pre>
-                    </div>
-                  )}
+                  {section.code && (() => {
+                    const codeBlocks = Array.isArray(section.code) ? section.code : [section.code];
+                    return codeBlocks.map((block, blockIndex) => {
+                      const blockKey = `${codeKey}-${blockIndex}`;
+                      return (
+                        <div key={blockKey} className="code-block">
+                          <div className="code-block__header">
+                            <span>{block.label}</span>
+                            <button type="button" onClick={() => copyCode(block.content, blockKey)}>
+                              {copied === blockKey ? <Check aria-hidden="true" size={14} /> : <Clipboard aria-hidden="true" size={14} />}
+                              {copied === blockKey ? "已复制" : "复制"}
+                            </button>
+                          </div>
+                          <pre><code>{block.content}</code></pre>
+                        </div>
+                      );
+                    });
+                  })()}
 
                   {section.note && <DocsNote note={section.note} />}
                   <span className="sr-only">章节 {sectionIndex + 1}，共 {active.sections.length} 章</span>
