@@ -20,7 +20,7 @@ export const dynamic = "force-static";
 export const metadata: Metadata = {
   title: "Stellara Work — 把复杂工作，留在本地完成。",
   description:
-    "数据本地、模型自由、操作可控的 Windows 桌面 Agent。下载 Stellara Work v0.9 内测版。",
+    "数据本地、模型自由、操作可控的桌面 Agent。下载 Stellara Work v0.9 内测版。",
 };
 
 const principles = [
@@ -56,11 +56,11 @@ export default function HomePage() {
           <div className="hero__copy">
             <div className="eyebrow">
               <span className="status-dot" aria-hidden="true" />
-              v0.9 内测版 · Windows x64
+              v0.9 内测版 · Windows 与 macOS
             </div>
             <h1>把复杂工作，<br />留在本地完成。</h1>
             <p className="hero__lead">
-              Stellara Work 是一款面向真实项目的 Windows 桌面 Agent。
+              Stellara Work 是一款面向真实项目的桌面 Agent。
               它理解你的工作区、执行计划和工具调用，同时把数据与决定权留给你。
             </p>
             <div className="hero__actions">
@@ -172,7 +172,7 @@ export default function HomePage() {
             <h2>把下一件复杂的事，交给更清晰的工作流。</h2>
           </div>
           <div className="final-cta__actions">
-            <Link className="button button--primary" href="/download">下载 Windows 版</Link>
+            <Link className="button button--primary" href="/download">前往下载 v0.9</Link>
             <Link className="text-link" href="/docs">先阅读文档 <ArrowRight aria-hidden="true" size={16} /></Link>
           </div>
         </section>

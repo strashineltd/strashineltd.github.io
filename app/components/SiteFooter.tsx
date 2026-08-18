@@ -17,7 +17,7 @@ export function SiteFooter() {
           />
           <div>
             <strong>Stellara Work</strong>
-            <span>本地优先的 Windows 桌面 Agent</span>
+            <span>本地优先的桌面 Agent</span>
           </div>
         </div>
         <nav className="site-footer__nav" aria-label="页脚导航">
@@ -25,7 +25,7 @@ export function SiteFooter() {
           <Link href="/docs">文档</Link>
           <Link href="/download">下载</Link>
         </nav>
-        <p className="site-footer__meta">v0.9 内测版 · Windows x64</p>
+        <p className="site-footer__meta">v0.9 内测版 · Windows 与 macOS</p>
       </div>
     </footer>
   );
