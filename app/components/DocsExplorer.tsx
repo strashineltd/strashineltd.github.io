@@ -106,12 +106,12 @@ export function DocsExplorer() {
     return theme;
   }, [theme]);
 
-  // Apply theme to docs container
+  // Apply theme to html element (covers header, main, footer)
   useEffect(() => {
-    const container = document.querySelector(".docs-page");
-    if (container) {
-      container.setAttribute("data-theme", resolvedTheme);
-    }
+    document.documentElement.setAttribute("data-theme", resolvedTheme);
+    return () => {
+      document.documentElement.removeAttribute("data-theme");
+    };
   }, [resolvedTheme]);
 
   // Listen for system preference changes
@@ -119,10 +119,7 @@ export function DocsExplorer() {
     if (theme !== "system") return;
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
     const handler = () => {
-      const container = document.querySelector(".docs-page");
-      if (container) {
-        container.setAttribute("data-theme", mq.matches ? "dark" : "light");
-      }
+      document.documentElement.setAttribute("data-theme", mq.matches ? "dark" : "light");
     };
     mq.addEventListener("change", handler);
     return () => mq.removeEventListener("change", handler);
