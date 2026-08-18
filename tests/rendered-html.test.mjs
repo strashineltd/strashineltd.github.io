@@ -58,7 +58,9 @@ test("server-renders the download route with verified release metadata", async (
   assert.match(html, /78DBC0D14441E1FE98164C88BC5A57027BE126DD5EF0C00C5AC636F7C1580037/);
   assert.match(html, /首次引导/);
   assert.match(html, /连接测试通过，配置已保存/);
-  assert.match(html, /version-card/);
+  assert.match(html, /class="version-card"/);
   assert.match(html, /changelog-card/);
   assert.doesNotMatch(html, /version-panel/);
+  const versionSection = html.match(/<section class="version-section[\s\S]*?<\/section>/)?.[0] ?? "";
+  assert.doesNotMatch(versionSection, /aria-expanded/);
 });
