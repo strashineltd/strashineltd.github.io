@@ -392,6 +392,7 @@ img { display: block; max-width: 100%; }
 .docs-search-status { min-height: 18px; margin: 8px 2px 0; color: var(--ink-faint); font-size: 11px; text-align: right; }
 
 .docs-layout { padding-block: 52px 100px; display: grid; grid-template-columns: 236px minmax(0, 700px) 176px; gap: 44px; align-items: start; }
+.docs-sidebar-wrap { min-height: 100%; }
 .docs-sidebar { position: sticky; top: 92px; max-height: calc(100vh - 116px); padding-right: 5px; overflow-y: auto; scrollbar-width: thin; }
 .docs-sidebar__summary { margin-bottom: 22px; padding: 0 9px 12px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); color: var(--ink-faint); font-size: 11px; }
 .docs-sidebar__summary strong { color: var(--ink-soft); font: 11px var(--font-mono); }

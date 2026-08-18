@@ -387,12 +387,13 @@ export function DocsExplorer() {
       </section>
 
       <div className="docs-layout page-shell">
-        <aside className="docs-sidebar" ref={sidebarRef} aria-label="文档目录">
-          <div className="docs-sidebar__summary">
-            <span>{normalizedQuery ? "搜索结果" : "文档目录"}</span>
-            <strong>{filtered.length} / {docArticles.length}</strong>
-          </div>
-          {filtered.length === 0 ? (
+        <div className="docs-sidebar-wrap">
+          <aside className="docs-sidebar" ref={sidebarRef} aria-label="文档目录">
+            <div className="docs-sidebar__summary">
+              <span>{normalizedQuery ? "搜索结果" : "文档目录"}</span>
+              <strong>{filtered.length} / {docArticles.length}</strong>
+            </div>
+            {filtered.length === 0 ? (
             <div className="docs-empty">
               <Search aria-hidden="true" size={20} />
               <strong>没有找到相关内容</strong>
@@ -448,6 +449,7 @@ export function DocsExplorer() {
             );
           })}
         </aside>
+        </div>
 
         {filtered.length === 0 ? (
           <section className="docs-no-result" aria-labelledby="docs-no-result-title">
