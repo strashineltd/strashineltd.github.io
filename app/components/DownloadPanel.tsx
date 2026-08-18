@@ -6,7 +6,6 @@ import {
   ArrowRight,
   Check,
   CheckCircle2,
-  ChevronDown,
   Clipboard,
   FileCheck2,
   FolderKanban,
@@ -32,7 +31,6 @@ const releaseNotes = [
 
 export function DownloadPanel() {
   const [copied, setCopied] = useState(false);
-  const [releaseOpen, setReleaseOpen] = useState(true);
 
   async function copyHash() {
     await navigator.clipboard.writeText(sha256);
@@ -110,42 +108,49 @@ export function DownloadPanel() {
         </div>
       </section>
 
-      <section className="version-section section section--soft page-shell" aria-labelledby="version-title">
-        <span className="section-kicker">版本信息</span>
-        <h2 id="version-title" className="version-title">v0.9.0 内测版</h2>
-        <p className="version-lead">这一版本已经完成从项目、会话到执行与审批的桌面工作闭环。</p>
-        <div className="version-layout">
-          <div className="version-panel">
-            <button
-              className="version-panel__header"
-              type="button"
-              aria-expanded={releaseOpen}
-              onClick={() => setReleaseOpen((value) => !value)}
-            >
-              <span><strong>本次更新</strong><small>2026-07-30</small></span>
-              <ChevronDown aria-hidden="true" size={18} className={releaseOpen ? "version-panel__icon version-panel__icon--open" : "version-panel__icon"} />
-            </button>
-            {releaseOpen && (
-              <div className="release-notes">
-                {releaseNotes.map((note) => (
-                  <div key={note}><Check aria-hidden="true" size={15} /><span>{note}</span></div>
-                ))}
+      <section className="version-section section section--soft" aria-labelledby="version-title">
+        <div className="page-shell">
+          <span className="section-kicker">版本信息</span>
+          <h2 id="version-title" className="version-title">v0.9.0 内测版</h2>
+          <p className="version-lead">这一版本已经完成从项目、会话到执行与审批的桌面工作闭环。</p>
+          <div className="version-layout">
+            <article className="version-card">
+              <span className="version-card__badge">内测版</span>
+              <h3 className="version-card__num">v0.9.0</h3>
+              <dl className="version-card__meta">
+                <div><dt>发布日期</dt><dd>2026-07-30</dd></div>
+              </dl>
+              <div className="version-card__status">
+                <span className="version-card__ok"><Check aria-hidden="true" size={14} />已通过本地构建验证</span>
+                <span className="version-card__wait">公开托管通道准备中</span>
               </div>
-            )}
-          </div>
+            </article>
 
-          <aside className="install-card" aria-label="安装信息">
-            <div className="install-card__head">
-              <span className="icon-box"><FileCheck2 aria-hidden="true" size={20} /></span>
-              <h3>安装信息</h3>
-            </div>
-            <dl>
-              <div><dt><Laptop aria-hidden="true" size={18} />系统</dt><dd>Windows x64</dd></div>
-              <div><dt><HardDrive aria-hidden="true" size={18} />包体积</dt><dd>111.8 MiB</dd></div>
-              <div><dt><FolderKanban aria-hidden="true" size={18} />文件</dt><dd>{installerName}</dd></div>
-            </dl>
-            <p className="install-card__note">安装器未设置额外的 Windows 版本限制。</p>
-          </aside>
+            <article className="changelog-card">
+              <div className="changelog-card__head">
+                <h3>本次更新</h3>
+                <small>2026-07-30</small>
+              </div>
+              <ul className="release-notes">
+                {releaseNotes.map((note) => (
+                  <li key={note}><Check aria-hidden="true" size={15} /><span>{note}</span></li>
+                ))}
+              </ul>
+            </article>
+
+            <aside className="install-card" aria-label="安装信息">
+              <div className="install-card__head">
+                <span className="icon-box"><FileCheck2 aria-hidden="true" size={20} /></span>
+                <h3>安装信息</h3>
+              </div>
+              <dl>
+                <div><dt><Laptop aria-hidden="true" size={18} />系统</dt><dd>Windows x64</dd></div>
+                <div><dt><HardDrive aria-hidden="true" size={18} />包体积</dt><dd>111.8 MiB</dd></div>
+                <div><dt><FolderKanban aria-hidden="true" size={18} />文件</dt><dd>{installerName}</dd></div>
+              </dl>
+              <p className="install-card__note">安装器未设置额外的 Windows 版本限制。</p>
+            </aside>
+          </div>
         </div>
       </section>
 
