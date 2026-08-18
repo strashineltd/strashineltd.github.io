@@ -12,7 +12,7 @@ test("documentation covers the complete v0.9 operating model", async () => {
     "install-setup",
     "projects-sessions",
     "plan-build",
-    "workdir-tools",
+    "tools",
     "models",
     "context-window",
     "skills",
@@ -29,8 +29,8 @@ test("documentation covers the complete v0.9 operating model", async () => {
     assert.ok(articleIds.includes(id), `missing documentation article: ${id}`);
   }
 
-  // Verify article count (21 total: 17 original + 4 new)
-  assert.ok(articleIds.length >= 21, `expected at least 21 articles, got ${articleIds.length}`);
+  // Verify article count
+  assert.ok(articleIds.length >= 22, `expected at least 22 articles, got ${articleIds.length}`);
 
   assert.match(source, /256K、512K 或 1M/);
   assert.match(source, /默认等待时间是 60 秒/);

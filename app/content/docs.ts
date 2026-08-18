@@ -170,7 +170,7 @@ export const docArticles: DocArticle[] = [
         ],
       },
     ],
-    related: ["models", "workdir", "troubleshooting"],
+    related: ["models", "troubleshooting"],
   },
   {
     id: "first-task",
@@ -273,7 +273,7 @@ export const docArticles: DocArticle[] = [
         },
       },
     ],
-    related: ["interface-tour", "models", "workdir"],
+    related: ["interface-tour", "models"],
   },
   {
     id: "interface-tour",
@@ -378,7 +378,7 @@ export const docArticles: DocArticle[] = [
         ],
       },
     ],
-    related: ["first-task", "workdir", "shortcuts"],
+    related: ["first-task", "shortcuts"],
   },
   {
     id: "projects-sessions",
@@ -832,91 +832,7 @@ export const docArticles: DocArticle[] = [
     ],
     related: ["approvals", "plan-build", "workspace-inspector"],
   },
-  {
-    id: "workdir-tools",
-    group: "工作流",
-    title: "工作目录、文件与工具",
-    summary: "理解目录安全边界，以及读取、编辑、命令和 Git 工具的限制。",
-    icon: "tools",
-    readTime: "16 分钟",
-    updated: "2026-07-31",
-    keywords: ["工作目录", "工具", "read_file", "write_file", "edit_file", "run_command", "Git", "web_fetch", "白名单", "安全"],
-    sections: [
-      {
-        id: "boundary",
-        title: "工作目录是文件操作边界",
-        body: [
-          "读取、写入、编辑、搜索和目录树都以当前工作目录为根。路径会被规范化并检查是否越界；Shell 参数也拒绝绝对路径和解析后逃出工作目录的 `..` 路径。",
-          "选择过大的目录会增加无关搜索，选择过小的目录又可能缺少依赖上下文。通常应选择仓库或独立项目的根目录。",
-          "工作目录的选择也会影响 Agent 的搜索范围。如果目录中包含大量无关文件（如 node_modules），搜索结果可能会被稀释。",
-        ],
-        note: {
-          tone: "info",
-          title: "切换目录",
-          body: "可从模型配置或命令面板切换工作目录。切换前先确认当前任务是否依赖旧目录中的文件。",
-        },
-      },
-      {
-        id: "tool-reference",
-        title: "核心工具参考",
-        body: [
-          "工具调用会出现在消息流中。只读工具可直接运行；会改变文件、执行命令或访问外部 URL 的工具会进入审批。",
-          "每个工具调用都有唯一的调用 ID，可以在工作区检查器中追踪其执行状态和结果。",
-        ],
-        table: {
-          headers: ["工具", "用途", "关键限制"],
-          rows: [
-            ["read_file", "读取文本并返回行号", "单文件最多 10 MiB；支持 offset/limit"],
-            ["write_file", "新建或覆盖整个文件", "路径必须在工作目录内；覆盖前应先读取"],
-            ["edit_file", "按 oldText 精确替换", "默认必须唯一匹配；replaceAll 才替换全部"],
-            ["search_files / search_content", "按文件名或文本/正则定位", "适合先搜后读，减少无关读取"],
-            ["list_files", "列出受限深度的目录树", "结果以工作目录为根"],
-            ["run_command", "运行开发命令", "无 shell、白名单、单行、路径受限"],
-            ["git_status / git_diff / git_log", "查看版本控制状态", "当前实现是只读 Git 操作"],
-            ["web_fetch", "HTTP GET 获取外部内容", "Plan 模式不可用，Build 模式需审批"],
-          ],
-        },
-      },
-      {
-        id: "shell-safety",
-        title: "命令执行的安全限制",
-        body: [
-          "run_command 直接启动白名单中的可执行程序，不经过系统 shell。它只接受单行命令，拒绝管道、重定向、变量展开和 `| & ; < > ` $ ( )` 等 shell 特殊字符；del、rm、mv、cp、rmdir、move 等破坏性文件命令不在白名单。",
-          "命令默认在工作目录中运行，最长可请求 300 秒超时，输出最多保留 5 MiB。复杂流水线应拆成多个可审查的工具调用。",
-          "白名单中的程序包括常见的开发工具（如 npm、git、python、cargo 等）。如果需要运行不在白名单中的程序，只能手动在终端中执行。",
-        ],
-        code: {
-          label: "可审查的命令方式",
-          content: "npm test\nnpm run build\ngit status\nrg TODO src",
-        },
-      },
-      {
-        id: "review-changes",
-        title: "审查文件变更",
-        body: [
-          "优先要求 Agent 先读后改，并在完成后说明修改文件、关键差异和验证结果。Git 项目可通过 git_status 和 git_diff 查看工作区变化；非 Git 项目也应检查工作区交付物并打开关键文件复核。",
-          "对于大型修改，建议要求 Agent 分批执行并逐步验证，而不是一次性修改所有文件。这样每一步的错误都可以被及时发现和纠正。",
-        ],
-        checklist: [
-          "变更文件都在预期目录内",
-          "没有覆盖用户已有但无关的修改",
-          "精确编辑没有误替换多处内容",
-          "构建或测试命令与项目技术栈匹配",
-          "失败命令已经分析原因，而不是盲目重复",
-          "新增文件的路径和命名符合项目约定",
-        ],
-      },
-      {
-        id: "file-size-limits",
-        title: "文件大小与读取优化",
-        body: [
-          "read_file 单次读取最大 10 MiB，超出时会自动截断并提示使用 offset/limit 分段读取。对于大型日志文件或数据文件，建议先用 search_content 定位关键行，再用 read_file 的 offset 和 limit 参数精确读取。",
-          "write_file 和 edit_file 没有明确的大小限制，但过大的文件（超过 1 MiB）可能会导致编辑匹配变慢。建议将大文件拆分为多个小文件。",
-        ],
-      },
-    ],
-    related: ["approvals", "plan-build", "troubleshooting"],
-  },
+
   {
     id: "models",
     group: "入门",
@@ -1002,101 +918,7 @@ export const docArticles: DocArticle[] = [
         },
       },
     ],
-    related: ["install-setup", "first-task", "workdir"],
-  },
-  {
-    id: "workdir",
-    group: "入门",
-    title: "工作目录与项目",
-    summary: "理解工作目录的安全边界、项目文件夹模式和路径限制。",
-    icon: "folders",
-    readTime: "8 分钟",
-    updated: "2026-08-19",
-    keywords: ["工作目录", "项目", "安全边界", "路径限制", "符号链接", "文件操作", "项目文件夹"],
-    sections: [
-      {
-        id: "concept",
-        title: "工作目录概念",
-        body: [
-          "工作目录是 Agent 的文件操作边界。所有文件读取、写入、编辑、搜索和目录树操作都以工作目录为根目录，路径会被严格检查是否越界。",
-          "选择工作目录时，通常应选择项目或仓库的根目录。过大的目录会增加无关搜索，过小的目录可能缺少必要的上下文。",
-        ],
-        bullets: [
-          { title: "文件操作边界", detail: "read_file、write_file、edit_file、search_files、list_files 等工具的路径参数都受工作目录限制。" },
-          { title: "命令执行目录", detail: "run_command 默认在工作目录中运行，Shell 参数也拒绝解析后逃出工作目录的路径。" },
-          { title: "独立配置", detail: "每个模型配置可以独立设置工作目录，不同模型的文件操作范围互不影响。" },
-        ],
-      },
-      {
-        id: "path-security",
-        title: "路径安全边界",
-        body: [
-          "所有文件路径都会经过多层安全检查。首先进行字符串级检查：路径必须在当前工作目录内，不允许 `..` 越界或外部绝对路径。",
-          "其次进行真实路径检查：系统会将路径解析为真实路径（跟随符号链接），确保通过 symlink 或 junction 也无法绕过工作目录限制。这在 macOS 上尤为重要，因为 `/tmp`、`/var` 等路径实际上是符号链接。",
-        ],
-        steps: [
-          { title: "路径解析", detail: "相对路径基于工作目录解析为绝对路径；绝对路径直接使用。" },
-          { title: "字符串检查", detail: "确认解析后的路径在工作目录内（path.relative 不以 .. 开头且不是绝对路径）。" },
-          { title: "真实路径验证", detail: "通过 fs.realpath 获取工作目录和文件路径的真实路径，再次确认包含关系。" },
-          { title: "写入路径额外检查", detail: "写入操作还会检查父目录链中的符号链接，防止通过新建 symlink 绕过限制。" },
-        ],
-        note: {
-          tone: "warning",
-          title: "安全检查不可绕过",
-          body: "路径安全检查是系统级的，即使 Agent 的提示词被篡改也无法绕过。这是多层防御策略的一部分。",
-        },
-      },
-      {
-        id: "project-folder",
-        title: "项目文件夹模式",
-        body: [
-          "v0.9.0 引入了项目文件夹模式。创建项目时可以指定一个本地文件夹作为项目的工作目录。项目中的会话会继承该工作目录，Agent 在此范围内读写文件和执行命令。",
-          "项目是会话的组织层，用于把相关会话放在一起。项目本身不改变磁盘目录结构，只在 Stellara Work 的数据库中维护层级关系。",
-        ],
-        bullets: [
-          { title: "创建项目", detail: "在侧栏点击「项目」按钮，输入项目名称并选择工作目录。" },
-          { title: "项目与会话", detail: "一个会话在同一时间只能属于一个项目，或不属于任何项目（「未分组」）。" },
-          { title: "删除项目", detail: "删除项目不会删除其会话，会话会保留并转入「未分组」。" },
-          { title: "工作目录继承", detail: "项目中创建的会话自动继承项目的工作目录设置。" },
-        ],
-      },
-      {
-        id: "file-limits",
-        title: "文件大小与读取限制",
-        body: [
-          "read_file 工具单次读取最大支持 10 MiB（10,485,760 字节）。超出限制时会返回错误，提示使用 offset 和 limit 参数分段读取。",
-          "对于大型文件，建议先用 search_content 定位关键行号，再用 read_file 的 offset 和 limit 参数精确读取特定区域。",
-        ],
-        table: {
-          headers: ["工具", "大小限制", "说明"],
-          rows: [
-            ["read_file", "10 MiB", "超出时返回错误，需用 offset/limit 分段读取"],
-            ["write_file", "无明确限制", "自动创建父目录，覆盖前先读取旧内容"],
-            ["edit_file", "无明确限制", "oldText 必须精确匹配，支持 replaceAll 全局替换"],
-            ["悬停预览", "100 KB", "FileHoverPreview 组件读取前 100KB 内容"],
-          ],
-        },
-      },
-      {
-        id: "choosing-workdir",
-        title: "如何选择工作目录",
-        body: [
-          "工作目录的选择直接影响 Agent 的搜索范围和操作权限。选择合适的目录可以提高效率并减少误操作风险。",
-        ],
-        checklist: [
-          "选择项目或仓库的根目录，而不是上层目录",
-          "避免选择包含大量无关文件的目录（如 home 目录）",
-          "确认目录中包含 Agent 需要访问的所有相关文件",
-          "如果是 monorepo，可以选择具体的子包目录",
-          "首次使用时可以先用 Plan 模式让 Agent 浏览目录结构",
-        ],
-        code: {
-          label: "好的选择",
-          content: "✓ /Users/dev/projects/my-app       （项目根目录）\n✓ /Users/dev/projects/my-app/src  （只关注源码）\n\n✗ /Users/dev                     （太大，包含无关文件）\n✗ /                              （整个文件系统，极其危险）",
-        },
-      },
-    ],
-    related: ["install-setup", "first-task", "models"],
+    related: ["install-setup", "first-task"],
   },
   {
     id: "context-window",
@@ -1537,94 +1359,6 @@ export const docArticles: DocArticle[] = [
       },
     ],
     related: ["tools", "workspace-inspector", "local-data"],
-  },
-  {
-    id: "attachments-hover",
-    group: "核心工作流",
-    title: "附件与悬停预览",
-    summary: "拖拽文件和图片作为附件发送，图片内联渲染，文件路径悬停预览内容。",
-    icon: "folders",
-    readTime: "8 分钟",
-    updated: "2026-08-19",
-    keywords: ["附件", "拖拽", "图片", "内联渲染", "悬停预览", "HoverablePath", "FileHoverPreview", "AttachmentPicker"],
-    sections: [
-      {
-        id: "drag-drop",
-        title: "拖拽文件与图片",
-        body: [
-          "输入区域支持拖拽添加附件。将文件或图片从文件管理器拖入聊天输入区，会显示「释放以添加附件」的覆盖层提示。释放后文件路径会被提取并添加为附件。",
-          "拖拽使用 React 的 drag 事件处理。拖入时显示覆盖层（dropActive 状态），拖出或释放后覆盖层消失。从浏览器拖入的预览图片（非本地文件）会被忽略。",
-        ],
-        bullets: [
-          { title: "拖拽识别", detail: "通过 e.dataTransfer.files 获取拖入的文件列表，使用 electronAPI.dialog.getPathForFile 提取本地路径。" },
-          { title: "覆盖层", detail: "拖入时显示半透明覆盖层，文本为「释放以添加附件」，role=\"status\" 支持无障碍。" },
-          { title: "禁用状态", detail: "未配置工作目录时，附件功能不可用，拖拽不会触发添加操作。" },
-        ],
-      },
-      {
-        id: "attachment-picker",
-        title: "附件选择器",
-        body: [
-          "输入框左侧的附件按钮（回形针图标）点击后会触发文件选择对话框。选择的文件会添加为附件，与消息一起发送给 Agent。",
-          "已添加的附件以 chip 标签的形式显示在输入框下方。每个 chip 显示文件图标、文件名、文件大小和移除按钮。点击移除按钮（× 图标）可以从附件列表中删除。",
-        ],
-        table: {
-          headers: ["元素", "说明"],
-          rows: [
-            ["附件按钮", "paperclip 图标，title 提示「添加附件（也可拖拽文件到此处）」"],
-            ["chip 标签", "显示文件图标 + 文件名 + 文件大小（格式化后如 1.2 MB）"],
-            ["移除按钮", "× 图标，aria-label 为「移除 {文件名}」"],
-            ["文件大小", "使用 formatFileSize 工具函数格式化显示"],
-          ],
-        },
-      },
-      {
-        id: "image-inline",
-        title: "图片内联渲染",
-        body: [
-          "当附件是图片文件时，图片会在消息中内联渲染显示，而不是仅显示文件名。这让 Agent 可以直接「看到」你提供的截图、设计稿或错误截图。",
-          "图片内联渲染在消息组件中处理，根据附件的 MIME 类型判断是否为图片。非图片附件显示为可点击的文件链接。",
-        ],
-        note: {
-          tone: "info",
-          title: "图片格式",
-          body: "支持的图片格式取决于 Electron 的 img 标签渲染能力，通常包括 PNG、JPEG、GIF、WebP 等常见格式。",
-        },
-      },
-      {
-        id: "hover-preview",
-        title: "文件路径悬停预览",
-        body: [
-          "聊天消息中出现的文件路径（如 Diff 卡片中的路径），鼠标悬停 300 毫秒后会弹出文件预览浮层。浮层最大尺寸 480×320 像素，显示文件的前 100KB 内容。",
-          "HoverablePath 组件包裹文件路径文本，处理悬停的打开/关闭逻辑。FileHoverPreview 组件通过 React Portal 渲染到 document.body，避免被父容器裁剪。",
-        ],
-        table: {
-          headers: ["参数", "值", "说明"],
-          rows: [
-            ["打开延迟", "300ms", "鼠标悬停 300ms 后显示预览"],
-            ["关闭延迟", "200ms", "鼠标移出后 200ms 关闭预览"],
-            ["预览宽度", "480px", "浮层固定宽度"],
-            ["预览高度", "320px", "浮层最大高度"],
-            ["读取大小", "100KB", "读取文件前 100KB 内容"],
-            ["缓存", "filePreviewCache", "预览内容会被缓存，重复悬停不重复读取"],
-          ],
-        },
-        bullets: [
-          { title: "智能定位", detail: "浮层会根据鼠标位置和窗口边界自动调整位置，避免超出可视区域。" },
-          { title: "复制路径", detail: "点击浮层中的文件路径文本可以复制到剪贴板，显示「已复制」反馈（1.5 秒后恢复）。" },
-          { title: "打开文件", detail: "点击浮层的「打开」按钮会调用系统默认应用打开该文件。" },
-          { title: "截断提示", detail: "文件内容超过 100KB 时显示「已截断」提示。" },
-          { title: "悬停联动", detail: "鼠标从路径文本移入浮层内部时不会关闭预览，移出浮层后才开始计时关闭。" },
-        ],
-        checklist: [
-          "悬停预览只在聊天消息中的文件路径上生效（如 Diff 卡片、工具调用结果）",
-          "预览内容是只读的，不能在浮层中编辑文件",
-          "点击文件路径（非悬停）会用系统默认应用直接打开文件",
-          "预览内容会被缓存，清除缓存需要重新加载页面",
-        ],
-      },
-    ],
-    related: ["first-task", "interface-tour", "workspace-inspector"],
   },
   {
     id: "local-data",

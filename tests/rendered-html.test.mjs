@@ -41,7 +41,7 @@ test("server-renders the documentation route", async () => {
   assert.equal(response.status, 200);
   const html = await response.text();
   assert.match(html, /Stellara Work 文档/);
-  assert.match(html, /<strong>25<\/strong> 个主题/);
+  assert.match(html, /<strong>22<\/strong> 个主题/);
   assert.match(html, /安装与首次启动/);
   assert.match(html, /通过 GitHub Releases 发布/);
   assert.match(html, /工作目录/);
