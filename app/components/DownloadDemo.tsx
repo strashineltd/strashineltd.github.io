@@ -38,8 +38,8 @@ export function DownloadDemo() {
               <ShieldCheck aria-hidden="true" size={13} />
               <strong>准备写入 README.md</strong>
               <span className="download-demo__actions">
-                <button type="button">拒绝</button>
-                <button type="button" className="download-demo__approve">允许这一次</button>
+                <button type="button" tabIndex={-1}>拒绝</button>
+                <button type="button" tabIndex={-1} className="download-demo__approve">允许这一次</button>
               </span>
             </div>
             <div className="download-demo__ok">

@@ -491,17 +491,13 @@ img { display: block; max-width: 100%; }
 .platform-card a { color: var(--blue-dark); }
 .platform-card__disabled { color: #9aa2ae; }
 
-.release-notes { padding-block: 22px; display: grid; gap: 13px; }
-.release-notes > div { display: flex; align-items: center; gap: 10px; color: var(--ink-soft); font-size: 14px; }
-.release-notes svg { color: var(--green); }
-
 .checksum-section { margin-bottom: 110px; padding: 28px; display: grid; grid-template-columns: auto 1fr; gap: 34px; align-items: center; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--bg-soft); }
 .checksum-copy { display: flex; align-items: center; gap: 14px; }
 .checksum-copy h2 { margin: 0; font-size: 18px; }
 .checksum-copy p { margin: 2px 0 0; color: var(--ink-faint); font-size: 12px; }
 .checksum-value { min-width: 0; padding: 8px 8px 8px 13px; display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; border: 1px solid var(--line-strong); border-radius: 8px; background: #fff; }
 .checksum-value code { min-width: 0; overflow: hidden; text-overflow: ellipsis; font: 11px var(--font-mono); color: var(--ink-soft); }
-.checksum-value button { min-height: 36px; padding: 6px 9px; display: flex; align-items: center; gap: 6px; border: 0; border-radius: 6px; background: var(--bg-soft); color: var(--blue-dark); font-size: 11px; font-weight: 650; cursor: pointer; }
+.checksum-value button { min-height: 44px; padding: 6px 9px; display: flex; align-items: center; gap: 6px; border: 0; border-radius: 6px; background: var(--bg-soft); color: var(--blue-dark); font-size: 11px; font-weight: 650; cursor: pointer; }
 
 .download-help { margin-bottom: 110px; padding: 56px; border-radius: var(--radius-xl); background: var(--charcoal); color: #fff; }
 .download-help h2 { margin: 9px 0 0; max-width: 660px; font-size: 40px; line-height: 1.2; letter-spacing: -.04em; }
@@ -1043,4 +1039,5 @@ img { display: block; max-width: 100%; }
   .download-hero h1 { font-size: 44px; }
   .download-hero__grid { gap: 36px; }
   .download-chips li { padding: 4px 11px; }
+  .download-demo__glow { inset: -30px 0 auto 0; }
 }
