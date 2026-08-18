@@ -7,19 +7,22 @@ import {
   Check,
   CheckCircle2,
   Clipboard,
+  Download,
   FileCheck2,
-  FolderKanban,
-  HardDrive,
   Laptop,
   Monitor,
-  ShieldCheck,
   Terminal,
 } from "lucide-react";
 import { useState } from "react";
 import { DownloadDemo } from "./DownloadDemo";
 
-const installerName = "Stellara Work-Setup-0.9.0.exe";
-const sha256 = "78DBC0D14441E1FE98164C88BC5A57027BE126DD5EF0C00C5AC636F7C1580037";
+const releaseUrl = "https://github.com/strashineltd/stellara-work/releases";
+const winInstallerName = "Stellara Work-Setup-0.9.0.exe";
+const winSize = "117.3 MiB";
+const winSha256 = "34784C8356B367EDEE1AD07064950272F5BA59EE36D898C5758750411DE52475";
+const macInstallerName = "Stellara Work-0.9.0-arm64.dmg";
+const macSize = "144.4 MiB";
+const macSha256 = "380826DC0010433A70F3C417616A96CBFA6D8F0F8DE5394F3F0F2E3E428051E7";
 
 const releaseNotes = [
   "项目与会话分组、搜索、重命名和导出",
@@ -30,12 +33,12 @@ const releaseNotes = [
 ];
 
 export function DownloadPanel() {
-  const [copied, setCopied] = useState(false);
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
-  async function copyHash() {
-    await navigator.clipboard.writeText(sha256);
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 1800);
+  async function copyHash(key: string, value: string) {
+    await navigator.clipboard.writeText(value);
+    setCopiedKey(key);
+    window.setTimeout(() => setCopiedKey(null), 1800);
   }
 
   return (
@@ -49,19 +52,24 @@ export function DownloadPanel() {
               为 Windows x64 打造的本地优先桌面 Agent。安装后选择模型和工作目录，即可开始第一个任务。
             </p>
             <div className="download-hero__actions">
-              <button className="button button--primary button--download" type="button" disabled>
-                <ShieldCheck aria-hidden="true" size={19} />
-                下载通道准备中
-              </button>
-              <span>安装包已构建 · 111.8 MiB · x64 · 2026-07-30</span>
+              <a
+                className="button button--primary button--download"
+                href={releaseUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Download aria-hidden="true" size={19} />
+                下载 Windows 版
+              </a>
+              <span>Windows x64 · 117.3 MiB · 2026-08-16</span>
             </div>
             <div className="download-feedback" role="status">
               <CheckCircle2 aria-hidden="true" size={17} />
-              v0.9 安装包已通过本地构建验证，公开文件托管通道正在准备。
+              v0.9 已开放下载，安装包通过 GitHub Releases 提供。
             </div>
             <ul className="download-chips" aria-label="版本摘要">
               <li><span className="download-chip__dot" aria-hidden="true" />Windows x64 <strong>可下载</strong></li>
-              <li>NSIS 安装向导</li>
+              <li><span className="download-chip__dot" aria-hidden="true" />macOS (arm64) <strong>可下载</strong></li>
               <li>版本 <strong>0.9.0</strong></li>
             </ul>
           </div>
@@ -85,16 +93,30 @@ export function DownloadPanel() {
             </div>
             <h3>Windows</h3>
             <p>64 位安装包，支持自定义安装目录、桌面与开始菜单快捷方式。</p>
-            <span className="platform-card__disabled">安装包暂未公开托管</span>
+            <a
+              className="platform-card__link"
+              href={releaseUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              前往 GitHub 下载 <ArrowRight aria-hidden="true" size={15} />
+            </a>
           </article>
-          <article className="platform-card">
+          <article className="platform-card platform-card--available">
             <div className="platform-card__header">
               <span className="icon-box"><Apple aria-hidden="true" size={22} /></span>
-              <span className="availability availability--muted">尚未提供</span>
+              <span className="availability">可下载</span>
             </div>
             <h3>macOS</h3>
-            <p>当前版本没有 macOS 构建。请关注后续版本更新。</p>
-            <span className="platform-card__disabled">暂不可下载</span>
+            <p>Apple 芯片 · 需 macOS 12 或更高版本。</p>
+            <a
+              className="platform-card__link"
+              href={releaseUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              前往 GitHub 下载 <ArrowRight aria-hidden="true" size={15} />
+            </a>
           </article>
           <article className="platform-card">
             <div className="platform-card__header">
@@ -144,21 +166,31 @@ export function DownloadPanel() {
                 <h3>安装信息</h3>
               </div>
               <dl>
-                <div><dt><Laptop aria-hidden="true" size={18} />系统</dt><dd>Windows x64</dd></div>
-                <div><dt><HardDrive aria-hidden="true" size={18} />包体积</dt><dd>111.8 MiB</dd></div>
-                <div><dt><FolderKanban aria-hidden="true" size={18} />文件</dt><dd>{installerName}</dd></div>
+                <div><dt><Monitor aria-hidden="true" size={18} />系统</dt><dd>Windows x64 · macOS (arm64)</dd></div>
+                <div><dt><Laptop aria-hidden="true" size={18} />Windows 安装包</dt><dd>{winInstallerName} · {winSize}</dd></div>
+                <div><dt><Apple aria-hidden="true" size={18} />macOS 安装包</dt><dd>{macInstallerName} · {macSize}</dd></div>
                 <div className="install-card__hash">
-                  <dt><Clipboard aria-hidden="true" size={18} />SHA-256</dt>
+                  <dt><Clipboard aria-hidden="true" size={18} />Windows SHA-256</dt>
                   <dd>
-                    <code className="install-card__hash-code">{sha256}</code>
-                    <button type="button" onClick={copyHash} aria-label="复制 SHA-256 校验值">
-                      {copied ? <Check aria-hidden="true" size={14} /> : <Clipboard aria-hidden="true" size={14} />}
-                      {copied ? "已复制" : "复制"}
+                    <code className="install-card__hash-code">{winSha256}</code>
+                    <button type="button" onClick={() => copyHash("win", winSha256)} aria-label="复制 Windows SHA-256 校验值">
+                      {copiedKey === "win" ? <Check aria-hidden="true" size={14} /> : <Clipboard aria-hidden="true" size={14} />}
+                      {copiedKey === "win" ? "已复制" : "复制"}
+                    </button>
+                  </dd>
+                </div>
+                <div className="install-card__hash">
+                  <dt><Clipboard aria-hidden="true" size={18} />macOS SHA-256</dt>
+                  <dd>
+                    <code className="install-card__hash-code">{macSha256}</code>
+                    <button type="button" onClick={() => copyHash("mac", macSha256)} aria-label="复制 macOS SHA-256 校验值">
+                      {copiedKey === "mac" ? <Check aria-hidden="true" size={14} /> : <Clipboard aria-hidden="true" size={14} />}
+                      {copiedKey === "mac" ? "已复制" : "复制"}
                     </button>
                   </dd>
                 </div>
               </dl>
-              <p className="install-card__note">安装器未设置额外的 Windows 版本限制。下载后可复制 SHA-256 校验文件完整性。</p>
+              <p className="install-card__note">Windows 无额外版本限制；macOS 需 12.0 或更高版本。</p>
             </aside>
           </div>
         </div>
