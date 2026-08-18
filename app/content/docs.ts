@@ -63,14 +63,14 @@ export const docArticles: DocArticle[] = [
         id: "download",
         title: "下载安装包",
         body: [
-          "Stellara Work v0.9.0 提供两个平台的安装包，均通过 GitHub Releases 发布。Windows 使用 NSIS 安装向导，macOS 使用 DMG 磁盘映像。",
+          "Stellara Work v0.9.1 提供两个平台的安装包，均通过 GitHub Releases 发布。Windows 使用 NSIS 安装向导，macOS 使用 DMG 磁盘映像。",
           "下载前请确认平台与架构匹配。Windows 安装包仅支持 x64 架构；macOS 安装包仅支持 Apple 芯片（M1/M2/M3/M4），不支持 Intel Mac。",
         ],
         table: {
           headers: ["平台", "安装包格式", "文件名", "架构要求"],
           rows: [
-            ["Windows", "NSIS 安装向导", "Stellara Work-Setup-0.9.0.exe", "x64"],
-            ["macOS", "DMG 磁盘映像", "Stellara Work-0.9.0-arm64.dmg", "Apple Silicon"],
+            ["Windows", "NSIS 安装向导", "Stellara.Work-Setup-0.9.1.exe", "x64"],
+            ["macOS", "DMG 磁盘映像", "Stellara.Work-0.9.1-arm64.dmg", "Apple Silicon"],
           ],
         },
         note: {
@@ -289,7 +289,7 @@ export const docArticles: DocArticle[] = [
         id: "frameless",
         title: "无边框窗口设计",
         body: [
-          "Stellara Work v0.9.0 在两个平台上都采用无边框窗口设计，移除了系统标题栏和交通灯按钮。窗口拖动、关闭、最小化等操作由应用内部的自定义控件实现。",
+          "Stellara Work v0.9.1 在两个平台上都采用无边框窗口设计，移除了系统标题栏和交通灯按钮。窗口拖动、关闭、最小化等操作由应用内部的自定义控件实现。",
           "macOS 用户通过 Cmd+Q 或应用菜单退出应用；Windows 用户通过窗口右上角的关闭按钮退出。无边框设计为内容区域留出了更多空间。",
         ],
         note: {
@@ -870,7 +870,7 @@ export const docArticles: DocArticle[] = [
         id: "presets",
         title: "内置模型预设",
         body: [
-          "Stellara Work v0.9.0 内置四个中文模型预设和一个自定义槽位。预设会自动填充 Base URL 和模型名称，你只需填写 API Key 即可使用。",
+          "Stellara Work v0.9.1 内置四个中文模型预设和一个自定义槽位。预设会自动填充 Base URL 和模型名称，你只需填写 API Key 即可使用。",
           "预设只是配置模板，不包含任何密钥。服务商可能调整模型可用性，最终以你的账号权限和连接测试结果为准。",
         ],
         table: {
@@ -1182,7 +1182,7 @@ export const docArticles: DocArticle[] = [
         ],
         code: {
           label: "诊断信息示例",
-          content: "# Stellara Work 诊断信息\n采集时间：2026-08-19T10:30:00.000Z\n\n## 版本\n- Stellara Work: v0.9.0\n- Electron: 31.0.0\n- Chromium: 126.0.6478.126\n- Node.js: 20.14.0\n- 平台: darwin arm64\n\n## 数据\n- 数据目录: /Users/xxx/Library/Application Support/Stellara Work\n- 日志文件: /Users/xxx/Library/Application Support/Stellara Work/logs/main.log\n- DB 大小: 256.0 KB\n- 会话数: 12 / 消息数: 348\n- 已配 model: 3（已配 key: deepseek-v4-pro, glm-5.2）\n- 活跃 model: deepseek-v4-pro",
+          content: "# Stellara Work 诊断信息\n采集时间：2026-08-19T10:30:00.000Z\n\n## 版本\n- Stellara Work: v0.9.1\n- Electron: 31.0.0\n- Chromium: 126.0.6478.126\n- Node.js: 20.14.0\n- 平台: darwin arm64\n\n## 数据\n- 数据目录: /Users/xxx/Library/Application Support/Stellara Work\n- 日志文件: /Users/xxx/Library/Application Support/Stellara Work/logs/main.log\n- DB 大小: 256.0 KB\n- 会话数: 12 / 消息数: 348\n- 已配 model: 3（已配 key: deepseek-v4-pro, glm-5.2）\n- 活跃 model: deepseek-v4-pro",
         },
         note: {
           tone: "info",
@@ -1366,7 +1366,7 @@ export const docArticles: DocArticle[] = [
         id: "skill-errors",
         title: "Skill 加载错误排查",
         body: [
-          "当 Skill 没有出现在列表中时，先确认当前模型配置已经选择工作目录，再检查文件位置和格式。v0.9.0 会返回详细的错误信息，帮助定位问题。",
+          "当 Skill 没有出现在列表中时，先确认当前模型配置已经选择工作目录，再检查文件位置和格式。v0.9.1 会返回详细的错误信息，帮助定位问题。",
         ],
         table: {
           headers: ["错误原因", "说明", "解决方式"],
@@ -2168,7 +2168,7 @@ export const docArticles: DocArticle[] = [
         ],
         code: {
           label: "诊断信息示例（脱敏后）",
-          content: "# Stellara Work 诊断信息\n采集时间：2026-08-19T10:30:00.000Z\n\n## 版本\n- Stellara Work: v0.9.0\n- Electron: 31.0.0\n- 平台: darwin arm64\n\n## 数据\n- 数据目录: /Users/xxx/Library/Application Support/Stellara Work\n- 会话数: 12 / 消息数: 348\n- 已配 model: 3（已配 key: deepseek-v4-pro, glm-5.2）\n- 活跃 model: deepseek-v4-pro\n\n## main.log 最近 50 行\n[错误日志片段...]",
+          content: "# Stellara Work 诊断信息\n采集时间：2026-08-19T10:30:00.000Z\n\n## 版本\n- Stellara Work: v0.9.1\n- Electron: 31.0.0\n- 平台: darwin arm64\n\n## 数据\n- 数据目录: /Users/xxx/Library/Application Support/Stellara Work\n- 会话数: 12 / 消息数: 348\n- 已配 model: 3（已配 key: deepseek-v4-pro, glm-5.2）\n- 活跃 model: deepseek-v4-pro\n\n## main.log 最近 50 行\n[错误日志片段...]",
         },
         note: {
           tone: "success",
@@ -2193,7 +2193,7 @@ export const docArticles: DocArticle[] = [
         id: "platform-support",
         title: "平台支持",
         body: [
-          "Stellara Work v0.9.0 提供 Windows 和 macOS 两个平台的安装包。Windows 版本仅支持 x64 架构，使用 NSIS 安装向导；macOS 版本仅支持 Apple 芯片（M1/M2/M3/M4），使用 DMG 磁盘映像。Linux 版本尚未提供。",
+          "Stellara Work v0.9.1 提供 Windows 和 macOS 两个平台的安装包。Windows 版本仅支持 x64 架构，使用 NSIS 安装向导；macOS 版本仅支持 Apple 芯片（M1/M2/M3/M4），使用 DMG 磁盘映像。Linux 版本尚未提供。",
           "两个平台的功能完全一致，包括 Agent 工具集、Plan/Build 模式、Skills、MCP 和记忆中心。差异仅体现在安装包格式、数据目录路径和命令白名单（macOS 白名单额外包含 swift、brew 等 POSIX 工具）。",
         ],
         table: {
@@ -2336,11 +2336,11 @@ export const docArticles: DocArticle[] = [
         id: "doc-version",
         title: "文档版本",
         body: [
-          "本文档以 Stellara Work v0.9.0（2026-08-15 发布）的代码和配置为依据。涉及快捷键、工具接口和设置项时，以文档标注的行为和应用实际界面为准。",
+          "本文档以 Stellara Work v0.9.1（2026-08-18 发布）的代码和配置为依据。涉及快捷键、工具接口和设置项时，以文档标注的行为和应用实际界面为准。",
           "后续版本可能会调整工具接口、快捷键绑定或设置项布局。更新版本后建议重新浏览文档的对应章节，关注版本记录中的变更说明。",
         ],
         bullets: [
-          { title: "当前版本", detail: "v0.9.0（2026-08-15）" },
+          { title: "当前版本", detail: "v0.9.1（2026-08-18）" },
           { title: "文档更新日期", detail: "2026-08-19" },
           { title: "配置格式", detail: "config.json schemaVersion 为 1" },
           { title: "数据库格式", detail: "SQLite，启用 WAL 模式和外键约束" },
@@ -2536,17 +2536,17 @@ export const docArticles: DocArticle[] = [
     id: "changelog",
     group: "参考",
     title: "版本记录",
-    summary: "版本变更记录：v0.9.0 的新增、变更、安全修复和已知限制。",
+    summary: "版本变更记录：v0.9.1 的新增、变更、安全修复和已知限制。",
     icon: "rocket",
     readTime: "10 分钟",
     updated: "2026-08-19",
-    keywords: ["版本", "变更", "changelog", "v0.9.0", "发布", "新功能", "限制", "已知问题"],
+    keywords: ["版本", "变更", "changelog", "v0.9.1", "发布", "新功能", "限制", "已知问题"],
     sections: [
       {
         id: "v090-changes",
-        title: "v0.9.0（2026-08-15）",
+        title: "v0.9.1（2026-08-18）",
         body: [
-          "Stellara Work v0.9.0 是首个公开版本，提供本地优先的 Codex 风格桌面 Agent 体验。此版本涵盖 AI 辅助编程的完整工作流：流式对话、Plan/Build 双模式、文件操作、命令执行、项目管理和安全审批。",
+          "Stellara Work v0.9.1 是首个公开版本，提供本地优先的 Codex 风格桌面 Agent 体验。此版本涵盖 AI 辅助编程的完整工作流：流式对话、Plan/Build 双模式、文件操作、命令执行、项目管理和安全审批。",
           "所有用户数据（配置、密钥、会话、记忆）保存在本机，不依赖 Stellara 云端服务。应用支持 Windows（x64）和 macOS（Apple Silicon）两个平台。",
         ],
         table: {
@@ -2591,9 +2591,9 @@ export const docArticles: DocArticle[] = [
       },
       {
         id: "v090-security",
-        title: "v0.9.0 安全改进",
+        title: "v0.9.1 安全改进",
         body: [
-          "v0.9.0 在安全方面做了多项改进，确保用户数据和操作的安全性。",
+          "v0.9.1 在安全方面做了多项改进，确保用户数据和操作的安全性。",
         ],
         bullets: [
           { title: "API Key 加密", detail: "使用 OS Keychain（macOS safeStorage）/ DPAPI（Windows）加密存储。加密后的密钥以 enc:v1: 前缀存储在 .env 文件中。" },
@@ -2609,9 +2609,9 @@ export const docArticles: DocArticle[] = [
       },
       {
         id: "v090-fixes",
-        title: "v0.9.0 修复",
+        title: "v0.9.1 修复",
         body: [
-          "v0.9.0 修复了以下问题：",
+          "v0.9.1 修复了以下问题：",
         ],
         bullets: [
           { title: "无边框窗口控件重复", detail: "修复了无边框窗口上控件重复显示的问题。" },
@@ -2639,7 +2639,7 @@ export const docArticles: DocArticle[] = [
         id: "known-limitations",
         title: "已知限制",
         body: [
-          "v0.9.0 存在以下已知限制，将在后续版本中逐步改进。了解这些限制可以帮助你更好地规划使用方式。",
+          "v0.9.1 存在以下已知限制，将在后续版本中逐步改进。了解这些限制可以帮助你更好地规划使用方式。",
         ],
         table: {
           headers: ["限制", "说明", "临时方案"],

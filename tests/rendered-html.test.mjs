@@ -45,23 +45,23 @@ test("server-renders the documentation route", async () => {
   assert.match(html, /安装与首次启动/);
   assert.match(html, /通过 GitHub Releases 发布/);
   assert.match(html, /工作目录/);
-  assert.match(html, /适用于 Stellara Work v0\.9\.0/);
+  assert.match(html, /适用于 Stellara Work v0\.9\.1/);
 });
 
 test("server-renders the download route with verified release metadata", async () => {
   const response = await render("/download");
   assert.equal(response.status, 200);
   const html = await response.text();
-  assert.match(html, /Stellara Work-Setup-0\.9\.0\.exe/);
-  assert.match(html, /117\.3 MiB/);
-  assert.match(html, /144\.4 MiB/);
-  assert.match(html, /前往下载 v0\.9/);
+  assert.match(html, /Stellara\.Work-Setup-0\.9\.1\.exe/);
+  assert.match(html, /113\.5 MiB/);
+  assert.match(html, /140\.6 MiB/);
+  assert.match(html, /前往下载 v0\.9\.1/);
   assert.doesNotMatch(html, /下载 Windows 版/);
   assert.match(html, /前往 GitHub 下载/);
   assert.match(html, /https:\/\/github\.com\/strashineltd\/stellara-work\/releases/);
   assert.match(html, /target="_blank" rel="noopener noreferrer"/);
-  assert.match(html, /34784C8356B367EDEE1AD07064950272F5BA59EE36D898C5758750411DE52475/);
-  assert.match(html, /380826DC0010433A70F3C417616A96CBFA6D8F0F8DE5394F3F0F2E3E428051E7/);
+  assert.match(html, /B55259D7FDB6A83575ABE4D05DD20E5CF5CF3C13C01D5509BC3C992348EC2DEC/);
+  assert.match(html, /EFE89A999EC154BAF225335D91B20983C65AB38E72FF3F827A788F5E67A9F4E7/);
   assert.doesNotMatch(html, /111\.8 MiB/);
   assert.doesNotMatch(html, /下载通道准备中/);
   assert.doesNotMatch(html, /78DBC0D14441E1FE98164C88BC5A57027BE126DD5EF0C00C5AC636F7C1580037/);

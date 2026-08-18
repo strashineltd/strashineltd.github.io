@@ -23,12 +23,15 @@ import {
   Link2,
   ListChecks,
   MessageSquareText,
+  Monitor,
+  Moon,
   PanelRight,
   Printer,
   Rocket,
   Search,
   Settings2,
   ShieldCheck,
+  Sun,
   TriangleAlert,
   WandSparkles,
   Wrench,
@@ -79,6 +82,60 @@ export function DocsExplorer() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const searchRef = useRef<HTMLInputElement>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
+
+  // Theme state: light / dark / system
+  type Theme = "light" | "dark" | "system";
+  const [theme, setTheme] = useState<Theme>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("docs-theme") as Theme | null;
+      if (saved && ["light", "dark", "system"].includes(saved)) {
+        return saved;
+      }
+    }
+    return "system";
+  });
+
+  // Resolve effective theme (light or dark) based on system preference
+  const resolvedTheme = useMemo(() => {
+    if (theme === "system") {
+      if (typeof window !== "undefined") {
+        return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      }
+      return "light";
+    }
+    return theme;
+  }, [theme]);
+
+  // Apply theme to docs container
+  useEffect(() => {
+    const container = document.querySelector(".docs-page");
+    if (container) {
+      container.setAttribute("data-theme", resolvedTheme);
+    }
+  }, [resolvedTheme]);
+
+  // Listen for system preference changes
+  useEffect(() => {
+    if (theme !== "system") return;
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const handler = () => {
+      const container = document.querySelector(".docs-page");
+      if (container) {
+        container.setAttribute("data-theme", mq.matches ? "dark" : "light");
+      }
+    };
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, [theme]);
+
+  // Cycle theme: light → dark → system
+  const cycleTheme = useCallback(() => {
+    setTheme((prev) => {
+      const next = prev === "light" ? "dark" : prev === "dark" ? "system" : "light";
+      localStorage.setItem("docs-theme", next);
+      return next;
+    });
+  }, []);
 
   const normalizedQuery = query.trim().toLowerCase();
   const filtered = useMemo(() => {
@@ -292,27 +349,40 @@ export function DocsExplorer() {
             <div className="docs-hero__stats" aria-label="文档概况">
               <span><strong>{docArticles.length}</strong> 个主题</span>
               <span><strong>{sectionCount}</strong> 个章节</span>
-              <span><strong>v0.9.0</strong> 当前版本</span>
+              <span><strong>v0.9.1</strong> 当前版本</span>
             </div>
           </div>
           <div className="docs-search-wrap">
-            <label className="docs-search">
-              <Search aria-hidden="true" size={18} />
-              <span className="sr-only">搜索全部文档</span>
-              <input
-                ref={searchRef}
-                type="search"
-                placeholder="搜索功能、错误或快捷键…"
-                value={query}
-                onChange={(event) => updateQuery(event.target.value)}
-                aria-describedby="docs-search-status"
-              />
-              {query ? (
-                <button type="button" onClick={() => updateQuery("")} aria-label="清除搜索">
-                  <X aria-hidden="true" size={16} />
-                </button>
-              ) : <kbd>/</kbd>}
-            </label>
+            <div className="docs-search-row">
+              <label className="docs-search">
+                <Search aria-hidden="true" size={18} />
+                <span className="sr-only">搜索全部文档</span>
+                <input
+                  ref={searchRef}
+                  type="search"
+                  placeholder="搜索功能、错误或快捷键…"
+                  value={query}
+                  onChange={(event) => updateQuery(event.target.value)}
+                  aria-describedby="docs-search-status"
+                />
+                {query ? (
+                  <button type="button" onClick={() => updateQuery("")} aria-label="清除搜索">
+                    <X aria-hidden="true" size={16} />
+                  </button>
+                ) : <kbd>/</kbd>}
+              </label>
+              <button
+                type="button"
+                className="docs-theme-toggle"
+                onClick={cycleTheme}
+                aria-label={`当前：${theme === "light" ? "浅色" : theme === "dark" ? "深色" : "跟随系统"}，点击切换`}
+                title={`当前：${theme === "light" ? "浅色" : theme === "dark" ? "深色" : "跟随系统"}`}
+              >
+                {theme === "light" && <Sun aria-hidden="true" size={16} />}
+                {theme === "dark" && <Moon aria-hidden="true" size={16} />}
+                {theme === "system" && <Monitor aria-hidden="true" size={16} />}
+              </button>
+            </div>
             <p id="docs-search-status" className="docs-search-status" aria-live="polite">
               {normalizedQuery ? `找到 ${filtered.length} 个相关主题` : "按 / 随时聚焦搜索框"}
             </p>
@@ -550,7 +620,7 @@ export function DocsExplorer() {
             ))}
             <div className="docs-version-note">
               <BookOpen aria-hidden="true" size={14} />
-              <span>适用于 Stellara Work v0.9.0</span>
+              <span>适用于 Stellara Work v0.9.1</span>
             </div>
           </aside>
         )}

@@ -17,12 +17,12 @@ import { useState } from "react";
 import { DownloadDemo } from "./DownloadDemo";
 
 const releaseUrl = "https://github.com/strashineltd/stellara-work/releases";
-const winInstallerName = "Stellara Work-Setup-0.9.0.exe";
-const winSize = "117.3 MiB";
-const winSha256 = "34784C8356B367EDEE1AD07064950272F5BA59EE36D898C5758750411DE52475";
-const macInstallerName = "Stellara Work-0.9.0-arm64.dmg";
-const macSize = "144.4 MiB";
-const macSha256 = "380826DC0010433A70F3C417616A96CBFA6D8F0F8DE5394F3F0F2E3E428051E7";
+const winInstallerName = "Stellara.Work-Setup-0.9.1.exe";
+const winSize = "113.5 MiB";
+const winSha256 = "B55259D7FDB6A83575ABE4D05DD20E5CF5CF3C13C01D5509BC3C992348EC2DEC";
+const macInstallerName = "Stellara.Work-0.9.1-arm64.dmg";
+const macSize = "140.6 MiB";
+const macSha256 = "EFE89A999EC154BAF225335D91B20983C65AB38E72FF3F827A788F5E67A9F4E7";
 
 const releaseNotes = [
   "项目与会话分组、搜索、重命名和导出",
@@ -63,18 +63,18 @@ export function DownloadPanel() {
                 rel="noopener noreferrer"
               >
                 <Download aria-hidden="true" size={19} />
-                前往下载 v0.9
+                前往下载 v0.9.1
               </a>
-              <span>Windows x64 与 macOS (arm64) · 2026-08-16</span>
+              <span>Windows x64 与 macOS (arm64) · 2026-08-18</span>
             </div>
             <div className="download-feedback" role="status">
               <CheckCircle2 aria-hidden="true" size={17} />
-              v0.9 已开放下载，安装包通过 GitHub Releases 提供。
+              v0.9.1 已开放下载，安装包通过 GitHub Releases 提供。
             </div>
             <ul className="download-chips" aria-label="版本摘要">
               <li><span className="download-chip__dot" aria-hidden="true" />Windows x64 <strong>可下载</strong></li>
               <li><span className="download-chip__dot" aria-hidden="true" />macOS (arm64) <strong>可下载</strong></li>
-              <li>版本 <strong>0.9.0</strong></li>
+              <li>版本 <strong>0.9.1</strong></li>
             </ul>
           </div>
 
