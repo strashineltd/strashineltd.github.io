@@ -147,24 +147,20 @@ export function DownloadPanel() {
                 <div><dt><Laptop aria-hidden="true" size={18} />系统</dt><dd>Windows x64</dd></div>
                 <div><dt><HardDrive aria-hidden="true" size={18} />包体积</dt><dd>111.8 MiB</dd></div>
                 <div><dt><FolderKanban aria-hidden="true" size={18} />文件</dt><dd>{installerName}</dd></div>
+                <div className="install-card__hash">
+                  <dt><Clipboard aria-hidden="true" size={18} />SHA-256</dt>
+                  <dd>
+                    <code className="install-card__hash-code">{sha256}</code>
+                    <button type="button" onClick={copyHash} aria-label="复制 SHA-256 校验值">
+                      {copied ? <Check aria-hidden="true" size={14} /> : <Clipboard aria-hidden="true" size={14} />}
+                      {copied ? "已复制" : "复制"}
+                    </button>
+                  </dd>
+                </div>
               </dl>
-              <p className="install-card__note">安装器未设置额外的 Windows 版本限制。</p>
+              <p className="install-card__note">安装器未设置额外的 Windows 版本限制。下载后可复制 SHA-256 校验文件完整性。</p>
             </aside>
           </div>
-        </div>
-      </section>
-
-      <section className="checksum-section page-shell" aria-labelledby="checksum-title">
-        <div className="checksum-copy">
-          <span className="icon-box"><FileCheck2 aria-hidden="true" size={21} /></span>
-          <div><h2 id="checksum-title">验证下载文件</h2><p>下载完成后，可用 SHA-256 确认文件是否完整。</p></div>
-        </div>
-        <div className="checksum-value">
-          <code>{sha256}</code>
-          <button type="button" onClick={copyHash} aria-label="复制 SHA-256 校验值">
-            {copied ? <Check aria-hidden="true" size={16} /> : <Clipboard aria-hidden="true" size={16} />}
-            {copied ? "已复制" : "复制"}
-          </button>
         </div>
       </section>
 

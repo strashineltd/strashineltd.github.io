@@ -63,4 +63,5 @@ test("server-renders the download route with verified release metadata", async (
   assert.doesNotMatch(html, /version-panel/);
   const versionSection = html.match(/<section class="version-section[\s\S]*?<\/section>/)?.[0] ?? "";
   assert.doesNotMatch(versionSection, /aria-expanded/);
+  assert.doesNotMatch(html, /checksum-section/);
 });
