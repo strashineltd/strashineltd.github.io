@@ -55,7 +55,8 @@ test("server-renders the download route with verified release metadata", async (
   assert.match(html, /Stellara Work-Setup-0\.9\.0\.exe/);
   assert.match(html, /117\.3 MiB/);
   assert.match(html, /144\.4 MiB/);
-  assert.match(html, /下载 Windows 版/);
+  assert.match(html, /前往下载 v0\.9/);
+  assert.doesNotMatch(html, /下载 Windows 版/);
   assert.match(html, /前往 GitHub 下载/);
   assert.match(html, /https:\/\/github\.com\/strashineltd\/stellara-work\/releases/);
   assert.match(html, /target="_blank" rel="noopener noreferrer"/);

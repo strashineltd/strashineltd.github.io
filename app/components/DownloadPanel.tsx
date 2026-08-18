@@ -63,9 +63,9 @@ export function DownloadPanel() {
                 rel="noopener noreferrer"
               >
                 <Download aria-hidden="true" size={19} />
-                下载 Windows 版
+                前往下载 v0.9
               </a>
-              <span>Windows x64 · 117.3 MiB · 2026-08-16</span>
+              <span>Windows x64 与 macOS (arm64) · 2026-08-16</span>
             </div>
             <div className="download-feedback" role="status">
               <CheckCircle2 aria-hidden="true" size={17} />
