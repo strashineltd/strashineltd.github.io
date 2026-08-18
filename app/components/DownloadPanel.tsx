@@ -83,7 +83,7 @@ export function DownloadPanel() {
       <section className="platform-section section page-shell" aria-labelledby="platform-title">
         <div className="section-heading section-heading--split">
           <div><span className="section-kicker">可用平台</span><h2 id="platform-title">选择你的系统</h2></div>
-          <p>v0.9 当前提供 Windows x64 安装包；其他平台尚未提供。</p>
+          <p>v0.9 提供 Windows x64 与 macOS (arm64) 安装包；Linux 尚未提供。</p>
         </div>
         <div className="platform-grid">
           <article className="platform-card platform-card--available">
@@ -140,18 +140,18 @@ export function DownloadPanel() {
               <span className="version-card__badge">内测版</span>
               <h3 className="version-card__num">v0.9.0</h3>
               <dl className="version-card__meta">
-                <div><dt>发布日期</dt><dd>2026-07-30</dd></div>
+                <div><dt>发布日期</dt><dd>2026-08-16</dd></div>
               </dl>
               <div className="version-card__status">
                 <span className="version-card__ok"><Check aria-hidden="true" size={14} />已通过本地构建验证</span>
-                <span className="version-card__wait">公开托管通道准备中</span>
+                <span className="version-card__wait">已通过 GitHub Releases 开放下载</span>
               </div>
             </article>
 
             <article className="changelog-card">
               <div className="changelog-card__head">
                 <h3>本次更新</h3>
-                <small>2026-07-30</small>
+                <small>2026-08-16</small>
               </div>
               <ul className="release-notes">
                 {releaseNotes.map((note) => (
