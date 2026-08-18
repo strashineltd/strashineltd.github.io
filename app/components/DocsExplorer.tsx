@@ -353,7 +353,7 @@ export function DocsExplorer() {
             </div>
           </div>
           <div className="docs-search-wrap">
-            <div className="docs-search-row">
+            <div className="docs-search-bar">
               <label className="docs-search">
                 <Search aria-hidden="true" size={18} />
                 <span className="sr-only">搜索全部文档</span>
@@ -375,8 +375,7 @@ export function DocsExplorer() {
                 type="button"
                 className="docs-theme-toggle"
                 onClick={cycleTheme}
-                aria-label={`当前：${theme === "light" ? "浅色" : theme === "dark" ? "深色" : "跟随系统"}，点击切换`}
-                title={`当前：${theme === "light" ? "浅色" : theme === "dark" ? "深色" : "跟随系统"}`}
+                aria-label={`主题：${theme === "light" ? "浅色" : theme === "dark" ? "深色" : "跟随系统"}，点击切换`}
               >
                 {theme === "light" && <Sun aria-hidden="true" size={16} />}
                 {theme === "dark" && <Moon aria-hidden="true" size={16} />}
