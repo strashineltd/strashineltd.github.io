@@ -34,7 +34,7 @@ test("documentation covers the complete v0.9 operating model", async () => {
 
   assert.match(source, /256K、512K 或 1M/);
   assert.match(source, /默认等待时间是 60 秒/);
-  assert.match(source, /本机受限明文/);
+  assert.match(source, /使用操作系统加密机制保护/);
   assert.match(source, /Ctrl\+Shift\+P/);
   assert.match(source, /安装包通过 GitHub Releases 提供/);
   assert.doesNotMatch(source, /Ctrl \+ ,/);

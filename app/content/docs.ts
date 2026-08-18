@@ -1416,7 +1416,7 @@ export const docArticles: DocArticle[] = [
     group: "扩展能力",
     title: "MCP 服务器集成",
     summary: "通过 Model Context Protocol 连接外部工具服务器，扩展 Agent 的能力边界。",
-    icon: "tools",
+    icon: "command",
     readTime: "13 分钟",
     updated: "2026-08-19",
     keywords: ["MCP", "Model Context Protocol", "服务器", "工具", "stdio", "http", "集成", "扩展", "配置"],
@@ -1766,7 +1766,7 @@ export const docArticles: DocArticle[] = [
         bullets: [
           { title: "config.json", detail: "应用配置文件，存储模型元数据（id、label、baseUrl、model、workDir、contextWindow）、活跃模型 ID、应用偏好（主题、工作区模式、快捷键）、MCP 服务器配置。schemaVersion 为 1。" },
           { title: "config.json.bak", detail: "配置写入时的备份文件，从旧版本迁移时自动生成。" },
-          { title: ".env", detail: "按模型 ID 存储的 API Key。Key 使用 `enc:v1:` 前缀加密存储（见下文）。文件权限设置为 0600。敏感程度：高，本机受限明文。" },
+          { title: ".env", detail: "按模型 ID 存储的 API Key。Key 使用 `enc:v1:` 前缀加密存储（见下文）。文件权限设置为 0600。敏感程度：高，使用操作系统加密机制保护（enc:v1: 前缀），仅主进程可解密。" },
           { title: "stellara.db", detail: "SQLite 数据库，存储项目（projects）、会话（sessions）、消息（messages）、记忆（memories）和知识实体（knowledge_entities）。启用 WAL 模式和外键约束。" },
           { title: "stellara.db-wal / stellara.db-shm", detail: "SQLite WAL 模式的辅助文件，用于提高并发读写性能。" },
           { title: "logs/", detail: "应用运行日志目录，记录启动、模型连接、工具调用和错误信息。" },
