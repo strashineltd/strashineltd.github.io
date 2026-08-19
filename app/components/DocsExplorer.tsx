@@ -312,6 +312,7 @@ export function DocsExplorer() {
     const wrap = wrapEl;
 
     const mq = window.matchMedia("(max-width: 860px)");
+    const layoutEl = document.querySelector(".docs-layout") as HTMLElement | null;
     let fixed = false;
 
     function release() {
@@ -319,6 +320,23 @@ export function DocsExplorer() {
       sidebar.style.left = "";
       sidebar.style.width = "";
       fixed = false;
+    }
+
+    function syncScroll() {
+      const max = sidebar.scrollHeight - sidebar.clientHeight;
+      if (max <= 0) return;
+      if (!layoutEl) return;
+      if (wrap.getBoundingClientRect().top > 92) {
+        sidebar.scrollTop = 0;
+        return;
+      }
+      const lr = layoutEl.getBoundingClientRect();
+      const viewportH = window.innerHeight;
+      const distance = 92 - lr.top;
+      const total = distance + Math.max(lr.bottom - viewportH, 0);
+      if (total <= 0) return;
+      const progress = Math.min(Math.max(distance / total, 0), 1);
+      sidebar.scrollTop = max * progress;
     }
 
     function updatePosition() {
@@ -339,6 +357,7 @@ export function DocsExplorer() {
         sidebar.style.left = `${wrapRect.left}px`;
         sidebar.style.width = `${wrapRect.width}px`;
       }
+      syncScroll();
     }
 
     function handleResize() {
