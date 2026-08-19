@@ -172,7 +172,7 @@ export default function HomePage() {
             <h2>把下一件复杂的事，交给更清晰的工作流。</h2>
           </div>
           <div className="final-cta__actions">
-            <Link className="button button--primary" href="/download">前往下载 v0.9</Link>
+            <Link className="button button--primary" href="/download">前往下载</Link>
             <Link className="text-link" href="/docs">先阅读文档 <ArrowRight aria-hidden="true" size={16} /></Link>
           </div>
         </section>
