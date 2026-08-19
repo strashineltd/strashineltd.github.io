@@ -302,6 +302,58 @@ export function DocsExplorer() {
     return () => window.removeEventListener("keydown", handleKeydown);
   }, [filtered, focusedIndex, next, previous]);
 
+  // Sidebar: sticky while hero is visible, then switch to fixed so it never
+  // scrolls away when reaching the bottom of the page
+  useEffect(() => {
+    const sidebarEl = sidebarRef.current;
+    const wrapEl = sidebarEl?.parentElement as HTMLElement | null;
+    if (!sidebarEl || !wrapEl) return;
+    const sidebar = sidebarEl;
+    const wrap = wrapEl;
+
+    const mq = window.matchMedia("(max-width: 860px)");
+    let fixed = false;
+
+    function release() {
+      sidebar.classList.remove("docs-sidebar--fixed");
+      sidebar.style.left = "";
+      sidebar.style.width = "";
+      fixed = false;
+    }
+
+    function updatePosition() {
+      if (mq.matches) {
+        if (fixed) release();
+        return;
+      }
+      const wrapRect = wrap.getBoundingClientRect();
+      const shouldFix = wrapRect.top <= 92;
+      if (shouldFix && !fixed) {
+        sidebar.classList.add("docs-sidebar--fixed");
+        sidebar.style.left = `${wrapRect.left}px`;
+        sidebar.style.width = `${wrapRect.width}px`;
+        fixed = true;
+      } else if (!shouldFix && fixed) {
+        release();
+      } else if (fixed) {
+        sidebar.style.left = `${wrapRect.left}px`;
+        sidebar.style.width = `${wrapRect.width}px`;
+      }
+    }
+
+    function handleResize() {
+      updatePosition();
+    }
+
+    updatePosition();
+    window.addEventListener("scroll", updatePosition, { passive: true });
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("scroll", updatePosition);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   function selectArticle(id: string, scroll = true) {
     setActiveId(id);
 
