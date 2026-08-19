@@ -65,7 +65,7 @@ export default function HomePage() {
             </p>
             <div className="hero__actions">
               <Link className="button button--primary" href="/download">
-                下载 v0.9
+                下载
                 <ArrowRight aria-hidden="true" size={18} />
               </Link>
               <Link className="button button--secondary" href="/docs">

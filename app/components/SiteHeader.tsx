@@ -55,7 +55,7 @@ export function SiteHeader() {
         <div className="site-header__actions">
           <Link className="button button--small button--dark desktop-download" href="/download">
             <Download aria-hidden="true" size={16} />
-            下载 v0.9
+            下载
           </Link>
           <button
             className="mobile-menu-button"
