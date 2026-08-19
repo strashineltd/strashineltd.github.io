@@ -63,7 +63,7 @@ export function DownloadPanel() {
                 rel="noopener noreferrer"
               >
                 <Download aria-hidden="true" size={19} />
-                前往下载 v0.9.1
+                前往下载
               </a>
               <span>Windows x64 与 macOS (arm64) · 2026-08-18</span>
             </div>
