@@ -319,6 +319,8 @@ export function DocsExplorer() {
       sidebar.classList.remove("docs-sidebar--fixed");
       sidebar.style.left = "";
       sidebar.style.width = "";
+      sidebar.style.top = "";
+      sidebar.style.height = "";
       fixed = false;
     }
 
@@ -356,6 +358,15 @@ export function DocsExplorer() {
       } else if (fixed) {
         sidebar.style.left = `${wrapRect.left}px`;
         sidebar.style.width = `${wrapRect.width}px`;
+        const lr = layoutEl ? layoutEl.getBoundingClientRect() : null;
+        if (lr && lr.bottom < 92 + sidebar.offsetHeight) {
+          const available = Math.max(0, lr.bottom - 92);
+          sidebar.style.top = "92px";
+          sidebar.style.height = `${available}px`;
+        } else {
+          sidebar.style.top = "92px";
+          sidebar.style.height = "";
+        }
       }
       syncScroll();
     }
