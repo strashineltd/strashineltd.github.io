@@ -318,6 +318,10 @@ export function DocsExplorer() {
     const layoutEl = document.querySelector(".docs-layout") as HTMLElement | null;
     let fixed = false;
     let raf = 0;
+    // 底部收缩的稳定阈值基准：仅在高度未收缩（""）时测量。
+    // 不能直接用 sidebar.offsetHeight 参与条件判断——高度被设置后 offsetHeight
+    // 变小，阈值随之变小，条件立刻翻转，导致高度在收缩值与最大值之间逐帧振荡闪烁。
+    let naturalHeight = 0;
 
     // 值守卫：仅在实际变化时写样式，避免每帧无意义的重排。
     function setStyle(prop: "left" | "width" | "top" | "height", value: string) {
@@ -370,7 +374,8 @@ export function DocsExplorer() {
         setStyle("left", `${wrapRect.left}px`);
         setStyle("width", `${wrapRect.width}px`);
         const lr = layoutEl ? layoutEl.getBoundingClientRect() : null;
-        if (lr && lr.bottom < 92 + sidebar.offsetHeight) {
+        if (sidebar.style.height === "") naturalHeight = sidebar.offsetHeight;
+        if (lr && lr.bottom < 92 + naturalHeight) {
           const available = Math.max(0, lr.bottom - 92);
           setStyle("top", "92px");
           setStyle("height", `${available}px`);
