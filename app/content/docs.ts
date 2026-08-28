@@ -644,6 +644,24 @@ export const docArticles: DocArticle[] = [
         },
       },
       {
+        id: "context-hub-section",
+        title: "Context Hub：检查点与任务门禁",
+        body: [
+          "v0.9.2 引入 Context Hub 统一管理会话上下文：修订号追踪、上下文检查点和任务门禁。上下文区底部展示当前检查点与任务门禁状态。",
+          "上下文检查点记录当前任务目标与创建时间。点击「创建当前检查点」可以把当前工作上下文固化为检查点，后续任务以它为验证依据。上下文发生过期变化（证据失效）时，会显示未验证警告。",
+          "任务门禁在任务交付前评估上下文是否完备：就绪时显示「任务可完成」（role=status），存在阻塞因素时显示「任务阻塞」（role=alert）并列出阻塞原因，例如缺少目标、验证证据过期或上下文修订不一致。",
+        ],
+        table: {
+          headers: ["元素", "说明"],
+          rows: [
+            ["修订号", "每次上下文事件递增，用于跟踪上下文版本与过期检测"],
+            ["上下文检查点", "记录目标与创建时间，可一键创建当前检查点"],
+            ["过期证据", "上下文失效时列出证据条目并提示未验证"],
+            ["任务门禁", "就绪（status）/ 阻塞（alert），阻塞时列出原因"],
+          ],
+        },
+      },
+      {
         id: "subagents-section",
         title: "子代理区：并行任务状态",
         body: [
@@ -865,13 +883,14 @@ export const docArticles: DocArticle[] = [
     icon: "models",
     readTime: "10 分钟",
     updated: "2026-08-19",
-    keywords: ["模型", "预设", "GLM", "DeepSeek", "Kimi", "MiniMax", "自定义", "上下文窗口", "256K", "512K", "1M"],
+    keywords: ["模型", "预设", "GLM", "DeepSeek", "Kimi", "MiniMax", "自定义", "协议", "Responses", "Anthropic", "Messages", "上下文窗口", "256K", "512K", "1M"],
     sections: [
       {
         id: "presets",
         title: "内置模型预设",
         body: [
           "Stellara Work v0.9.2 内置七个中文模型预设和一个自定义槽位。预设会自动填充 Base URL 和模型名称，你只需填写 API Key 即可使用。",
+          "内置预设统一使用 Responses API 协议（POST {baseUrl}/responses），无旧版 Chat Completions 回退。设置页的模型卡片会显示协议徽章（Responses / Anthropic），连接测试通过后标记为已验证。",
           "预设只是配置模板，不包含任何密钥。服务商可能调整模型可用性，最终以你的账号权限和连接测试结果为准。",
         ],
         table: {
@@ -890,19 +909,20 @@ export const docArticles: DocArticle[] = [
       },
       {
         id: "custom-endpoint",
-        title: "自定义 OpenAI 兼容端点",
+        title: "自定义模型与 API 协议",
         body: [
-          "选择「自定义模型」可以接入任何兼容 OpenAI Chat Completions API 的端点。这包括本地部署的模型服务（如 Ollama、vLLM）和企业内部网关。",
-          "自定义端点需要手动填写 Base URL 和模型名称。Base URL 是否包含 `/v1` 路径由服务商决定，请参照服务商文档。端点必须支持流式输出（SSE），否则无法正常显示生成结果。",
+          "选择「自定义模型」可以接入任意模型服务。v0.9.2 支持两种 API 协议：Responses API（默认）与 Anthropic Messages。",
+          "协议选择：Base URL 路径包含 `/v1/messages` 或 `/anthropic` 时自动识别为 Anthropic Messages；其余地址统一使用 Responses API（`POST {baseUrl}/responses`）。应用绝不回退到 Chat Completions。你也可以在自定义模型配置里显式指定协议。",
+          "Anthropic Messages 端点会走完整的 Agent 工具循环：写入（POST {baseUrl}/v1/messages）、工具调用与结果回传均按 Anthropic 格式进行。端点必须支持流式输出（SSE），否则无法正常显示生成结果。",
         ],
         code: {
-          label: "自定义配置示例",
-          content: "显示名称：团队网关\nBase URL：https://gateway.example.com/v1\n模型名称：team-coder\nAPI Key ：<由服务商提供>\n上下文窗口：256K",
+          label: "自定义配置示例（Anthropic Messages）",
+          content: "显示名称：团队网关\nBase URL：https://gateway.example.com/v1/messages\n模型名称：team-coder\nAPI Key ：<由服务商提供>\n协议：Anthropic Messages（按地址自动识别）\n上下文窗口：256K",
         },
         note: {
           tone: "info",
           title: "本地模型",
-          body: "如果使用 Ollama 等本地服务，Base URL 通常为 http://localhost:11434/v1。请确认本地服务已启动且模型已下载。",
+          body: "如果使用 Ollama 等本地服务，Base URL 通常为 http://localhost:11434/v1。请确认本地服务已启动且模型已下载。Ollama 的 /v1 端点按 Responses 协议访问即可。",
         },
       },
       {
@@ -2794,7 +2814,7 @@ export const docArticles: DocArticle[] = [
             ["DeepSeek-v4-Pro", "DeepSeek 的大语言模型。Base URL: https://api.deepseek.com"],
             ["Kimi-K3", "月之暗面 Moonshot 的大语言模型。Base URL: https://api.moonshot.cn"],
             ["MiniMax-M3", "MiniMax 的大语言模型。Base URL: https://api.minimaxi.com/v1"],
-            ["OpenAI 兼容", "遵循 OpenAI Chat Completions API 格式的服务端点。Stellara Work 支持接入任何兼容此协议的端点，包括本地部署和自定义网关。"],
+            ["API 协议", "模型服务使用的消息格式。Stellara Work 支持两种：Responses API（内置模型与自定义模型默认，POST {baseUrl}/responses）和 Anthropic Messages（Base URL 含 /v1/messages 或 /anthropic 时自动识别，POST {baseUrl}/v1/messages）。应用绝不回退到 Chat Completions。"],
             ["流式输出", "模型逐 token 生成响应的方式。通过 SSE 传输，用户可以实时看到输出过程，而不需要等待完整回复。"],
             ["上下文压缩", "当消息累积的 token 数超过上下文窗口的 90% 时，自动将早期消息摘要化为一条摘要，保留 system 消息和最近 12 轮对话。"],
             ["tiktoken", "OpenAI 的 token 计数库。Stellara Work 使用 cl100k_base 编码估算消息 token 数。加载失败时回退到字符数/4 的粗估方式。"],
