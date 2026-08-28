@@ -53,7 +53,7 @@ export function DownloadPanel() {
       <section className="download-hero">
         <div className="page-shell download-hero__grid">
           <div className="download-hero__copy">
-            <span className="eyebrow"><span className="status-dot" aria-hidden="true" />v0.9.2 内测版</span>
+            <span className="eyebrow"><span className="status-dot" aria-hidden="true" />v0.9.2 正式版</span>
             <h1>下载 Stellara Work</h1>
             <p className="download-hero__lead">
               为 Windows 与 macOS 打造的本地优先桌面 Agent。安装后选择模型和工作目录，即可开始第一个任务。
@@ -140,11 +140,11 @@ export function DownloadPanel() {
       <section className="version-section section section--soft" aria-labelledby="version-title">
         <div className="page-shell">
           <span className="section-kicker">版本信息</span>
-          <h2 id="version-title" className="version-title">v0.9.2 内测版</h2>
+          <h2 id="version-title" className="version-title">v0.9.2 正式版</h2>
           <p className="version-lead">这一版本已经完成从项目、会话到执行与审批的桌面工作闭环。</p>
           <div className="version-layout">
             <article className="version-card">
-              <span className="version-card__badge">内测版</span>
+              <span className="version-card__badge">正式版</span>
               <h3 className="version-card__num">v0.9.2</h3>
               <dl className="version-card__meta">
                 <div><dt>发布日期</dt><dd>2026-08-28</dd></div>

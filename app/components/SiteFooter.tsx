@@ -25,7 +25,7 @@ export function SiteFooter() {
           <Link href="/docs">文档</Link>
           <Link href="/download">下载</Link>
         </nav>
-        <p className="site-footer__meta">v0.9.2 内测版 · Windows 与 macOS</p>
+        <p className="site-footer__meta">v0.9.2 正式版 · Windows 与 macOS</p>
       </div>
     </footer>
   );
