@@ -422,7 +422,7 @@ export function DocsExplorer() {
       <section className="docs-hero">
         <div className="page-shell docs-hero__inner">
           <div className="docs-hero__copy">
-            <span className="section-kicker">Stellara Work 文档 · v0.9</span>
+            <span className="section-kicker">Stellara Work 文档 · v0.9.2</span>
             <h1>从首次配置到安全交付，每一步都有依据。</h1>
             <p>这是一份以当前程序实现为准的完整手册，覆盖模型、项目工作流、工具边界、本地数据与故障排查。</p>
             <div className="docs-hero__stats" aria-label="文档概况">

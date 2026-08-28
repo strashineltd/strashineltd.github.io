@@ -20,7 +20,7 @@ export const dynamic = "force-static";
 export const metadata: Metadata = {
   title: "Stellara Work — 把复杂工作，留在本地完成。",
   description:
-    "数据本地、模型自由、操作可控的桌面 Agent。下载 Stellara Work v0.9 内测版。",
+    "数据本地、模型自由、操作可控的桌面 Agent。下载 Stellara Work v0.9.2 内测版。",
 };
 
 const principles = [
@@ -56,7 +56,7 @@ export default function HomePage() {
           <div className="hero__copy">
             <div className="eyebrow">
               <span className="status-dot" aria-hidden="true" />
-              v0.9 内测版 · Windows 与 macOS
+              v0.9.2 内测版 · Windows 与 macOS
             </div>
             <h1>把复杂工作，<br />留在本地完成。</h1>
             <p className="hero__lead">

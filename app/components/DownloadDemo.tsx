@@ -10,7 +10,7 @@ export function DownloadDemo() {
         <div className="download-demo__bar">
           <div className="window-controls" aria-hidden="true"><i /><i /><i /></div>
           <span>Stellara Work · 首次引导</span>
-          <small>v0.9</small>
+          <small>v0.9.2</small>
         </div>
         <div className="download-demo__body">
           <aside className="download-demo__steps">
