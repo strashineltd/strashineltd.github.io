@@ -1213,7 +1213,7 @@ export const docArticles: DocArticle[] = [
         ],
         code: {
           label: "诊断信息示例",
-          content: "# Stellara Work 诊断信息\n采集时间：2026-08-28T10:30:00.000Z\n\n## 版本\n- Stellara Work: v0.9.2\n- Electron: 31.0.0\n- Chromium: 126.0.6478.126\n- Node.js: 20.14.0\n- 平台: darwin arm64\n\n## 数据\n- 数据目录: /Users/xxx/Library/Application Support/Stellara Work\n- 日志文件: /Users/xxx/Library/Application Support/Stellara Work/logs/main.log\n- DB 大小: 256.0 KB\n- 会话数: 12 / 消息数: 348\n- 已配 model: 3（已配 key: deepseek-v4-pro, glm-5.2）\n- 活跃 model: deepseek-v4-pro",
+          content: "# Stellara Work 诊断信息\n采集时间：2026-08-28T10:30:00.000Z\n\n## 版本\n- Stellara Work: v0.9.2\n- Electron: 43.2.0\n- Chromium: 150.0.7871.129\n- Node.js: 24.18.0\n- 平台: darwin arm64\n\n## 数据\n- 数据目录: /Users/xxx/Library/Application Support/Stellara Work\n- 日志文件: /Users/xxx/Library/Application Support/Stellara Work/logs/main.log\n- DB 大小: 256.0 KB\n- 会话数: 12 / 消息数: 348\n- 已配 model: 3（已配 key: deepseek-v4-pro, glm-5.2）\n- 活跃 model: deepseek-v4-pro",
         },
         note: {
           tone: "info",
@@ -2199,7 +2199,7 @@ export const docArticles: DocArticle[] = [
         ],
         code: {
           label: "诊断信息示例（脱敏后）",
-          content: "# Stellara Work 诊断信息\n采集时间：2026-08-28T10:30:00.000Z\n\n## 版本\n- Stellara Work: v0.9.2\n- Electron: 31.0.0\n- 平台: darwin arm64\n\n## 数据\n- 数据目录: /Users/xxx/Library/Application Support/Stellara Work\n- 会话数: 12 / 消息数: 348\n- 已配 model: 3（已配 key: deepseek-v4-pro, glm-5.2）\n- 活跃 model: deepseek-v4-pro\n\n## main.log 最近 50 行\n[错误日志片段...]",
+          content: "# Stellara Work 诊断信息\n采集时间：2026-08-28T10:30:00.000Z\n\n## 版本\n- Stellara Work: v0.9.2\n- Electron: 43.2.0\n- 平台: darwin arm64\n\n## 数据\n- 数据目录: /Users/xxx/Library/Application Support/Stellara Work\n- 会话数: 12 / 消息数: 348\n- 已配 model: 3（已配 key: deepseek-v4-pro, glm-5.2）\n- 活跃 model: deepseek-v4-pro\n\n## main.log 最近 50 行\n[错误日志片段...]",
         },
         note: {
           tone: "success",
@@ -2231,12 +2231,12 @@ export const docArticles: DocArticle[] = [
           headers: ["平台", "安装包格式", "架构要求", "数据目录"],
           rows: [
             ["Windows", "NSIS 安装向导（.exe）", "x64", "%APPDATA%\\Stellara Work"],
-            ["macOS", "DMG 磁盘映像（.dmg）", "Apple Silicon（arm64）", "~/Library/Application Support/Stellara Work"],
+            ["macOS", "DMG 磁盘映像（.dmg）", "arm64 / x64", "~/Library/Application Support/Stellara Work"],
             ["Linux", "暂未提供", "—", "—"],
           ],
         },
         bullets: [
-          { title: "macOS 版本要求", detail: "需要 macOS 12.0 或更高版本。不支持 Intel Mac。" },
+          { title: "macOS 版本要求", detail: "需要 macOS 12.0 或更高版本，提供 Apple 芯片（arm64）与 Intel（x64）两种安装包。" },
           { title: "Windows 版本要求", detail: "支持 Windows 10 及以上版本（x64）。" },
           { title: "未签名安装包", detail: "当前版本未经代码签名。macOS 需右键打开绕过 Gatekeeper；Windows 需在 SmartScreen 中选择「仍要运行」。" },
           { title: "旧版本迁移", detail: "v0.8 及更早版本使用 ~/.stellara 目录。首次启动 v0.9.0 时自动迁移到新的数据目录，原目录保留作为备份。" },
@@ -2696,12 +2696,12 @@ export const docArticles: DocArticle[] = [
         id: "known-limitations",
         title: "已知限制",
         body: [
-          "v0.9.1 存在以下已知限制，将在后续版本中逐步改进。了解这些限制可以帮助你更好地规划使用方式。",
+          "Stellara Work 当前存在以下已知限制，将在后续版本中逐步改进。了解这些限制可以帮助你更好地规划使用方式。",
         ],
         table: {
           headers: ["限制", "说明", "临时方案"],
           rows: [
-            ["平台覆盖", "Windows x64 + macOS Apple Silicon；暂无 Linux 版本，不支持 Intel Mac", "Linux 用户可关注官方发布渠道"],
+            ["平台覆盖", "Windows x64 + macOS（arm64 / x64）；暂无 Linux 版本", "Linux 用户可关注官方发布渠道"],
             ["安装包签名", "安装包未经代码签名，macOS 需右键打开，Windows 需 SmartScreen 放行", "核对 SHA-256 校验值确认来源"],
             ["云同步", "不支持跨设备云同步", "手动备份和迁移数据目录"],
             ["加密密钥迁移", "加密的 API Key 绑定到设备用户账户，跨设备无法解密", "在新设备上重新配置 API Key"],
@@ -2774,7 +2774,7 @@ export const docArticles: DocArticle[] = [
             ["审批", "Approval", "对敏感操作（write_file、edit_file、run_command、web_fetch、memory 等）的人工确认机制。审批顶部栏显示工具名和参数，单次授权。"],
             ["交付物", "Deliverable", "本次会话中 Agent 通过 write_file 或 edit_file 创建或修改的文件列表。显示在工作区检查器中。"],
             ["记忆中心", "Memory Center", "跨会话持久记忆系统。基于 SQLite + FTS5 全文索引，支持自动提取、语义搜索和手动管理。"],
-            ["子代理", "Subagent", "通过 dispatch_subagents 工具分发的并行任务执行者。最多 10 个并行，20 个总数上限。共享工作目录但拥有独立上下文。"],
+            ["子代理", "Subagent", "通过 dispatch_subagents 工具分发、由会话级协调器管理的任务执行者。单次最多 10 个；research/verify 角色并行（上限 4），build 角色串行。共享工作目录但拥有独立上下文。"],
             ["Diff 卡片", "Diff Card", "当 Agent 创建或修改文件时，聊天区显示的并排对比视图。使用 CodeMirror MergeView 组件，展示修改前后的差异。"],
             ["Shell 卡片", "Shell Card", "当 Agent 执行命令时，聊天区显示的命令输出卡片。包含命令、执行时长、退出码、stdout 和 stderr。"],
           ],
@@ -2820,7 +2820,7 @@ export const docArticles: DocArticle[] = [
             ["GLM-5.2", "智谱 BigModel 的大语言模型。Base URL: https://open.bigmodel.cn/api/paas/v4"],
             ["DeepSeek-v4-Pro", "DeepSeek 的大语言模型。Base URL: https://api.deepseek.com"],
             ["Kimi-K3", "月之暗面 Moonshot 的大语言模型。Base URL: https://api.moonshot.cn"],
-            ["MiniMax-M3", "MiniMax 的大语言模型。Base URL: https://api.minimaxi.com/v1"],
+            ["MiniMax-M3", "MiniMax 的大语言模型。Base URL: https://api.minimax.io/v1"],
             ["API 协议", "模型服务使用的消息格式。Stellara Work 支持两种：Responses API（内置模型与自定义模型默认，POST {baseUrl}/responses）和 Anthropic Messages（Base URL 含 /v1/messages 或 /anthropic 时自动识别，POST {baseUrl}/v1/messages）。应用绝不回退到 Chat Completions。"],
             ["流式输出", "模型逐 token 生成响应的方式。通过 SSE 传输，用户可以实时看到输出过程，而不需要等待完整回复。"],
             ["上下文压缩", "当消息累积的 token 数超过上下文窗口的 90% 时，自动将早期消息摘要化为一条摘要，保留 system 消息和最近 12 轮对话。"],
