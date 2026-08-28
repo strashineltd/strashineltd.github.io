@@ -53,18 +53,18 @@ export const docArticles: DocArticle[] = [
     id: "install-setup",
     group: "入门",
     title: "安装与首次启动",
-    summary: "下载、安装并首次启动 Stellara Work，完成模型连接与工作目录设置。",
+    summary: "下载、安装并首次启动 Stellara Work v0.9.2，完成模型连接与工作目录设置。",
     icon: "rocket",
     readTime: "10 分钟",
-    updated: "2026-08-19",
-    keywords: ["安装", "Windows", "macOS", "NSIS", "DMG", "首次启动", "未签名", "SmartScreen", "Gatekeeper", "API Key", "数据目录"],
+    updated: "2026-08-28",
+    keywords: ["安装", "Windows", "macOS", "NSIS", "DMG", "首次启动", "未签名", "SmartScreen", "Gatekeeper", "API Key", "数据目录", "预设"],
     sections: [
       {
         id: "download",
         title: "下载安装包",
         body: [
           "Stellara Work v0.9.2 提供两个平台的安装包，均通过 GitHub Releases 发布。Windows 使用 NSIS 安装向导，macOS 使用 DMG 磁盘映像。",
-          "下载前请确认平台与架构匹配。Windows 安装包仅支持 x64 架构；macOS 提供 Apple 芯片（arm64）与 Intel（x64）两种磁盘映像。",
+          "下载前请确认平台与架构匹配。Windows 安装包仅支持 x64 架构；macOS 提供 Apple 芯片（arm64）与 Intel（x64）两种磁盘映像，其中 x64 映像从 v0.9.2 起提供。macOS 系统要求为 12.0 或更高版本。",
         ],
         table: {
           headers: ["平台", "安装包格式", "文件名", "架构要求"],
@@ -77,15 +77,15 @@ export const docArticles: DocArticle[] = [
         note: {
           tone: "info",
           title: "下载来源",
-          body: "请仅从官方 GitHub 仓库（github.com/strashineltd/stellara-work）获取安装包，并核对发布页给出的 SHA-256 校验值。",
+          body: "请仅从官方 GitHub 仓库（github.com/strashineltd/stellara-work）的 Releases 页面获取安装包，并核对发布页给出的 SHA-256 校验值。",
         },
       },
       {
         id: "unsigned",
         title: "未签名安装包的处理",
         body: [
-          "当前版本的安装包尚未经过代码签名。两个平台都需要额外步骤才能正常启动。",
-          "macOS 的 Gatekeeper 会阻止未签名的应用直接打开。Windows 的 SmartScreen 会显示安全警告。这些都是正常现象，按以下步骤操作即可。",
+          "当前版本的安装包尚未经过代码签名，两个平台都需要额外步骤才能正常启动。",
+          "macOS 的 Gatekeeper 会阻止未签名的应用直接打开，Windows 的 SmartScreen 会显示安全警告。这些都是正常现象，按以下步骤操作即可。",
         ],
         steps: [
           { title: "macOS：右键打开", detail: "在 Finder 中找到 Stellara Work，右键点击选择「打开」，在弹出对话框中再次点击「打开」。首次操作后，后续可直接双击启动。" },
@@ -114,7 +114,7 @@ export const docArticles: DocArticle[] = [
         title: "数据目录位置",
         body: [
           "Stellara Work 将所有用户数据（配置、会话数据库、加密密钥）存储在平台标准的应用数据目录中。应用不会在用户主目录下创建隐藏文件夹。",
-          "旧版本（v0.8 及更早）使用 `~/.stellara` 目录。首次启动 v0.9.0 时，应用会自动将旧数据迁移到新的数据目录，原目录保留作为备份。",
+          "旧版本（v0.8 及更早）使用 `~/.stellara` 目录。首次启动 v0.9.x 时，应用会自动将旧数据迁移到新的数据目录，原目录保留作为备份。",
         ],
         table: {
           headers: ["平台", "数据目录路径"],
@@ -125,8 +125,8 @@ export const docArticles: DocArticle[] = [
         },
         bullets: [
           { title: "config.json", detail: "模型配置、活跃模型、工作目录和应用偏好设置。" },
-          { title: ".env", detail: "按模型 ID 存储的 API Key（加密存储）。" },
-          { title: "stellara.db", detail: "SQLite 数据库，存储项目、会话和消息记录。" },
+          { title: ".env", detail: "按模型 ID 存储的 API Key（enc:v1: 前缀加密存储）。" },
+          { title: "stellara.db", detail: "SQLite 数据库（WAL 模式），存储项目、会话和消息记录。" },
           { title: "logs/", detail: "应用运行日志，用于问题排查。" },
         ],
       },
@@ -154,17 +154,18 @@ export const docArticles: DocArticle[] = [
         id: "first-launch",
         title: "首次启动引导",
         body: [
-          "首次启动时，应用会进入引导流程，引导你完成三项基本配置：选择模型、填写 API Key、选择工作目录。",
+          "首次启动时，应用进入三步引导流程：欢迎页 → 选择模型 → 配置密钥。每一步都可以跳过，跳过后可随时在设置面板中补齐配置。",
           "内置模型预设会自动填充 Base URL 和模型名称，只需填写 API Key。选择「自定义模型」则需要手动填写所有字段。",
         ],
         steps: [
-          { title: "选择模型预设", detail: "从 GLM-5.2、DeepSeek-v4-Pro、Kimi-K3、MiniMax-M3 或自定义模型中选择一个。" },
-          { title: "填写 API Key", detail: "输入对应模型服务商提供的密钥。密钥会加密存储。" },
-          { title: "选择工作目录", detail: "点击「浏览」选择项目根目录。Agent 的文件操作和命令执行都受此目录约束。" },
+          { title: "欢迎页", detail: "介绍「数据本地」「模型自由」「本地执行」三项特性。点击「开始配置」进入模型选择，或「先逛逛」跳过。" },
+          { title: "选择模型预设", detail: "从 7 个内置预设——DeepSeek-V4-Pro、DeepSeek-V4-Flash、Qwen3.8-Max、GLM-5.3、GLM-5.2、Kimi-K3、MiniMax-M3——或自定义模型中选择一个。预设自动填充 Base URL 和模型名称。" },
+          { title: "填写 API Key", detail: "输入对应模型服务商提供的密钥。密钥加密存储，只保存在本机。" },
           { title: "连接测试", detail: "应用向模型服务发送测试请求。测试通过后保存配置并进入主界面；失败则可返回修改重新测试。" },
+          { title: "配置工作目录", detail: "引导流程本身不要求工作目录。首次任务前，在首页创建项目或选择工作目录，Agent 的文件操作和命令执行都受此目录约束。" },
         ],
         checklist: [
-          "已下载安装包并成功启动应用",
+          "已下载匹配平台与架构的安装包并成功启动应用",
           "已准备好模型服务商的 API Key",
           "已确定一个项目文件夹作为工作目录",
           "网络连接正常，可以访问所选模型服务",
@@ -177,11 +178,11 @@ export const docArticles: DocArticle[] = [
     id: "first-task",
     group: "入门",
     title: "完成第一个任务",
-    summary: "输入任务、查看流式响应、理解 Diff 卡片和 Shell 卡片，掌握工具调用可视化。",
+    summary: "从发送任务到验收交付，走一遍 v0.9.2 的完整任务流程：流式响应、工具卡片、审批、工作区检查器与交付物。",
     icon: "message",
-    readTime: "10 分钟",
-    updated: "2026-08-19",
-    keywords: ["任务", "流式响应", "Markdown", "Diff 卡片", "Shell 卡片", "工具调用", "审批", "附件"],
+    readTime: "12 分钟",
+    updated: "2026-08-28",
+    keywords: ["任务", "流式响应", "Markdown", "Diff 卡片", "Shell 卡片", "工具调用", "审批", "附件", "进度", "检查点", "任务门禁", "交付物"],
     sections: [
       {
         id: "task-input",
@@ -197,13 +198,14 @@ export const docArticles: DocArticle[] = [
         bullets: [
           { title: "附件支持", detail: "通过拖拽或附件选择器添加文件和图片。附件与消息一起发送，帮助 Agent 理解上下文。" },
           { title: "快捷任务", detail: "首页提供「梳理项目计划」「总结当前进展」「检查代码问题」「整理交付清单」四个快捷入口。" },
+          { title: "未配置模型横幅", detail: "尚未配置可用模型时，首页会显示「尚未配置模型，Agent 暂时无法执行任务」的横幅，点击横幅可进入设置补齐配置。" },
         ],
       },
       {
         id: "streaming",
         title: "流式响应与 Markdown 渲染",
         body: [
-          "Agent 的回复以流式方式实时显示在聊天区。模型逐 token 生成响应，你可以实时看到输出过程，而不需要等待完整回复。",
+          "发送任务后，Agent 的回复以流式方式实时显示在聊天区。模型逐 token 生成响应，你可以实时看到输出过程，而不需要等待完整回复。",
           "回复内容使用 Markdown 格式渲染，支持标题、列表、代码块、链接等常见格式。代码块会根据语言自动高亮语法。",
         ],
         bullets: [
@@ -256,10 +258,10 @@ export const docArticles: DocArticle[] = [
       },
       {
         id: "tool-calls",
-        title: "工具调用可视化",
+        title: "工具调用与审批",
         body: [
-          "Agent 的每次工具调用都会在聊天区显示为对应的卡片。只读工具（read_file、search_files 等）直接执行并显示结果；写入工具（write_file、edit_file）和命令执行（run_command）需要用户审批。",
-          "审批请求会以顶部固定条的形式出现，显示工具名称和格式化参数。点击「允许这一次」放行当前请求，点击「拒绝」或按 Esc 拒绝。审批只放行当前请求，不会建立永久授权。",
+          "Agent 的每次工具调用都会在聊天区显示为对应的卡片。只读工具（read_file、search_files 等）直接执行并显示结果；写入工具（write_file、edit_file）、命令执行（run_command）、Web 抓取（web_fetch）和记忆操作需要你审批。",
+          "审批请求以顶部固定条的形式出现，显示工具名称和格式化参数。点击「允许这一次」放行当前请求，点击「拒绝」或按 Esc 拒绝。审批是单次的：只放行当前请求，不会建立永久授权。",
         ],
         checklist: [
           "检查审批条中的工具类型是否与当前任务相符",
@@ -273,18 +275,51 @@ export const docArticles: DocArticle[] = [
           body: "审批默认等待 60 秒，超时自动拒绝。可以在设置中调整等待时间（1-300 秒）。",
         },
       },
+      {
+        id: "inspector-followup",
+        title: "工作区检查器：进度、检查点与门禁",
+        body: [
+          "任务执行过程中，右侧工作区检查器实时反映执行状态。目标区显示 Plan 计划步骤或首条任务消息；进度区显示完成百分比和当前正在执行的工具；上下文区显示 token 使用率与工具调用统计。",
+          "v0.9.2 起，Context Hub 统一管理任务上下文：你可以点击「创建当前检查点」把当前工作上下文固化为检查点（记录目标与创建时间）；任务临近交付时，任务门禁会评估上下文是否完备——就绪时显示「任务可完成」，存在阻塞因素（缺少目标、验证证据过期、上下文修订不一致等）时显示「任务阻塞」并列出原因。",
+        ],
+        steps: [
+          { title: "查看进度", detail: "进度区显示百分比和摘要文本：Plan 任务按步骤计算（如「步骤 3 / 6」），普通任务按工具调用数计算（如「已完成 12 / 20 项操作」），下方显示当前正在执行的工具。" },
+          { title: "创建检查点", detail: "在上下文区点击「创建当前检查点」，把当前目标与上下文固化。上下文发生过期变化（证据失效）时，会显示未验证警告。" },
+          { title: "检查任务门禁", detail: "任务收尾前查看门禁状态。阻塞时阅读原因列表（缺目标 / 证据过期 / 修订不一致），让 Agent 补齐后再验收。" },
+          { title: "核对交付物", detail: "在交付物区检查本次会话写入或编辑的所有文件，逐项确认符合任务要求。" },
+        ],
+        note: {
+          tone: "info",
+          title: "详细说明",
+          body: "工作区检查器的每个区域都有更详细的参考：见「工作区检查器」一文。",
+        },
+      },
+      {
+        id: "deliverables-check",
+        title: "交付物与任务收尾",
+        body: [
+          "当 Agent 认为任务已完成时，会调用 task_complete 工具结束执行循环，并附带完成摘要（做了什么、改了哪些文件、测试结果如何）。",
+          "交付物列表记录本次会话中通过 write_file 或 edit_file 写入或编辑的所有文件，但它只表示 Agent 执行过写入操作，并不等同于最终可发布的产物。建议结合 Diff 卡片、Shell 卡片的测试输出和实际运行结果完成验收。",
+        ],
+        checklist: [
+          "逐条查看交付物列表，确认没有意外修改的文件",
+          "查看最后一条任务完成摘要，确认验证方式与结果",
+          "结合测试输出（Shell 卡片）判断改动是否通过验证",
+          "需要微调时直接在输入框补充要求，继续同一会话迭代",
+        ],
+      },
     ],
-    related: ["interface-tour", "models"],
+    related: ["interface-tour", "workspace-inspector", "models"],
   },
   {
     id: "interface-tour",
     group: "入门",
     title: "界面导览",
-    summary: "了解无边框窗口、首页仪表盘、三栏布局、侧栏文件视图和悬停预览。",
+    summary: "了解无边框窗口、顶部标题栏、首页仪表盘、三栏布局、主题切换与克制动效系统。",
     icon: "layout",
-    readTime: "8 分钟",
-    updated: "2026-08-19",
-    keywords: ["界面", "无边框", "首页", "仪表盘", "三栏布局", "侧栏", "文件视图", "悬停预览", "附件"],
+    readTime: "11 分钟",
+    updated: "2026-08-28",
+    keywords: ["界面", "无边框", "标题栏", "首页", "仪表盘", "三栏布局", "侧栏", "文件视图", "悬停预览", "附件", "主题", "浅色", "深色", "跟随系统", "动效"],
     sections: [
       {
         id: "frameless",
@@ -300,17 +335,36 @@ export const docArticles: DocArticle[] = [
         },
       },
       {
+        id: "header-bar",
+        title: "顶部标题栏",
+        body: [
+          "窗口顶部是应用标题栏，集中放置最常用的全局操作，在任意页面都可用。",
+        ],
+        table: {
+          headers: ["元素", "功能"],
+          rows: [
+            ["左侧栏开关", "显示/隐藏左侧导航栏（等价于 Ctrl+B）"],
+            ["工作目录", "显示当前项目或工作目录名称，可点击切换"],
+            ["模型切换", "显示当前活跃模型，点击下拉切换"],
+            ["工作区开关", "显示/隐藏右侧工作区检查器（等价于 Ctrl+Shift+W）"],
+            ["文件树", "打开当前工作目录的文件树"],
+            ["菜单", "打开应用菜单（设置、命令面板等入口）"],
+          ],
+        },
+      },
+      {
         id: "home-dashboard",
         title: "首页仪表盘",
         body: [
           "启动应用后首先看到的是首页仪表盘。这里是任务入口和工作概览的中心，包含任务输入区、附件拖拽区、快捷任务按钮和继续工作列表。",
-          "任务输入区支持多行文本输入，按 Ctrl+Enter（macOS 为 Cmd+Enter）发送。输入区下方显示当前项目或工作目录名称。",
+          "任务输入区支持多行文本输入，按 Ctrl+Enter（macOS 为 Cmd+Enter）发送。输入区下方显示当前项目或工作目录名称，未选择时显示「尚未选择项目」。",
         ],
         bullets: [
           { title: "任务输入", detail: "描述你的目标、范围和验收标准，Agent 会在当前工作区执行。" },
           { title: "附件拖拽", detail: "将文件或图片拖入输入区，或通过附件选择器添加。图片会内联渲染，文件点击可打开。" },
           { title: "快捷任务", detail: "提供「梳理项目计划」「总结当前进展」「检查代码问题」「整理交付清单」四个快捷入口。" },
           { title: "继续工作", detail: "显示最近 3 个会话或项目，点击可快速恢复之前的工作。" },
+          { title: "未配置模型横幅", detail: "尚未配置可用模型时显示提示横幅，Agent 暂时无法执行任务，点击横幅进入设置补齐配置。" },
         ],
         note: {
           tone: "warning",
@@ -329,7 +383,7 @@ export const docArticles: DocArticle[] = [
           rows: [
             ["左侧导航栏", "首页、项目、工作记录、记忆、文件、设置入口；项目与会话列表", "搜索、新建、重命名、导出、删除"],
             ["中间聊天区", "消息流、工具调用卡片、审批条、输入框", "发送、中止、审批、切换模型/模式"],
-            ["右侧工作区", "目标、进度、交付物、文件树", "查看步骤状态、折叠/展开"],
+            ["右侧工作区", "目标、进度、上下文、子代理、交付物、文件树", "查看步骤状态、创建检查点、折叠/展开"],
           ],
         },
         checklist: [
@@ -365,6 +419,38 @@ export const docArticles: DocArticle[] = [
         ],
       },
       {
+        id: "theme-switcher",
+        title: "主题切换",
+        body: [
+          "Stellara Work 提供三种主题：浅色、深色和跟随系统。「跟随系统」模式下，应用会自动响应操作系统深色模式的变化。",
+          "主题可以在设置 → 应用面板中切换，也可以使用命令面板（Ctrl+K）搜索「深色」「浅色」「跟随系统」快速切换。切换立即生效，偏好自动保存。",
+        ],
+        steps: [
+          { title: "通过设置面板切换", detail: "打开设置 → 应用，在「界面」区域点击主题卡片（浅色 / 深色 / 跟随系统）。" },
+          { title: "通过命令面板切换", detail: "按 Ctrl+K，输入「主题」「深色」或「浅色」，从结果中选择对应命令。" },
+          { title: "检查生效", detail: "切换后整个界面（含聊天区、工作区检查器、Diff 卡片）立即应用新主题。" },
+        ],
+      },
+      {
+        id: "motion-system",
+        title: "克制动效系统",
+        body: [
+          "v0.9.2 引入了统一的克制动效系统：菜单、页面、弹窗、状态和微交互使用同一套动效契约，让界面变化有层次而不喧宾夺主。",
+          "动效只作用于 opacity、transform、颜色、边框和阴影，不做布局尺寸动画。历史记录是静态的，只有实时条目（如新消息、审批条、状态反馈）播放进入动画。如果你在系统中开启了「减弱动效」偏好，所有过渡会立即完成、循环动画全部停用。",
+        ],
+        bullets: [
+          { title: "统一契约", detail: "菜单、页面、弹窗、状态与微交互使用统一的时长与位移参数。" },
+          { title: "静态历史", detail: "历史消息与旧卡片不播放动画，只有实时更新的条目有进入动画。" },
+          { title: "合成器友好", detail: "只动 opacity/transform/颜色/边框/阴影，不触发布局，性能开销极低。" },
+          { title: "减弱动效", detail: "系统开启减弱动效时立即完成过渡，循环动画全部停用。" },
+        ],
+        note: {
+          tone: "info",
+          title: "深入阅读",
+          body: "动效的完整时序参数和无障碍行为见「动效与无障碍」一文。",
+        },
+      },
+      {
         id: "hover-preview",
         title: "悬停预览",
         body: [
@@ -379,7 +465,7 @@ export const docArticles: DocArticle[] = [
         ],
       },
     ],
-    related: ["first-task", "shortcuts"],
+    related: ["first-task", "shortcuts", "motion-accessibility"],
   },
   {
     id: "projects-sessions",
@@ -388,7 +474,7 @@ export const docArticles: DocArticle[] = [
     summary: "创建、切换和关闭会话，使用项目分组组织工作，导出会话记录用于备份或迁移。",
     icon: "folders",
     readTime: "12 分钟",
-    updated: "2026-08-19",
+    updated: "2026-08-28",
     keywords: ["会话", "项目", "创建", "切换", "删除", "导出", "未分组", "标签页", "搜索"],
     sections: [
       {
@@ -490,7 +576,7 @@ export const docArticles: DocArticle[] = [
     summary: "Plan 模式只读分析并输出执行计划，Build 模式使用全部工具执行修改，理解两种模式的能力边界与切换方式。",
     icon: "plan",
     readTime: "12 分钟",
-    updated: "2026-08-19",
+    updated: "2026-08-28",
     keywords: ["Plan", "Build", "计划模式", "只读", "READY TO EXECUTE", "执行模式", "模式切换", "Ctrl+Shift+P"],
     sections: [
       {
@@ -498,7 +584,7 @@ export const docArticles: DocArticle[] = [
         title: "Plan 模式：只读分析与计划生成",
         body: [
           "Plan 模式是工具层面的只读限制，而非提示词约定。进入 Plan 模式后，Agent 只能调用只读工具，无法写入文件、执行命令或访问外部 URL。系统提示词明确要求 Agent 分析需求并输出有序执行计划，计划末尾用 \"READY TO EXECUTE\" 标记表示准备就绪。",
-          "Plan 模式下可用的工具包括：read_file（读取文件）、search_files（文件名搜索）、search_content（内容搜索）、search_symbol（符号定位）、list_files（目录树）、git_status / git_diff / git_log（Git 只读操作）。web_fetch 和记忆工具不进入 Plan 模式。",
+          "Plan 模式下可用的工具包括：read_file（读取文件）、search_files（文件名搜索）、search_content（内容搜索）、search_symbol（符号定位）、list_files（目录树）、git_status / git_diff / git_log（Git 只读操作）。web_fetch、记忆工具和子代理调度不进入 Plan 模式。",
         ],
         bullets: [
           { title: "只读工具集", detail: "read_file、search_files、search_content、search_symbol、list_files 以及三个 Git 只读工具。" },
@@ -568,7 +654,7 @@ export const docArticles: DocArticle[] = [
           { title: "审核计划", detail: "检查每一步的理由、涉及文件和验证方法，必要时要求补充或调整。" },
           { title: "切换到 Build", detail: "确认计划后按 Ctrl+Shift+P 切到 Build 模式，Agent 开始按计划执行。" },
           { title: "审批执行", detail: "执行中通过审批顶部条逐个确认文件修改和命令执行。" },
-          { title: "核对交付", detail: "根据工作区检查器的步骤状态和交付物列表判断是否完成。" },
+          { title: "核对交付", detail: "根据工作区检查器的步骤状态、任务门禁和交付物列表判断是否完成。" },
         ],
         note: {
           tone: "success",
@@ -583,11 +669,11 @@ export const docArticles: DocArticle[] = [
     id: "workspace-inspector",
     group: "核心工作流",
     title: "工作区检查器",
-    summary: "右侧面板集中展示任务目标、执行进度、上下文使用、子代理状态、交付物、记忆注入和文件树。",
+    summary: "右侧面板集中展示任务目标、执行进度、上下文使用、Context Hub 检查点与门禁、子代理状态、交付物、记忆注入和文件树。",
     icon: "workspace",
-    readTime: "11 分钟",
-    updated: "2026-08-19",
-    keywords: ["工作区", "检查器", "目标", "进度", "上下文", "子代理", "交付物", "记忆注入", "文件树", "步骤状态"],
+    readTime: "12 分钟",
+    updated: "2026-08-28",
+    keywords: ["工作区", "检查器", "目标", "进度", "上下文", "Context Hub", "检查点", "任务门禁", "子代理", "交付物", "记忆注入", "文件树", "步骤状态"],
     sections: [
       {
         id: "goal-section",
@@ -613,7 +699,7 @@ export const docArticles: DocArticle[] = [
         table: {
           headers: ["元素", "说明"],
           rows: [
-            ["进度条", "可视化百分比，role=\"progressbar\"，支持 aria-valuenow"],
+            ["进度条", "可视化百分比，role=\"progressbar\"，支持 aria-valuenow；填充使用 scaleX transform 动画（220ms）"],
             ["百分比文本", "如 50%，紧跟进度条右侧"],
             ["摘要文本", "Plan 模式显示「步骤 N / M」，普通模式显示「已完成 N / M 项操作」"],
             ["当前操作", "显示当前正在执行的工具名称"],
@@ -625,7 +711,7 @@ export const docArticles: DocArticle[] = [
         title: "上下文区：Token 使用与工具调用统计",
         body: [
           "上下文区追踪当前会话的 Token 消耗和工具调用情况。顶部显示上下文使用率（promptTokens / contextWindow），超过 80% 时进度条变为警告色。",
-          "下方显示输入/输出 Token 数、各工具的调用次数分布（带可视化条形图），以及最近调用的成功/失败状态和耗时。当消息被压缩时，还会显示已压缩的消息条数。",
+          "下方显示输入/输出 Token 数（provider 未上报时标注「估算」）、各工具的调用次数分布（带可视化条形图），以及最近调用的成功/失败状态和耗时。当消息被压缩时，还会显示已压缩的消息条数。",
         ],
         table: {
           headers: ["指标", "说明"],
@@ -648,7 +734,7 @@ export const docArticles: DocArticle[] = [
         title: "Context Hub：检查点与任务门禁",
         body: [
           "v0.9.2 引入 Context Hub 统一管理会话上下文：修订号追踪、上下文检查点和任务门禁。上下文区底部展示当前检查点与任务门禁状态。",
-          "上下文检查点记录当前任务目标与创建时间。点击「创建当前检查点」可以把当前工作上下文固化为检查点，后续任务以它为验证依据。上下文发生过期变化（证据失效）时，会显示未验证警告。",
+          "上下文检查点记录当前任务目标与创建时间。点击「创建当前检查点」可以把当前工作上下文固化为检查点，后续任务以它为验证依据。上下文发生过期变化（证据失效）时，会显示未验证警告并列出涉及的文件或证据条目。",
           "任务门禁在任务交付前评估上下文是否完备：就绪时显示「任务可完成」（role=status），存在阻塞因素时显示「任务阻塞」（role=alert）并列出阻塞原因，例如缺少目标、验证证据过期或上下文修订不一致。",
         ],
         table: {
@@ -656,8 +742,9 @@ export const docArticles: DocArticle[] = [
           rows: [
             ["修订号", "每次上下文事件递增，用于跟踪上下文版本与过期检测"],
             ["上下文检查点", "记录目标与创建时间，可一键创建当前检查点"],
-            ["过期证据", "上下文失效时列出证据条目并提示未验证"],
-            ["任务门禁", "就绪（status）/ 阻塞（alert），阻塞时列出原因"],
+            ["未验证警告", "文件被修改后，检查点下的相关证据显示未验证并列出文件"],
+            ["过期证据", "上下文失效时列出证据条目并提示过期"],
+            ["任务门禁", "就绪显示「任务可完成」（status），阻塞显示「任务阻塞」（alert）并列出原因"],
           ],
         },
       },
@@ -665,7 +752,7 @@ export const docArticles: DocArticle[] = [
         id: "subagents-section",
         title: "子代理区：并行任务状态",
         body: [
-          "当 Agent 使用 dispatch_subagents 工具分发子任务时，子代理区会显示每个子代理的状态卡片。没有子代理时此区域不显示。子代理由会话级协调器管理，每个会话独立跟踪。",
+          "当 Agent 使用 dispatch_subagents 工具分发子任务时，子代理区会显示每个子代理的状态卡片。没有子代理时此区域不显示。子代理由会话级协调器管理，每个会话独立跟踪、跨会话互不覆盖。",
           "每个子代理卡片显示 ID、角色徽标（研究/构建/验证）、任务描述、状态徽标（排队/执行中/完成/失败）、最近使用的工具和执行耗时。点击卡片可展开查看子代理的汇总报告。",
         ],
         table: {
@@ -722,17 +809,17 @@ export const docArticles: DocArticle[] = [
         ],
       },
     ],
-    related: ["plan-build", "tools", "shortcuts"],
+    related: ["plan-build", "tools", "motion-accessibility"],
   },
   {
     id: "tools",
     group: "核心工作流",
     title: "工具集",
-    summary: "完整参考 Agent 可用的 12 类工具：文件操作、搜索、Shell 命令、Git、Web 抓取、记忆和子代理调度。",
+    summary: "完整参考 Agent 可用的 12 类工具：文件操作、搜索、Shell 命令、Git、Web 抓取、记忆、子代理调度与任务完成标记。",
     icon: "tools",
     readTime: "16 分钟",
-    updated: "2026-08-19",
-    keywords: ["工具", "read_file", "write_file", "edit_file", "run_command", "search_files", "search_content", "search_symbol", "list_files", "git", "web_fetch", "memory", "dispatch_subagents"],
+    updated: "2026-08-28",
+    keywords: ["工具", "read_file", "write_file", "edit_file", "run_command", "search_files", "search_content", "search_symbol", "list_files", "git", "web_fetch", "memory", "dispatch_subagents", "task_complete", "fileScopes"],
     sections: [
       {
         id: "file-operations",
@@ -762,7 +849,7 @@ export const docArticles: DocArticle[] = [
         id: "search-tools",
         title: "搜索：search_files / search_content / search_symbol",
         body: [
-          "三个搜索工具分别用于文件名搜索、内容搜索和代码符号定位。它们自动忽略 node_modules、.git、dist、build、release 目录。",
+          "三个搜索工具分别用于文件名搜索、内容搜索和代码符号定位。它们自动忽略 node_modules、.git、dist、build、release 目录，各自最多返回 200 条结果。",
         ],
         table: {
           headers: ["工具", "功能", "关键参数"],
@@ -774,7 +861,7 @@ export const docArticles: DocArticle[] = [
         },
         bullets: [
           { title: "search_files", detail: "仅匹配文件名，不搜索内容。最多返回 200 条结果。" },
-          { title: "search_content", detail: "类似 grep，返回匹配行和行号。最多 200 条匹配，跳过 >10MB 文件。支持正则（regex=true）。" },
+          { title: "search_content", detail: "类似 grep，返回匹配行和行号。最多 200 条匹配，自动跳过超过 10MB 的大文件。支持正则（regex=true）。" },
           { title: "search_symbol", detail: "匹配 function/const/class/def/func/interface/enum/type/import/赋值等定义模式。默认搜索 TS/JS/Py/Swift/Go/Rs/Java 文件，返回匹配行及上下文。" },
         ],
       },
@@ -866,6 +953,18 @@ export const docArticles: DocArticle[] = [
         ],
       },
       {
+        id: "task-complete",
+        title: "任务完成标记：task_complete",
+        body: [
+          "task_complete 是任务的收尾工具：当 Agent 认为任务已完成时调用，可选提供完成摘要（做了什么、改了哪些文件、测试结果如何）。调用后 Agent 结束执行循环。",
+          "task_complete 不是文件操作，不会改变任何状态，主要用于向工作区检查器同步「任务已完成」的信号。",
+        ],
+        code: {
+          label: "调用示例",
+          content: "task_complete(summary=\"已修复登录 500 错误：更新 src/auth/login.ts 的异常处理，相关测试通过。\")",
+        },
+      },
+      {
         id: "plan-mode-tools",
         title: "Plan 模式的工具子集",
         body: [
@@ -886,18 +985,18 @@ export const docArticles: DocArticle[] = [
     id: "models",
     group: "入门",
     title: "模型配置",
-    summary: "了解内置模型预设、自定义端点、上下文窗口选项和模型切换。",
+    summary: "了解 7 个内置模型预设、Responses / Anthropic 双协议、上下文窗口与模型参数、协议徽章与模型切换。",
     icon: "models",
-    readTime: "10 分钟",
-    updated: "2026-08-19",
-    keywords: ["模型", "预设", "GLM", "DeepSeek", "Kimi", "MiniMax", "自定义", "协议", "Responses", "Anthropic", "Messages", "上下文窗口", "256K", "512K", "1M"],
+    readTime: "13 分钟",
+    updated: "2026-08-28",
+    keywords: ["模型", "预设", "GLM", "DeepSeek", "Qwen", "Kimi", "MiniMax", "自定义", "协议", "Responses", "Anthropic", "Messages", "协议徽章", "验证", "上下文窗口", "256K", "512K", "1M", "压缩"],
     sections: [
       {
         id: "presets",
         title: "内置模型预设",
         body: [
           "Stellara Work v0.9.2 内置七个中文模型预设和一个自定义槽位。预设会自动填充 Base URL 和模型名称，你只需填写 API Key 即可使用。",
-          "内置预设统一使用 Responses API 协议（POST {baseUrl}/responses），无旧版 Chat Completions 回退。设置页的模型卡片会显示协议徽章（Responses / Anthropic），连接测试通过后标记为已验证。",
+          "v0.9.2 起，内置预设统一使用 Responses API 协议（POST {baseUrl}/responses），没有旧协议的兼容回退。设置页的模型卡片会显示协议徽章（Responses / Anthropic）与验证状态：连接测试通过后标记为「已验证」，尚未验证的显示「未验证」，当前服务不支持该协议的显示「不兼容」并禁止执行。",
           "预设只是配置模板，不包含任何密钥。服务商可能调整模型可用性，最终以你的账号权限和连接测试结果为准。",
         ],
         table: {
@@ -913,14 +1012,19 @@ export const docArticles: DocArticle[] = [
             ["自定义模型", "任意", "手动填写", "手动填写"],
           ],
         },
+        bullets: [
+          { title: "协议徽章", detail: "模型卡片显示协议类型（Responses / Anthropic）与验证状态（已验证 / 未验证 / 不兼容）。" },
+          { title: "已验证预设", detail: "DeepSeek-V4-Pro 与 DeepSeek-V4-Flash 已完成 Responses 协议验证，开箱即用。" },
+          { title: "待验证预设", detail: "其余预设需要你的账号开通对应服务并通过连接测试后，才会标记为已验证并可执行。" },
+        ],
       },
       {
         id: "custom-endpoint",
         title: "自定义模型与 API 协议",
         body: [
           "选择「自定义模型」可以接入任意模型服务。v0.9.2 支持两种 API 协议：Responses API（默认）与 Anthropic Messages。",
-          "协议选择：Base URL 路径包含 `/v1/messages` 或 `/anthropic` 时自动识别为 Anthropic Messages；其余地址统一使用 Responses API（`POST {baseUrl}/responses`）。应用绝不回退到 Chat Completions。你也可以在自定义模型配置里显式指定协议。",
-          "Anthropic Messages 端点会走完整的 Agent 工具循环：写入（POST {baseUrl}/v1/messages）、工具调用与结果回传均按 Anthropic 格式进行。端点必须支持流式输出（SSE），否则无法正常显示生成结果。",
+          "协议选择：Base URL 路径包含 `/v1/messages` 或 `/anthropic` 时自动识别为 Anthropic Messages（POST {baseUrl}/v1/messages）；其余地址统一使用 Responses API（POST {baseUrl}/responses）。应用绝不回退到 Chat Completions。你也可以在自定义模型配置的「接口协议」下拉框中显式指定协议。",
+          "Anthropic Messages 端点会走完整的 Agent 工具循环：消息写入、工具调用与结果回传均按 Anthropic 格式进行。端点必须支持流式输出（SSE），否则无法正常显示生成结果。",
         ],
         code: {
           label: "自定义配置示例（Anthropic Messages）",
@@ -929,28 +1033,55 @@ export const docArticles: DocArticle[] = [
         note: {
           tone: "info",
           title: "本地模型",
-          body: "如果使用 Ollama 等本地服务，Base URL 通常为 http://localhost:11434/v1。请确认本地服务已启动且模型已下载。Ollama 的 /v1 端点按 Responses 协议访问即可。",
+          body: "如果使用 Ollama 等本地服务，Base URL 通常为 http://localhost:11434/v1。请确认本地服务已启动且模型已下载。该地址不含 /v1/messages 或 /anthropic，会按 Responses 协议访问。",
         },
       },
       {
         id: "context-window",
-        title: "上下文窗口选项",
+        title: "上下文窗口与自动压缩",
         body: [
-          "每个模型配置可选择上下文窗口大小。上下文窗口决定了单次请求可以携带多少历史消息和文件内容。窗口越大，Agent 能参考的信息越多，但成本和延迟也会增加。",
-          "这里的值用于应用侧预算管理，不会提升服务商实际支持的模型上限。应选择不超过模型真实能力的值。",
+          "每个模型配置可选择 256K、512K 或 1M token 的上下文窗口，默认 256K。这里的值用于应用侧预算管理，不会提升服务商实际支持的模型上限；应选择不超过模型真实能力的值。",
+          "当消息累积的 token 数超过窗口大小的 90% 时，应用自动触发压缩：把最早一批消息交给 LLM 生成摘要，保留 system 消息和最近 12 轮对话（user-assistant 对算 1 轮，tool 消息绑到所属 assistant 轮次一起保留）。压缩后的历史无法在界面上查看原始完整内容。",
         ],
         table: {
-          headers: ["选项", "Token 数", "适合场景"],
+          headers: ["选项", "Token 数", "压缩阈值（90%）", "适合场景"],
           rows: [
-            ["256K（默认）", "256,000", "一般代码库、常规任务，最稳妥的选择"],
-            ["512K", "512,000", "较长会话、需要更多文件上下文时"],
-            ["1M", "1,000,000", "超长上下文模型和大型调查任务"],
+            ["256K（默认）", "256,000", "230,400", "一般代码库、常规任务，最稳妥的选择"],
+            ["512K", "512,000", "460,800", "较长会话、需要更多文件上下文时"],
+            ["1M", "1,000,000", "900,000", "超长上下文模型和大型调查任务"],
           ],
         },
         bullets: [
           { title: "默认值", detail: "新建模型配置时默认选择 256K。" },
-          { title: "压缩阈值", detail: "当上下文使用量达到窗口大小的 90% 时，应用会自动压缩较早的历史消息为摘要。" },
+          { title: "压缩保留", detail: "压缩保留 system 消息与最近 12 轮对话，更早的消息摘要化；摘要长度控制在 800 字以内。" },
+          { title: "压缩兜底", detail: "摘要生成失败（网络错误、空内容等）时跳过本次压缩、保留原始消息，下一轮再判定，不会破坏 Agent 流程。" },
+          { title: "Token 估算", detail: "使用 tiktoken（cl100k_base 编码）估算，加载失败时回退到字符数/4 的粗估方式。" },
+          { title: "使用追踪", detail: "工作区检查器的上下文区实时显示使用率与压缩计数，超过 80% 显示警告色。" },
           { title: "注意事项", detail: "选择超过模型实际能力的窗口值会导致请求失败（413 错误）。" },
+        ],
+        note: {
+          tone: "warning",
+          title: "需要精确保留的内容",
+          body: "压缩只保留任务要点而非逐字完整历史。对必须精确保留的错误文本或验收条件，建议放在当前消息中重新明确。",
+        },
+      },
+      {
+        id: "model-parameters",
+        title: "模型参数：输出上限与推理强度",
+        body: [
+          "除上下文窗口外，每个模型配置还包含最大输出 token（maxOutputTokens）与推理强度（reasoningEffort）两项参数，在服务商支持时生效。",
+        ],
+        table: {
+          headers: ["参数", "可选值", "说明"],
+          rows: [
+            ["上下文窗口", "256K / 512K / 1M", "应用侧预算管理，默认 256K"],
+            ["maxOutputTokens", "如 16384 / 65536", "单次回复的最大输出 token 数"],
+            ["reasoningEffort", "low / medium / high", "推理强度，影响思考深度、质量与延迟"],
+          ],
+        },
+        bullets: [
+          { title: "预设默认值", detail: "内置预设自带合理的默认值（如 DeepSeek 预设 maxOutputTokens 为 16384）。" },
+          { title: "自定义模型", detail: "自定义模型可按需填写；服务商不支持时参数会被忽略。" },
         ],
       },
       {
@@ -958,12 +1089,12 @@ export const docArticles: DocArticle[] = [
         title: "模型切换",
         body: [
           "你可以在会话中随时切换已配置的模型。切换后立即生效，新模型从切换后的消息开始参与对话，不会重新发送之前的上下文。",
-          "活跃模型决定新会话使用的默认配置。可以通过设置面板、聊天区顶部或命令面板（Ctrl+K）切换模型。",
+          "活跃模型决定新会话使用的默认配置。可以通过设置面板、聊天区顶部、顶部标题栏或命令面板（Ctrl+K）切换模型。",
         ],
         steps: [
           { title: "通过设置切换", detail: "打开设置 → 模型，在模型卡片中点击「设为活跃」。" },
           { title: "通过命令面板切换", detail: "按 Ctrl+K，搜索「切换模型」，选择目标模型。" },
-          { title: "在聊天区切换", detail: "点击输入框上方的模型名称，从下拉列表中选择。" },
+          { title: "在聊天区或标题栏切换", detail: "点击输入框上方或顶部标题栏的模型名称，从下拉列表中选择。" },
         ],
         note: {
           tone: "warning",
@@ -972,143 +1103,17 @@ export const docArticles: DocArticle[] = [
         },
       },
     ],
-    related: ["install-setup", "first-task"],
-  },
-  {
-    id: "context-window",
-    group: "扩展能力",
-    title: "上下文窗口与压缩",
-    summary: "选择 256K、512K 或 1M 上下文窗口，理解 90% 压缩阈值和上下文使用追踪机制。",
-    icon: "context",
-    readTime: "12 分钟",
-    updated: "2026-08-19",
-    keywords: ["上下文窗口", "256K", "512K", "1M", "压缩", "90%", "阈值", "token", "摘要", "tiktoken", "长会话"],
-    sections: [
-      {
-        id: "window-options",
-        title: "窗口选项：256K、512K 或 1M",
-        body: [
-          "每个模型配置可选择 256K、512K 或 1M token 的上下文窗口，默认值为 256K。这里的值用于应用侧预算管理，不会提升服务商实际支持的模型上限；应选择不超过模型真实能力的值。",
-          "上下文窗口大小直接影响每次请求可以携带多少历史消息和文件内容。窗口越大，Agent 能参考的信息越多，但成本和延迟也会相应增加。选择超过模型实际能力的窗口值会导致请求失败（413 错误）。",
-        ],
-        table: {
-          headers: ["选项", "Token 数", "适合场景"],
-          rows: [
-            ["256K（默认）", "256,000", "一般代码库、常规任务，最稳妥的选择"],
-            ["512K", "512,000", "较长会话、需要更多文件上下文时"],
-            ["1M", "1,000,000", "超长上下文模型和大型调查任务"],
-          ],
-        },
-        bullets: [
-          { title: "默认值", detail: "新建模型配置时默认选择 256K。" },
-          { title: "自定义值", detail: "代码中预设了三个档位，不在列表中的值也算合法但没有预设档位。" },
-          { title: "注意事项", detail: "选择超过模型实际能力的窗口值会导致请求失败（413 错误）。" },
-        ],
-        note: {
-          tone: "info",
-          title: "窗口值来源",
-          body: "上下文窗口选项定义在 shared/context-window.ts 中，主进程和渲染进程共享同一份配置。",
-        },
-      },
-      {
-        id: "compression-threshold",
-        title: "90% 压缩阈值",
-        body: [
-          "默认压缩阈值等于所选上下文窗口大小的 90%。例如，256K 窗口的压缩阈值为 230,400 token（256,000 × 0.9），512K 窗口为 460,800 token，1M 窗口为 900,000 token。",
-          "当消息累积的 token 数超过阈值时，应用会自动触发压缩。压缩将最早一批消息交给 LLM 生成摘要，保留 system 消息和最近 12 轮对话（user-assistant 对算 1 轮）。",
-        ],
-        table: {
-          headers: ["窗口大小", "压缩阈值（90%）", "保留轮次"],
-          rows: [
-            ["256K", "230,400 token", "12 轮"],
-            ["512K", "460,800 token", "12 轮"],
-            ["1M", "900,000 token", "12 轮"],
-          ],
-        },
-        steps: [
-          { title: "Token 估算", detail: "使用 tiktoken（cl100k_base 编码）估算消息总 token 数。tiktoken 加载失败时回退到字符数/4 的粗估方式。" },
-          { title: "阈值判定", detail: "每次 LLM 调用前检查当前 token 数是否超过阈值。未超过则跳过压缩。" },
-          { title: "确定压缩范围", detail: "从消息数组尾部向前数 12 轮 user-assistant 对，确定保留边界。tool 消息绑到所属 assistant 轮次一起保留。" },
-          { title: "生成摘要", detail: "将压缩范围内的消息格式化为纯文本，交给 LLM 生成 800 字以内的中文摘要。" },
-          { title: "替换消息", detail: "用摘要消息替换被压缩的消息。新数组 = system 消息 + 摘要消息 + 最近 12 轮对话。" },
-        ],
-        note: {
-          tone: "warning",
-          title: "压缩失败兜底",
-          body: "如果摘要生成失败（网络错误、模型返回空内容等），应用会跳过本次压缩，保留原始消息，下一轮再判定。不会破坏 agent 流程。",
-        },
-      },
-      {
-        id: "context-tracking",
-        title: "上下文使用追踪",
-        body: [
-          "工作区检查器的上下文区实时追踪当前会话的 Token 消耗。顶部显示上下文使用率（promptTokens / contextWindow），超过 80% 时进度条变为警告色。",
-          "Token 估算使用 tiktoken 库的 cl100k_base 编码，对中英文都有准确的计算。每条消息额外计算 4 个 token 的 metadata 开销（OpenAI 标准），对话起始额外 2 个 token。",
-        ],
-        table: {
-          headers: ["指标", "说明"],
-          rows: [
-            ["上下文使用率", "promptTokens / contextWindow，超过 80% 显示警告色"],
-            ["输入 / 输出 Token", "以 K 为单位显示（如 45.2K），provider 未上报时标注「估算」"],
-            ["工具调用分布", "按调用次数降序排列，每行显示工具中文名、条形图和次数"],
-            ["压缩计数", "已压缩的消息条数，长会话中自动触发时显示"],
-          ],
-        },
-        bullets: [
-          { title: "估算精度", detail: "tiktoken 的 cl100k_base 编码对 GPT-4、DeepSeek、GLM 等模型的 token 计算都兼容。" },
-          { title: "回退机制", detail: "tiktoken 加载失败时回退到字符数/4 的粗估方式，控制台会输出警告信息。" },
-          { title: "实时性", detail: "每次 LLM 调用后更新 token 统计，工作区检查器实时反映最新状态。" },
-        ],
-        code: {
-          label: "压缩配置生成逻辑",
-          content: "// 按模型 contextWindow 生成压缩配置\nfunction compressionForContextWindow(contextWindow) {\n  if (!contextWindow || contextWindow <= 0) return {};\n  return { thresholdTokens: Math.floor(contextWindow * 0.9) };\n}\n\n// 示例：256K 窗口 → thresholdTokens = 230400\n// 示例：512K 窗口 → thresholdTokens = 460800",
-        },
-      },
-      {
-        id: "compression-details",
-        title: "压缩算法细节",
-        body: [
-          "压缩过程保留 system 消息（始终在最前）和最近 12 轮对话。中间的早期消息被替换为一条摘要消息，格式为 `[conversation summary — N messages compressed]` 加上摘要正文。",
-          "摘要由 LLM 生成，使用专门的系统提示词引导。提示词要求保留：用户的关键需求和约束、已完成的工作、重要的失败与排除过程、助手当前进展与下一步计划。摘要长度控制在 800 字以内，使用第三人称叙述。",
-        ],
-        checklist: [
-          "压缩是自动的，不需要手动触发",
-          "压缩后的历史消息被替换为摘要版本，无法在界面上看到原始完整历史",
-          "压缩保留任务要点而非逐字完整历史",
-          "对必须精确保留的错误文本或验收条件，建议放在当前消息中重新明确",
-          "压缩只保留最近 12 轮对话，更早的消息会被摘要化",
-        ],
-      },
-      {
-        id: "token-optimization",
-        title: "Token 消耗优化",
-        body: [
-          "一个中文字大约占用 1-2 个 token，一个英文单词大约占用 1 个 token。代码中的标识符、注释和字符串都会消耗 token。工具调用的结果（如文件内容、命令输出）也会占用上下文窗口。",
-        ],
-        bullets: [
-          { title: "优化读取范围", detail: "用 search_content 先定位，再用 read_file 的 offset/limit 精确读取需要的行范围。" },
-          { title: "分段处理", detail: "大任务拆分为多个子任务，每个子任务在新会话中执行，避免单个会话上下文膨胀。" },
-          { title: "清理输出", detail: "命令输出过长时，要求 Agent 只关注关键行或使用 grep 过滤。" },
-          { title: "避免大文件", detail: "避免一次读取大量生成文件、锁文件或日志文件。" },
-        ],
-        note: {
-          tone: "success",
-          title: "自动管理",
-          body: "上下文压缩是全自动的。你只需要选择合适的窗口大小，应用会在接近阈值时自动压缩历史消息，确保对话可以持续进行。",
-        },
-      },
-    ],
-    related: ["models", "workspace-inspector", "troubleshooting"],
+    related: ["install-setup", "first-task", "workspace-inspector"],
   },
   {
     id: "app-settings",
     group: "设置与数据",
     title: "应用内设置面板",
-    summary: "了解设置面板的 5 个页签：模型、会话、应用、技能与 MCP、快捷键，掌握各项配置的操作方式。",
+    summary: "了解设置面板的 5 个页签：模型、会话、应用、技能与 MCP、快捷键，掌握协议徽章、主题工作台与各项配置的操作方式。",
     icon: "settings",
     readTime: "14 分钟",
-    updated: "2026-08-19",
-    keywords: ["设置", "模型", "会话", "应用", "快捷键", "Skills", "MCP", "主题", "诊断", "清空数据"],
+    updated: "2026-08-28",
+    keywords: ["设置", "模型", "会话", "应用", "快捷键", "Skills", "MCP", "主题", "协议徽章", "诊断", "清空数据"],
     sections: [
       {
         id: "settings-tabs",
@@ -1120,7 +1125,7 @@ export const docArticles: DocArticle[] = [
         table: {
           headers: ["页签", "功能", "主要内容"],
           rows: [
-            ["模型", "管理 API 提供商与模型连接", "添加模型、切换活跃模型、编辑 API Key、删除模型"],
+            ["模型", "管理 API 提供商与模型连接", "添加模型、协议与验证状态、切换活跃模型、编辑 API Key、删除模型"],
             ["会话", "管理本地会话记录", "查看会话列表、删除单个会话、清空所有会话"],
             ["应用", "界面偏好与数据管理", "主题、工作区模式、数据目录、日志、诊断信息、危险区"],
             ["技能与 MCP", "项目技能与 MCP 服务器", "技能管理（新建/编辑/删除/启用）、MCP 服务器配置"],
@@ -1130,18 +1135,19 @@ export const docArticles: DocArticle[] = [
         note: {
           tone: "info",
           title: "打开设置",
-          body: "使用 Ctrl+K 打开命令面板，搜索「打开设置」即可进入。设置面板也支持从侧栏导航的「设置」入口打开。",
+          body: "使用 Ctrl+K 打开命令面板，搜索「打开设置」即可进入。设置面板也支持从侧栏导航的「设置」入口或顶部标题栏的菜单打开。",
         },
       },
       {
         id: "models-panel",
         title: "模型设置",
         body: [
-          "模型页签用于管理所有已配置的 API 提供商和模型连接。顶部显示当前活跃模型的信息（名称、Base URL、上下文窗口大小、Key 配置状态），下方是完整的模型列表。",
+          "模型页签用于管理所有已配置的 API 提供商和模型连接。顶部显示当前活跃模型的信息（名称、Base URL、协议、上下文窗口大小、Key 配置状态），下方是完整的模型列表。",
           "每个模型配置独立保存 API Key。你可以为同一个服务商创建多个配置（使用不同的 Key 或模型），并在会话中根据需要切换。删除模型时，对应的 API Key 也会从本地密钥存储中移除。",
         ],
         steps: [
-          { title: "添加模型", detail: "点击右上角「添加模型」按钮，从预设（GLM-5.2、DeepSeek-v4-Pro、Kimi-K3、MiniMax-M3）或自定义模型中选择。填写 API Key 后点击「保存」，应用会自动测试连接。" },
+          { title: "添加模型", detail: "点击右上角「添加模型」按钮，从预设（DeepSeek-V4-Pro、DeepSeek-V4-Flash、Qwen3.8-Max、GLM-5.3、GLM-5.2、Kimi-K3、MiniMax-M3）或自定义模型中选择。自定义模型可在「接口协议」中选择 Responses API 或 Anthropic Messages API。填写 API Key 后点击「保存」，应用会自动测试连接。" },
+          { title: "查看协议徽章", detail: "每个模型卡片显示协议徽章（Responses / Anthropic）与验证状态（已验证 / 未验证 / 不兼容），以及上下文窗口和 Key 配置状态。" },
           { title: "切换活跃模型", detail: "在活跃模型区域点击「切换」，从列表中选择目标模型。切换后立即生效，新模型从切换后的消息开始参与对话。" },
           { title: "编辑 API Key", detail: "在模型列表中点击编辑图标，输入新的 API Key 后保存。Key 会加密存储。" },
           { title: "删除模型", detail: "在模型列表或危险区点击删除按钮，确认后模型配置和对应的 Key 会被永久移除。" },
@@ -1149,7 +1155,7 @@ export const docArticles: DocArticle[] = [
         table: {
           headers: ["操作", "说明"],
           rows: [
-            ["添加模型", "选择预设或自定义，填写 API Key，自动测试连接"],
+            ["添加模型", "选择预设或自定义，选择协议，填写 API Key，自动测试连接"],
             ["设为活跃", "将选中的模型设为当前活跃模型，新会话将使用此配置"],
             ["编辑 Key", "行内编辑 API Key，加密存储"],
             ["删除", "移除模型配置和对应的 Key，不可恢复"],
@@ -1158,7 +1164,7 @@ export const docArticles: DocArticle[] = [
         note: {
           tone: "warning",
           title: "连接测试",
-          body: "添加模型时会自动测试连接。测试不通过时配置不会写入，请检查 API Key、Base URL 和网络连接。",
+          body: "添加模型时会自动测试连接。测试不通过时配置不会写入，请检查 API Key、Base URL、协议类型和网络连接。",
         },
       },
       {
@@ -1189,7 +1195,7 @@ export const docArticles: DocArticle[] = [
         table: {
           headers: ["设置项", "选项", "说明"],
           rows: [
-            ["主题", "浅色 / 深色 / 跟随系统", "控制应用的深浅色外观"],
+            ["主题", "浅色 / 深色 / 跟随系统", "控制应用的深浅色外观，立即生效"],
             ["工作区模式", "侧栏 / 标签页", "主界面右侧面板的呈现方式"],
             ["数据目录", "打开按钮", "在文件管理器中打开数据目录"],
             ["日志", "查看按钮", "打开主进程日志文件"],
@@ -1305,7 +1311,7 @@ export const docArticles: DocArticle[] = [
     summary: "通过工作目录下的 JSON 或 Markdown 文件为 Agent 添加可复用的自定义指令和工作流模板。",
     icon: "skills",
     readTime: "14 分钟",
-    updated: "2026-08-19",
+    updated: "2026-08-28",
     keywords: ["Skills", "skill", "JSON", "Markdown", "prompt", "斜杠命令", "自动补全", "工作流", "模板", "skills 目录"],
     sections: [
       {
@@ -1373,19 +1379,19 @@ export const docArticles: DocArticle[] = [
         id: "load-invoke",
         title: "加载与调用",
         body: [
-          "打开设置 → Skills 可查看实际目录路径、已加载数量、加载错误和每个 Skill 的 prompt 内容。新增或修改文件后点击「重新加载」让应用从磁盘重新读取全部文件；也可点击「打开目录」在文件管理器中进入 skills 目录。",
+          "打开设置 → 技能与 MCP 可查看实际目录路径、已加载数量、加载错误和每个 Skill 的 prompt 内容。新增或修改文件后点击「重新加载」让应用从磁盘重新读取全部文件；也可点击「打开目录」在文件管理器中进入 skills 目录。",
           "Skill 被加载后，会在输入框中通过斜杠命令自动补全。输入 `/` 后跟 Skill 名称的前几个字符，会出现匹配的补全建议。Skill 也会被注入到系统提示词中，Agent 可以感知可用的 Skills 列表。",
         ],
         steps: [
           { title: "创建文件", detail: "在 `<workDir>/skills/` 中保存一个合法 JSON 或 Markdown 文件。" },
-          { title: "重新加载", detail: "在设置 → Skills 页面点击「重新加载」，让应用从磁盘重新读取全部文件。" },
+          { title: "重新加载", detail: "在设置 → 技能与 MCP 页面点击「重新加载」，让应用从磁盘重新读取全部文件。" },
           { title: "检查内容", detail: "展开卡片确认 name、description 和 prompt 已按预期解析。检查是否有加载错误提示。" },
           { title: "在聊天中调用", detail: "在输入框中输入 `/skill-name`，从自动补全列表中选择即可调用。" },
         ],
         bullets: [
           { title: "自动注入", detail: "加载的 Skills 列表会格式化后注入系统提示词，格式为 `可用技能（skills/ 目录）：- name: description`。" },
           { title: "斜杠命令", detail: "输入 `/` 触发自动补全，显示所有已加载 Skill 的名称和描述。" },
-          { title: "错误处理", detail: "无效文件不再静默跳过，而是在 Skills 页面标注「格式错误」并显示具体原因（缺少 name / 缺少 description / 缺少 prompt / 格式解析失败 / 读取失败）。" },
+          { title: "错误处理", detail: "无效文件不再静默跳过，而是在技能面板标注「格式错误」并显示具体原因（缺少 name / 缺少 description / 缺少 prompt / 格式解析失败 / 读取失败）。" },
         ],
         note: {
           tone: "success",
@@ -1449,7 +1455,7 @@ export const docArticles: DocArticle[] = [
     summary: "通过 Model Context Protocol 连接外部工具服务器，扩展 Agent 的能力边界。",
     icon: "command",
     readTime: "13 分钟",
-    updated: "2026-08-19",
+    updated: "2026-08-28",
     keywords: ["MCP", "Model Context Protocol", "服务器", "工具", "stdio", "http", "集成", "扩展", "配置"],
     sections: [
       {
@@ -1563,7 +1569,7 @@ export const docArticles: DocArticle[] = [
     summary: "审批顶部条确认敏感操作，命令白名单限制可执行范围，渲染进程沙箱隔离界面层。",
     icon: "shield",
     readTime: "13 分钟",
-    updated: "2026-08-19",
+    updated: "2026-08-28",
     keywords: ["审批", "允许这一次", "拒绝", "Esc", "超时", "白名单", "命令安全", "沙箱", "contextIsolation"],
     sections: [
       {
@@ -1678,7 +1684,7 @@ export const docArticles: DocArticle[] = [
     summary: "跨会话持久记忆系统：自动提取对话中的关键信息，注入相关记忆到上下文，并在记忆中心统一管理。",
     icon: "database",
     readTime: "12 分钟",
-    updated: "2026-08-19",
+    updated: "2026-08-28",
     keywords: ["记忆", "Memory", "跨会话", "持久记忆", "提取", "注入", "FTS5", "SQLite", "管理", "记忆中心"],
     sections: [
       {
@@ -1777,7 +1783,7 @@ export const docArticles: DocArticle[] = [
     summary: "了解数据目录结构、加密密钥存储机制，掌握备份恢复和跨平台迁移方法。",
     icon: "database",
     readTime: "14 分钟",
-    updated: "2026-08-19",
+    updated: "2026-08-28",
     keywords: ["数据目录", "备份", "恢复", "迁移", "加密", "Keychain", "DPAPI", "safeStorage", "config.json", "stellara.db"],
     sections: [
       {
@@ -1785,7 +1791,7 @@ export const docArticles: DocArticle[] = [
         title: "数据目录结构",
         body: [
           "Stellara Work 将所有用户数据（配置、会话数据库、加密密钥、日志）存储在平台标准的应用数据目录中。应用不会在用户主目录下创建隐藏文件夹。",
-          "旧版本（v0.8 及更早）使用 `~/.stellara` 目录。首次启动 v0.9.0 时，应用会自动将旧数据迁移到新的数据目录，原目录保留作为备份。",
+          "旧版本（v0.8 及更早）使用 `~/.stellara` 目录。首次启动 v0.9.x 时，应用会自动将旧数据迁移到新的数据目录，原目录保留作为备份。",
         ],
         table: {
           headers: ["平台", "数据目录路径"],
@@ -1795,9 +1801,9 @@ export const docArticles: DocArticle[] = [
           ],
         },
         bullets: [
-          { title: "config.json", detail: "应用配置文件，存储模型元数据（id、label、baseUrl、model、workDir、contextWindow）、活跃模型 ID、应用偏好（主题、工作区模式、快捷键）、MCP 服务器配置。schemaVersion 为 1。" },
+          { title: "config.json", detail: "应用配置文件，存储模型元数据（id、label、baseUrl、model、workDir、contextWindow、wireApi、maxOutputTokens、reasoningEffort）、活跃模型 ID、应用偏好（主题、工作区模式、快捷键）、MCP 服务器配置。schemaVersion 为 1。" },
           { title: "config.json.bak", detail: "配置写入时的备份文件，从旧版本迁移时自动生成。" },
-          { title: ".env", detail: "按模型 ID 存储的 API Key。Key 使用 `enc:v1:` 前缀加密存储（见下文）。文件权限设置为 0600。敏感程度：高，使用操作系统加密机制保护（enc:v1: 前缀），仅主进程可解密。" },
+          { title: ".env", detail: "按模型 ID 存储的 API Key。Key 使用 `enc:v1:` 前缀加密存储（见下文）。文件权限设置为 0600。敏感程度：高，使用操作系统加密机制保护，仅主进程可解密。" },
           { title: "stellara.db", detail: "SQLite 数据库，存储项目（projects）、会话（sessions）、消息（messages）、记忆（memories）和知识实体（knowledge_entities）。启用 WAL 模式和外键约束。" },
           { title: "stellara.db-wal / stellara.db-shm", detail: "SQLite WAL 模式的辅助文件，用于提高并发读写性能。" },
           { title: "logs/", detail: "应用运行日志目录，记录启动、模型连接、工具调用和错误信息。" },
@@ -1869,7 +1875,7 @@ export const docArticles: DocArticle[] = [
         title: "跨平台迁移",
         body: [
           "从 Windows 迁移到 macOS（或反向）时，数据目录位置不同，需要手动迁移。会话数据库（stellara.db）和配置文件（config.json）是跨平台兼容的，但加密的 API Key 需要重新配置。",
-          "旧版本（v0.8 及更早）使用 `~/.stellara` 目录。首次启动 v0.9.0 时，应用会自动检测并迁移旧数据到新位置，原目录保留作为备份。",
+          "旧版本（v0.8 及更早）使用 `~/.stellara` 目录。首次启动 v0.9.x 时，应用会自动检测并迁移旧数据到新位置，原目录保留作为备份。",
         ],
         table: {
           headers: ["迁移方向", "源路径", "目标路径"],
@@ -1933,7 +1939,7 @@ export const docArticles: DocArticle[] = [
     summary: "通过 Ctrl+K 命令面板快速执行命令，掌握 17 个默认快捷键和自定义录制方法。",
     icon: "keyboard",
     readTime: "12 分钟",
-    updated: "2026-08-19",
+    updated: "2026-08-28",
     keywords: ["命令面板", "快捷键", "Ctrl+K", "Ctrl+B", "Ctrl+Shift+P", "Ctrl+Enter", "Escape", "录制", "重置", "17 个默认快捷键"],
     sections: [
       {
@@ -2004,7 +2010,7 @@ export const docArticles: DocArticle[] = [
         id: "custom-shortcuts",
         title: "自定义快捷键",
         body: [
-          "打开设置 → 快捷键，找到目标操作并点击「录制」。按钮进入录制状态后按下新的组合键；按 Esc 会取消本次录制。每一项都可独立点击「重置」恢复默认。自定义快捷键会立即保存到本地配置文件（`~/.stellara/config.json`）。",
+          "打开设置 → 快捷键，找到目标操作并点击「录制」。按钮进入录制状态后按下新的组合键；按 Esc 会取消本次录制。每一项都可独立点击「重置」恢复默认。自定义快捷键会立即保存到本地配置文件（config.json，位于数据目录）。",
           "快捷键序列化规则：KeyboardEvent 被转换为 `Ctrl+Shift+P` 格式的字符串。单独的修饰键（Control/Shift/Alt/Meta）不会触发录制。空格键序列化为 `Space`，单字符键转为大写。",
         ],
         steps: [
@@ -2044,13 +2050,117 @@ export const docArticles: DocArticle[] = [
     related: ["interface-tour", "skills", "approvals"],
   },
   {
+    id: "motion-accessibility",
+    group: "扩展能力",
+    title: "动效与无障碍",
+    summary: "克制动效系统的设计原则、时序参数、循环动画规则，以及减弱动效偏好与无障碍行为。",
+    icon: "layout",
+    readTime: "9 分钟",
+    updated: "2026-08-28",
+    keywords: ["动效", "无障碍", "克制动效", "减弱动效", "prefers-reduced-motion", "过渡", "动画", "合成器", "焦点管理", "inert", "ARIA"],
+    sections: [
+      {
+        id: "motion-principles",
+        title: "动效设计原则",
+        body: [
+          "v0.9.2 引入的克制动效系统以「克制、可预期、合成器友好」为设计原则。界面中所有动效只作用于 opacity、transform、颜色、边框和阴影，不做布局尺寸动画，不使用 transition: all，控件也不会整体缩放。",
+          "这意味着动画永远不会引起元素跳动或布局重排，在低性能设备上也能流畅运行，并且对屏幕阅读器用户没有干扰。",
+        ],
+        bullets: [
+          { title: "合成器友好", detail: "只动 opacity/transform/颜色/边框/阴影，全部由合成器处理，不触发布局。" },
+          { title: "无布局动画", detail: "不动画 width/height/margin 等布局属性，避免内容跳动。" },
+          { title: "无 transition:all", detail: "每个动画都声明明确的属性列表，杜绝意外过渡。" },
+          { title: "无控件缩放", detail: "按钮、卡片等控件不做 scale 放大动画，状态变化通过颜色与边框表达。" },
+        ],
+      },
+      {
+        id: "motion-timings",
+        title: "动效时序",
+        body: [
+          "所有动效遵循统一的时长与位移参数。位移方向固定（进入向下 4px 或 2px，退出向上），时长按组件类型区分，整体保持在 120-220ms 之间，节奏快速而不拖沓。",
+        ],
+        table: {
+          headers: ["组件", "进入", "退出", "位移"],
+          rows: [
+            ["菜单", "180ms", "120ms", "4px"],
+            ["斜杠菜单（/）", "120ms", "120ms", "—"],
+            ["页面切换", "180ms", "120ms", "4px"],
+            ["设置面板内容", "120ms", "120ms", "2px"],
+            ["弹窗", "180ms", "140ms", "—"],
+            ["状态反馈（成功/错误/验证中）", "120ms", "120ms", "2px"],
+            ["实时条目（新消息/审批条）", "180ms", "120ms", "4px"],
+            ["进度条填充", "scaleX 220ms", "—", "—"],
+          ],
+        },
+        note: {
+          tone: "info",
+          title: "静态历史",
+          body: "历史记录是静态的：已渲染的消息、旧卡片不会在重新进入视图时播放动画。只有实时更新的条目（新消息、审批条、状态反馈、进度变化）才会播放进入动画。",
+        },
+      },
+      {
+        id: "looping-animations",
+        title: "循环动画",
+        body: [
+          "循环动画只在实际活动存在时运行：加载中的旋转（800ms 一圈）、Agent 思考时的脉冲（1200ms 一个周期）、录音时的录制指示等。没有活动时，这些动画立即停止。",
+          "窗口或页面隐藏时，所有循环动画暂停，避免后台空转消耗资源。",
+        ],
+        bullets: [
+          { title: "加载旋转", detail: "800ms 一圈，仅出现在加载进行中。" },
+          { title: "思考脉冲", detail: "1200ms 一个周期，仅出现在 Agent 正在思考时。" },
+          { title: "录音指示", detail: "录音录制期间播放，停止录音立即结束。" },
+          { title: "隐藏暂停", detail: "页面隐藏时暂停全部循环动画。" },
+        ],
+      },
+      {
+        id: "reduced-motion",
+        title: "系统减弱动效偏好",
+        body: [
+          "当操作系统开启了「减弱动效」（macOS 辅助功能 → 显示；Windows 设置 → 辅助功能 → 动画效果）时，Stellara Work 会读取 prefers-reduced-motion 偏好并立即适配：所有过渡立即完成（不播放动画），所有循环动画停用。",
+          "文档站等网页内容同样遵循该偏好：滚动定位等行为会从平滑动画切换为直接跳转。",
+        ],
+        checklist: [
+          "开启系统减弱动效后，菜单、页面、弹窗的过渡立即完成",
+          "加载旋转、思考脉冲等循环动画全部停用",
+          "页面滚动定位使用即时跳转而非平滑滚动",
+          "功能不受影响：仅视觉效果变化",
+        ],
+      },
+      {
+        id: "accessibility-behavior",
+        title: "无障碍行为",
+        body: [
+          "动效系统与无障碍机制协同设计，确保所有状态变化在动画播放期间也可被辅助技术即时感知。",
+          "关闭过渡开始前，焦点会先恢复到关闭前的元素，避免焦点落入正在退场的节点；退场节点会被标记为 inert，不再参与 Tab 顺序和屏幕阅读器朗读。",
+        ],
+        table: {
+          headers: ["场景", "ARIA 语义", "说明"],
+          rows: [
+            ["审批条", "role=alertdialog", "可聚焦、可键盘操作，Esc 拒绝"],
+            ["错误反馈", "role=alert", "即时广播，不等动画结束"],
+            ["成功/就绪", "role=status", "如「任务可完成」即时广播"],
+            ["验证中", "role=status", "进度反馈即时广播"],
+            ["退场节点", "inert", "过渡期间不再参与交互与朗读"],
+            ["焦点恢复", "过渡前恢复", "关闭弹窗/菜单前焦点回到触发元素"],
+          ],
+        },
+        bullets: [
+          { title: "ARIA 状态即时", detail: "alert/status/alertdialog 语义在状态变化时立即生效，不等待动画完成。" },
+          { title: "焦点管理", detail: "焦点在关闭过渡前恢复，离场节点 inert 化，键盘与读屏用户不受动画影响。" },
+          { title: "键盘可达", detail: "弹窗、菜单、审批条全部支持键盘操作，动效不改变交互路径。" },
+        ],
+      },
+    ],
+    related: ["interface-tour", "app-settings", "workspace-inspector"],
+  },
+  {
     id: "troubleshooting",
     group: "设置与数据",
     title: "故障排查",
     summary: "按错误类型快速定位模型连接、工具执行、数据目录和 macOS 特定问题。",
     icon: "lifebuoy",
     readTime: "16 分钟",
-    updated: "2026-08-19",
+    updated: "2026-08-28",
     keywords: ["故障排查", "错误", "401", "403", "404", "429", "5xx", "网络", "Keychain", "Gatekeeper", "日志", "诊断"],
     sections: [
       {
@@ -2075,7 +2185,7 @@ export const docArticles: DocArticle[] = [
         },
         steps: [
           { title: "检查 API Key", detail: "在设置 → 模型中确认 Key 是否正确配置。点击编辑图标重新输入 Key 并保存。" },
-          { title: "测试连接", detail: "添加模型时会自动测试连接。如果测试失败，检查 Key、Base URL 和网络。" },
+          { title: "测试连接", detail: "添加模型时会自动测试连接。如果测试失败，检查 Key、Base URL、协议类型和网络。" },
           { title: "检查网络", detail: "确认可以访问模型服务商的 API 端点。如果使用代理或 VPN，确认配置正确。" },
           { title: "切换模型", detail: "如果当前模型持续报错，尝试切换到其他已配置的模型。" },
           { title: "查看日志", detail: "在设置 → 应用中点击「查看」打开主日志，搜索错误信息获取详细原因。" },
@@ -2217,14 +2327,14 @@ export const docArticles: DocArticle[] = [
     summary: "按主题集中解答平台支持、离线使用、云同步和密钥安全等高频疑问。",
     icon: "help",
     readTime: "12 分钟",
-    updated: "2026-08-19",
-    keywords: ["FAQ", "常见问题", "平台支持", "离线", "云同步", "密钥安全", "Windows", "macOS", "Linux", "加密"],
+    updated: "2026-08-28",
+    keywords: ["FAQ", "常见问题", "平台支持", "离线", "云同步", "密钥安全", "Windows", "macOS", "Linux", "加密", "Responses"],
     sections: [
       {
         id: "platform-support",
         title: "平台支持",
         body: [
-          "Stellara Work v0.9.2 提供 Windows 和 macOS 两个平台的安装包。Windows 版本仅支持 x64 架构，使用 NSIS 安装向导；macOS 提供 Apple 芯片（arm64）与 Intel（x64）两种 DMG 磁盘映像。Linux 版本尚未提供。",
+          "Stellara Work v0.9.2 提供 Windows 和 macOS 两个平台的安装包。Windows 版本支持 x64 架构，使用 NSIS 安装向导；macOS 提供 Apple 芯片（arm64）与 Intel（x64）两种 DMG 磁盘映像，要求 macOS 12.0 或更高版本。Linux 版本尚未提供。",
           "两个平台的功能完全一致，包括 Agent 工具集、Plan/Build 模式、Skills、MCP 和记忆中心。差异仅体现在安装包格式、数据目录路径和命令白名单（macOS 白名单额外包含 swift、brew 等 POSIX 工具）。",
         ],
         table: {
@@ -2236,10 +2346,10 @@ export const docArticles: DocArticle[] = [
           ],
         },
         bullets: [
-          { title: "macOS 版本要求", detail: "需要 macOS 12.0 或更高版本，提供 Apple 芯片（arm64）与 Intel（x64）两种安装包。" },
+          { title: "macOS 版本要求", detail: "需要 macOS 12.0 或更高版本，提供 Apple 芯片（arm64）与 Intel（x64）两种安装包（x64 从 v0.9.2 起提供）。" },
           { title: "Windows 版本要求", detail: "支持 Windows 10 及以上版本（x64）。" },
           { title: "未签名安装包", detail: "当前版本未经代码签名。macOS 需右键打开绕过 Gatekeeper；Windows 需在 SmartScreen 中选择「仍要运行」。" },
-          { title: "旧版本迁移", detail: "v0.8 及更早版本使用 ~/.stellara 目录。首次启动 v0.9.0 时自动迁移到新的数据目录，原目录保留作为备份。" },
+          { title: "旧版本迁移", detail: "v0.8 及更早版本使用 ~/.stellara 目录。首次启动 v0.9.x 时自动迁移到新的数据目录，原目录保留作为备份。" },
         ],
         note: {
           tone: "info",
@@ -2252,7 +2362,7 @@ export const docArticles: DocArticle[] = [
         title: "离线使用",
         body: [
           "Stellara Work 的应用界面、会话数据库（stellara.db）、配置文件和技能文件全部存储在本地，不依赖 Stellara 云端服务，也不需要注册 Stellara 账号。应用本身可以在无网络环境下启动和操作界面。",
-          "但 Agent 的核心能力依赖模型服务。内置的四个预设（GLM-5.2、DeepSeek-v4-Pro、Kimi-K3、MiniMax-M3）都是网络 Provider，使用它们必须联网，请求内容会发送到对应端点。如果需要离线使用，可以配置本地部署的 OpenAI 兼容服务（如 Ollama、vLLM），但本地模型的能力和上下文窗口可能不如云端模型。",
+          "但 Agent 的核心能力依赖模型服务。七个内置预设（DeepSeek-V4-Pro、DeepSeek-V4-Flash、Qwen3.8-Max、GLM-5.3、GLM-5.2、Kimi-K3、MiniMax-M3）都是网络 Provider，使用它们必须联网，请求内容会发送到对应端点。如果需要离线使用，可以配置本地部署的模型服务（如 Ollama），通过本地 Base URL 接入，但本地模型的能力和上下文窗口可能不如云端模型。",
         ],
         table: {
           headers: ["功能", "是否需要网络", "说明"],
@@ -2346,20 +2456,21 @@ export const docArticles: DocArticle[] = [
         title: "多模型与多账号",
         body: [
           "每个模型配置独立保存 API Key。你可以为同一个服务商创建多个配置（使用不同的 Key 或模型），并在会话中根据需要切换。这适合团队共用设备或个人有多个服务商账号的场景。",
-          "活跃模型决定新会话使用的默认配置。可以通过设置面板、聊天区顶部或命令面板（Ctrl+K）随时切换活跃模型。切换后立即生效，新模型从切换后的消息开始参与对话。",
+          "活跃模型决定新会话使用的默认配置。可以通过设置面板、聊天区顶部、顶部标题栏或命令面板（Ctrl+K）随时切换活跃模型。切换后立即生效，新模型从切换后的消息开始参与对话。",
         ],
         table: {
           headers: ["操作", "方式"],
           rows: [
             ["添加模型", "设置 → 模型 → 添加模型，选择预设或自定义"],
             ["切换活跃模型", "设置 → 模型 → 切换，或 Ctrl+K 搜索「切换模型」"],
-            ["会话中切换", "点击输入框上方的模型名称，从下拉列表中选择"],
+            ["会话中切换", "点击输入框上方或顶部标题栏的模型名称，从下拉列表中选择"],
             ["删除模型", "设置 → 模型 → 删除，对应的 Key 也会移除"],
           ],
         },
         bullets: [
           { title: "独立工作目录", detail: "每个模型配置可以设置不同的工作目录，适合不同项目使用不同模型。" },
           { title: "独立上下文窗口", detail: "每个模型配置可以设置不同的上下文窗口大小（256K/512K/1M）。" },
+          { title: "独立协议", detail: "每个自定义模型配置可以独立选择协议（Responses API / Anthropic Messages API）。" },
           { title: "历史会话兼容", detail: "删除模型不会删除历史会话。但如果历史会话引用的模型已被删除，继续发送前需要重新选择可用模型。" },
         ],
       },
@@ -2387,8 +2498,8 @@ export const docArticles: DocArticle[] = [
     summary: "掌握多模型协作、批量操作、上下文优化和自动化工作流。",
     icon: "tools",
     readTime: "15 分钟",
-    updated: "2026-08-02",
-    keywords: ["高级", "多模型", "批量", "优化", "自动化", "工作流", "上下文", "效率"],
+    updated: "2026-08-28",
+    keywords: ["高级", "多模型", "批量", "优化", "自动化", "工作流", "上下文", "效率", "子代理"],
     sections: [
       {
         id: "multi-model-workflow",
@@ -2434,7 +2545,7 @@ export const docArticles: DocArticle[] = [
         bullets: [
           { title: "精确搜索", detail: "用 search_content 定位后再读取，避免加载无关文件。" },
           { title: "分段读取", detail: "大文件使用 offset/limit 读取关键段落，而非整个文件。" },
-          { title: "定期总结", detail: "在长会话中定期要求 Agent 总结当前进展，压缩历史消息。" },
+          { title: "自动压缩", detail: "接近 90% 阈值时应用会自动压缩早期历史消息为摘要，保持会话可持续。" },
           { title: "新会话分割", detail: "完成一个子任务后新建会话，避免上下文污染。" },
         ],
       },
@@ -2463,6 +2574,7 @@ export const docArticles: DocArticle[] = [
             ["对比验证", "让 Agent 在修改前后分别运行测试", "关键功能"],
             ["回退策略", "在修改前要求 Agent 说明如何回退", "高风险改动"],
             ["并行任务", "在不同会话中处理独立的子任务", "多模块项目"],
+            ["子代理分工", "用 dispatch_subagents 按角色并行分发研究/验证子任务", "大型重构"],
           ],
         },
       },
@@ -2476,7 +2588,7 @@ export const docArticles: DocArticle[] = [
     summary: "从任务编写到项目管理，掌握高效使用 Stellara Work 的核心原则。",
     icon: "shield",
     readTime: "14 分钟",
-    updated: "2026-08-02",
+    updated: "2026-08-28",
     keywords: ["最佳实践", "任务编写", "项目组织", "安全", "性能", "效率"],
     sections: [
       {
@@ -2567,32 +2679,37 @@ export const docArticles: DocArticle[] = [
     id: "changelog",
     group: "参考",
     title: "版本记录",
-    summary: "版本变更记录：v0.9.2 的新增、变更、安全修复和已知限制。",
+    summary: "版本变更记录：v0.9.2 的新增、变更、安全修复和当前限制。",
     icon: "rocket",
     readTime: "12 分钟",
     updated: "2026-08-28",
-    keywords: ["版本", "变更", "changelog", "v0.9.2", "发布", "新功能", "限制", "已知问题"],
+    keywords: ["版本", "变更", "changelog", "v0.9.2", "发布", "新功能", "限制", "已知问题", "动效", "无障碍"],
     sections: [
       {
         id: "v092-changes",
         title: "v0.9.2（2026-08-28）",
         body: [
-          "Stellara Work v0.9.2 在 v0.9.1 基础上重构了模型连接层并加入统一的克制动效系统。内置模型全部切换到 Responses API，同时为自定义模型新增 Anthropic Messages 协议支持。",
-          "任务上下文由 Context Hub 统一管理，支持检查点、验证证据与过期检测；子代理调度改为会话级协调，按研究/构建/验证角色并发执行。界面新增深色/浅色主题工作台与受控动效，历史记录保持静态，只有实时条目播放进入动画。",
+          "Stellara Work v0.9.2 在 v0.9.1 基础上重构了模型连接层并加入统一的克制动效系统。内置模型全部切换到 Responses API，同时为自定义模型新增 Anthropic Messages 协议支持，Chat Completions 协议已移除。",
+          "任务上下文由 Context Hub 统一管理，支持检查点、验证证据与过期检测、修订号追踪与任务门禁；子代理调度改为会话级协调，按研究/构建/验证角色并发执行，构建子代理必须声明不重叠的文件范围。",
+          "界面新增浅色/深色/跟随系统主题工作台与协议徽章，动效系统全程克制：历史记录保持静态，只有实时条目播放进入动画，系统减弱动效偏好下立即完成过渡并停用循环。macOS 新增 Intel（x64）安装包。",
         ],
         table: {
           headers: ["类别", "功能", "说明"],
           rows: [
+            ["平台", "macOS x64 安装包", "新增 Stellara.Work-0.9.2-x64.dmg，Intel Mac 可用"],
             ["模型", "Responses API", "内置模型统一使用 Responses API，无旧协议回退"],
             ["模型", "Anthropic Messages", "自定义模型可选 Anthropic Messages 并走完整 Agent 工具循环"],
-            ["模型", "协议自动识别", "统一自定义模型配置，连接时自动识别协议"],
+            ["模型", "协议自动识别", "统一自定义模型配置，连接时自动识别协议，也可显式指定"],
+            ["模型", "协议徽章", "设置页模型卡片显示协议（Responses / Anthropic）与验证状态"],
             ["模型", "新增预设", "DeepSeek-V4-Flash、Qwen3.8-Max、GLM-5.3"],
+            ["模型", "输出与推理参数", "模型配置支持 maxOutputTokens 与 reasoningEffort"],
             ["上下文", "Context Hub", "检查点、验证证据、过期检测与修订号追踪"],
+            ["上下文", "任务门禁", "就绪显示「任务可完成」，阻塞显示「任务阻塞」并列出原因"],
             ["子代理", "会话级协调", "研究/构建/验证角色并发，会话作用域管理"],
+            ["子代理", "角色与约束", "build 必须声明 fileScopes，不同 build 范围不允许重叠"],
             ["工具", "执行上下文", "工具调用携带会话/修订/计划步骤审计信息"],
             ["界面", "克制动效系统", "菜单、页面、弹窗、状态与微交互统一动效契约"],
             ["界面", "主题工作台", "浅色/深色/跟随系统，协议徽章与实时上下文修订"],
-            ["界面", "任务门禁", "工作区检查点与任务门禁语义（阻塞/就绪）"],
             ["性能", "合成器友好动效", "进度条使用 scaleX transform，仅 opacity/transform/颜色/边框/阴影"],
             ["无障碍", "状态语义", "审批/错误/验证节点即时 alert/status/alertdialog 语义"],
             ["无障碍", "减弱动效", "系统减弱动效偏好下立即完成过渡并停用循环"],
@@ -2694,15 +2811,16 @@ export const docArticles: DocArticle[] = [
       },
       {
         id: "known-limitations",
-        title: "已知限制",
+        title: "当前限制",
         body: [
-          "Stellara Work 当前存在以下已知限制，将在后续版本中逐步改进。了解这些限制可以帮助你更好地规划使用方式。",
+          "以下是 Stellara Work v0.9.2 当前的状态与限制。了解这些信息可以帮助你更好地规划使用方式，它们可能在后续版本中逐步改进。",
         ],
         table: {
           headers: ["限制", "说明", "临时方案"],
           rows: [
-            ["平台覆盖", "Windows x64 + macOS（arm64 / x64）；暂无 Linux 版本", "Linux 用户可关注官方发布渠道"],
+            ["平台覆盖", "当前支持 Windows x64 + macOS（arm64 / x64）；暂无 Linux 版本", "Linux 用户可关注官方发布渠道"],
             ["安装包签名", "安装包未经代码签名，macOS 需右键打开，Windows 需 SmartScreen 放行", "核对 SHA-256 校验值确认来源"],
+            ["模型验证状态", "部分内置预设尚未通过协议验证，需账号开通服务并通过连接测试", "优先使用已验证预设，或在自定义模型中接入已验证的端点"],
             ["云同步", "不支持跨设备云同步", "手动备份和迁移数据目录"],
             ["加密密钥迁移", "加密的 API Key 绑定到设备用户账户，跨设备无法解密", "在新设备上重新配置 API Key"],
             ["界面语言", "界面主要支持中文，部分技术术语使用英文", "—"],
@@ -2724,11 +2842,11 @@ export const docArticles: DocArticle[] = [
     id: "glossary",
     group: "参考",
     title: "术语表",
-    summary: "按类别解释文档中使用的核心概念、功能术语和技术术语。",
+    summary: "按类别解释文档中使用的核心概念、功能术语、协议与技术术语。",
     icon: "help",
     readTime: "12 分钟",
-    updated: "2026-08-19",
-    keywords: ["术语", "概念", "定义", "Agent", "Token", "上下文", "模型", "Electron", "SQLite", "MCP", "Skills"],
+    updated: "2026-08-28",
+    keywords: ["术语", "概念", "定义", "Agent", "Token", "上下文", "模型", "Electron", "SQLite", "MCP", "Skills", "Responses", "Anthropic", "Context Hub", "任务门禁"],
     sections: [
       {
         id: "core-concepts",
@@ -2745,7 +2863,7 @@ export const docArticles: DocArticle[] = [
             ["Plan 模式", "Plan Mode", "只读分析模式。Agent 只能调用只读工具（read_file、search_files 等），分析需求并输出有序执行计划，末尾以 READY TO EXECUTE 标记就绪。"],
             ["上下文窗口", "Context Window", "模型单次请求能处理的最大 token 数。Stellara Work 提供 256K、512K、1M 三档选项，默认 256K。"],
             ["Token", "Token", "文本的基本单位。一个中文字约 1-2 个 token，一个英文单词约 1 个 token。使用 tiktoken cl100k_base 编码估算。"],
-            ["Provider", "Provider", "模型服务商，提供 OpenAI 兼容 API 端点。内置预设包括智谱（GLM）、DeepSeek、月之暗面（Kimi）和 MiniMax。"],
+            ["Provider", "Provider", "模型服务商，提供 API 端点。内置预设包括智谱（GLM）、DeepSeek、阿里云（Qwen）、月之暗面（Kimi）和 MiniMax。"],
             ["Base URL", "Base URL", "模型服务的 API 端点地址。例如 https://api.deepseek.com。是否包含 /v1 路径由服务商决定。"],
             ["工作目录", "Work Directory", "Agent 的文件操作范围根目录。所有工具的路径参数都受此约束，防止越界访问。在引导流程或设置中配置。"],
           ],
@@ -2767,14 +2885,19 @@ export const docArticles: DocArticle[] = [
           rows: [
             ["会话", "Session", "一次完整的对话记录，包含标题、模型配置、工作目录、所属项目、消息历史和工具调用结果。存储在本地 SQLite 数据库中。"],
             ["项目", "Project", "会话的组织分组，用于将相关会话归类管理。项目是虚拟分组，不改变磁盘目录结构。没有项目归属的会话归入「未分组」。"],
+            ["Context Hub", "Context Hub", "v0.9.2 引入的统一上下文管理器，负责修订号追踪、上下文检查点、过期证据检测与任务门禁。"],
+            ["上下文检查点", "Checkpoint", "记录当前任务目标与创建时间的上下文快照，可一键创建，作为后续任务的验证依据。"],
+            ["任务门禁", "Task Gate", "任务交付前的上下文完备性检查：就绪显示「任务可完成」（role=status），阻塞显示「任务阻塞」（role=alert）并列出原因。"],
+            ["协议徽章", "Protocol Badge", "设置页模型卡片上显示的协议类型（Responses / Anthropic）与验证状态标识。"],
+            ["克制动效系统", "Restrained Motion", "v0.9.2 引入的统一动效契约：只动 opacity/transform/颜色/边框/阴影，历史记录静态，尊重系统减弱动效偏好。"],
             ["Skills", "Skills", "自定义工作流模板。存储在工作目录的 skills/ 子目录中，支持 JSON 和 Markdown 两种格式。通过斜杠命令（/skill-name）或自动注入系统提示词调用。"],
             ["MCP", "Model Context Protocol", "开放协议，允许 AI 应用连接外部工具服务器。Stellara Work 作为 MCP 客户端，支持 stdio 和 HTTP 两种传输方式。"],
             ["命令面板", "Command Palette", "Ctrl+K 打开的快速命令搜索界面。支持模糊搜索和中英文混合，全程键盘操作。"],
-            ["工作区检查器", "Workspace Inspector", "右侧面板，集中展示任务目标、执行进度、上下文使用率、子代理状态、交付物列表、记忆注入和工作目录文件树。"],
+            ["工作区检查器", "Workspace Inspector", "右侧面板，集中展示任务目标、执行进度、上下文使用率、Context Hub 检查点与门禁、子代理状态、交付物列表、记忆注入和工作目录文件树。"],
             ["审批", "Approval", "对敏感操作（write_file、edit_file、run_command、web_fetch、memory 等）的人工确认机制。审批顶部栏显示工具名和参数，单次授权。"],
             ["交付物", "Deliverable", "本次会话中 Agent 通过 write_file 或 edit_file 创建或修改的文件列表。显示在工作区检查器中。"],
             ["记忆中心", "Memory Center", "跨会话持久记忆系统。基于 SQLite + FTS5 全文索引，支持自动提取、语义搜索和手动管理。"],
-            ["子代理", "Subagent", "通过 dispatch_subagents 工具分发、由会话级协调器管理的任务执行者。单次最多 10 个；research/verify 角色并行（上限 4），build 角色串行。共享工作目录但拥有独立上下文。"],
+            ["子代理", "Subagent", "通过 dispatch_subagents 工具分发、由会话级协调器管理的任务执行者。角色必填（研究/构建/验证）；research/verify 并行（上限 4），build 串行且必须声明不重叠的 fileScopes。单次最多 10 个。"],
             ["Diff 卡片", "Diff Card", "当 Agent 创建或修改文件时，聊天区显示的并排对比视图。使用 CodeMirror MergeView 组件，展示修改前后的差异。"],
             ["Shell 卡片", "Shell Card", "当 Agent 执行命令时，聊天区显示的命令输出卡片。包含命令、执行时长、退出码、stdout 和 stderr。"],
           ],
@@ -2792,7 +2915,7 @@ export const docArticles: DocArticle[] = [
             ["Electron", "Electron", "基于 Chromium 和 Node.js 的桌面应用框架。Stellara Work 使用 Electron 构建跨平台桌面应用，主进程处理敏感操作，渲染进程显示界面。"],
             ["SQLite", "SQLite", "轻量级嵌入式关系数据库。Stellara Work 使用 better-sqlite3 驱动，存储项目、会话、消息和记忆数据。启用 WAL 模式和外键约束。"],
             ["数据目录", "App Data Directory", "存储所有用户数据的目录。Windows: %APPDATA%\\Stellara Work；macOS: ~/Library/Application Support/Stellara Work。旧版本使用 ~/.stellara。"],
-            ["config.json", "config.json", "应用配置文件（JSON 格式），存储模型元数据（id、label、baseUrl、model、workDir、contextWindow）、活跃模型 ID、应用偏好（主题、工作区模式、快捷键）和 MCP 服务器配置。schemaVersion 为 1。"],
+            ["config.json", "config.json", "应用配置文件（JSON 格式），存储模型元数据（id、label、baseUrl、model、workDir、contextWindow、wireApi、maxOutputTokens、reasoningEffort）、活跃模型 ID、应用偏好（主题、工作区模式、快捷键）和 MCP 服务器配置。schemaVersion 为 1。"],
             [".env", ".env", "密钥存储文件，按模型 ID 存储 API Key。Key 使用 enc:v1: 前缀加密存储。文件权限 0600，仅当前用户可读写。"],
             ["SSE", "Server-Sent Events", "流式数据传输协议。模型响应通过 SSE 逐 token 传输到应用，实现实时显示生成结果。"],
             ["IPC", "Inter-Process Communication", "进程间通信。Electron 主进程和渲染进程之间通过预加载层暴露的受控 IPC 接口通信。渲染进程无法直接访问 Node.js API。"],
@@ -2801,6 +2924,7 @@ export const docArticles: DocArticle[] = [
             ["FTS5", "Full-Text Search 5", "SQLite 的全文搜索扩展。记忆系统使用 FTS5 实现高效的记忆检索，支持精确短语搜索和模糊匹配。查询语法错误时自动回退到 LIKE 搜索。"],
             ["contextIsolation", "Context Isolation", "Electron 安全配置。设为 true 时，预加载脚本与页面脚本运行在隔离的上下文中，防止页面脚本访问预加载层暴露的 API。"],
             ["WAL", "Write-Ahead Logging", "SQLite 的日志模式。启用后提高并发读写性能，数据写入先记录到 WAL 文件（stellara.db-wal），再批量同步到主数据库。"],
+            ["inert", "inert", "HTML 属性。标记为 inert 的节点不参与 Tab 顺序、点击和屏幕阅读器朗读，动效离场节点在过渡期间会使用它。"],
           ],
         },
         code: {
@@ -2810,18 +2934,23 @@ export const docArticles: DocArticle[] = [
       },
       {
         id: "model-terms",
-        title: "模型相关术语",
+        title: "模型与协议术语",
         body: [
-          "这些术语与 AI 模型配置和 API 交互相关。",
+          "这些术语与 AI 模型配置和 API 协议相关。",
         ],
         table: {
           headers: ["术语", "定义"],
           rows: [
-            ["GLM-5.2", "智谱 BigModel 的大语言模型。Base URL: https://open.bigmodel.cn/api/paas/v4"],
-            ["DeepSeek-v4-Pro", "DeepSeek 的大语言模型。Base URL: https://api.deepseek.com"],
+            ["DeepSeek-V4-Pro", "DeepSeek 的大语言模型。Base URL: https://api.deepseek.com。已验证 Responses 协议。"],
+            ["DeepSeek-V4-Flash", "DeepSeek 的大语言模型。Base URL: https://api.deepseek.com。已验证 Responses 协议。"],
+            ["Qwen3.8-Max", "阿里云 DashScope 的大语言模型。Base URL: https://dashscope.aliyuncs.com/compatible-mode/v1"],
+            ["GLM-5.3", "智谱 BigModel 的大语言模型。Base URL: https://open.bigmodel.cn/api/v1"],
+            ["GLM-5.2", "智谱 BigModel 的大语言模型。Base URL: https://open.bigmodel.cn/api/v1"],
             ["Kimi-K3", "月之暗面 Moonshot 的大语言模型。Base URL: https://api.moonshot.cn"],
             ["MiniMax-M3", "MiniMax 的大语言模型。Base URL: https://api.minimax.io/v1"],
-            ["API 协议", "模型服务使用的消息格式。Stellara Work 支持两种：Responses API（内置模型与自定义模型默认，POST {baseUrl}/responses）和 Anthropic Messages（Base URL 含 /v1/messages 或 /anthropic 时自动识别，POST {baseUrl}/v1/messages）。应用绝不回退到 Chat Completions。"],
+            ["Responses API", "模型服务的消息协议之一。内置模型与默认自定义模型使用，POST {baseUrl}/responses。"],
+            ["Anthropic Messages", "模型服务的消息协议之一。Base URL 含 /v1/messages 或 /anthropic 时自动识别，POST {baseUrl}/v1/messages，走完整 Agent 工具循环。"],
+            ["协议自动识别", "自定义模型按 Base URL 路径自动判断协议：含 /v1/messages 或 /anthropic 用 Anthropic Messages，其余用 Responses。也可显式指定。应用绝不回退到 Chat Completions。"],
             ["流式输出", "模型逐 token 生成响应的方式。通过 SSE 传输，用户可以实时看到输出过程，而不需要等待完整回复。"],
             ["上下文压缩", "当消息累积的 token 数超过上下文窗口的 90% 时，自动将早期消息摘要化为一条摘要，保留 system 消息和最近 12 轮对话。"],
             ["tiktoken", "OpenAI 的 token 计数库。Stellara Work 使用 cl100k_base 编码估算消息 token 数。加载失败时回退到字符数/4 的粗估方式。"],
