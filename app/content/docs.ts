@@ -665,8 +665,8 @@ export const docArticles: DocArticle[] = [
         id: "subagents-section",
         title: "子代理区：并行任务状态",
         body: [
-          "当 Agent 使用 dispatch_subagents 工具分发子任务时，子代理区会显示每个子代理的状态卡片。没有子代理时此区域不显示。",
-          "每个子代理卡片显示 ID、任务描述、状态徽标（排队/执行中/完成/失败）、最近使用的工具和执行耗时。点击卡片可展开查看子代理的汇总报告。",
+          "当 Agent 使用 dispatch_subagents 工具分发子任务时，子代理区会显示每个子代理的状态卡片。没有子代理时此区域不显示。子代理由会话级协调器管理，每个会话独立跟踪。",
+          "每个子代理卡片显示 ID、角色徽标（研究/构建/验证）、任务描述、状态徽标（排队/执行中/完成/失败）、最近使用的工具和执行耗时。点击卡片可展开查看子代理的汇总报告。",
         ],
         table: {
           headers: ["状态", "徽标文本", "说明"],
@@ -677,6 +677,10 @@ export const docArticles: DocArticle[] = [
             ["failed", "失败", "子代理执行失败"],
           ],
         },
+        bullets: [
+          { title: "角色徽标", detail: "research → 研究（并行），build → 构建（串行，需 fileScopes），verify → 验证（并行）。" },
+          { title: "会话隔离", detail: "每个会话拥有独立的子代理运行器，跨会话互不覆盖。" },
+        ],
       },
       {
         id: "deliverables-section",
@@ -845,17 +849,20 @@ export const docArticles: DocArticle[] = [
         id: "subagent-tool",
         title: "子代理调度：dispatch_subagents",
         body: [
-          "dispatch_subagents 把大任务拆分成多个独立子任务，并行分发给子代理执行。每个子代理共享工作目录但拥有独立上下文。",
-          "子代理最多 10 个并行执行，超出部分排队等待。单次最多分发 20 个子任务。所有子代理的 ID 必须唯一。",
+          "dispatch_subagents 把大任务拆分成多个独立子任务分发给子代理执行。v0.9.2 起子代理由会话级协调器管理：每个会话拥有独立的子代理运行器，多个会话并行执行互不覆盖。每个子代理共享工作目录但拥有独立上下文。",
+          "子代理必须声明角色（research / build / verify），默认 research。research 与 verify 角色并行执行（并行上限 4 个），build 角色串行执行——构建类子代理可能修改文件，串行避免写冲突。单次最多分发 10 个子任务（1-10 项），所有 ID 必须唯一。",
+          "build 角色的子代理必须声明 fileScopes（允许修改的文件范围），且不同 build 子代理的 fileScopes 不允许重叠。缺少 fileScopes 或范围冲突会导致整次调度被拒绝。",
         ],
         code: {
           label: "子代理调度示例",
-          content: "dispatch_subagents({\n  subagents: [\n    { id: \"refactor-fs\", task: \"重构文件系统模块...\" },\n    { id: \"write-tests\", task: \"为 auth 模块编写单元测试...\" },\n    { id: \"update-docs\", task: \"更新 API 文档...\" }\n  ]\n})",
+          content: "dispatch_subagents({\n  subagents: [\n    { id: \"survey-fs\", role: \"research\", task: \"梳理文件系统模块的现状与问题...\" },\n    { id: \"refactor-fs\", role: \"build\", fileScopes: [\"src/fs\"], task: \"重构文件系统模块...\" },\n    { id: \"verify-fs\", role: \"verify\", task: \"验证重构后的模块测试与行为...\" }\n  ]\n})",
         },
         bullets: [
-          { title: "并行限制", detail: "最多 10 个并行，超出排队。总数上限 20 个。" },
+          { title: "角色策略", detail: "research/verify 并行（上限 4），build 串行；角色必填，默认 research。" },
+          { title: "调度上限", detail: "单次最多 10 个子任务，ID 必须唯一。" },
+          { title: "build 约束", detail: "build 必须声明 fileScopes，且与其他 build 的范围不允许重叠。" },
           { title: "结果汇总", detail: "所有子代理完成后返回各自的汇总报告，失败的子代理会标注并说明原因。" },
-          { title: "工作区显示", detail: "子代理的状态和进度会显示在工作区检查器的子代理区。" },
+          { title: "工作区显示", detail: "子代理的状态和进度会显示在工作区检查器的子代理区，卡片带角色徽标。" },
         ],
       },
       {
