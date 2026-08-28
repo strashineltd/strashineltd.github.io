@@ -17,19 +17,22 @@ import { useState } from "react";
 import { DownloadDemo } from "./DownloadDemo";
 
 const releaseUrl = "https://github.com/strashineltd/stellara-work/releases";
-const winInstallerName = "Stellara.Work-Setup-0.9.1.exe";
-const winSize = "113.5 MiB";
-const winSha256 = "B55259D7FDB6A83575ABE4D05DD20E5CF5CF3C13C01D5509BC3C992348EC2DEC";
-const macInstallerName = "Stellara.Work-0.9.1-arm64.dmg";
-const macSize = "140.6 MiB";
-const macSha256 = "EFE89A999EC154BAF225335D91B20983C65AB38E72FF3F827A788F5E67A9F4E7";
+const winInstallerName = "Stellara.Work-Setup-0.9.2-x64.exe";
+const winSize = "117.5 MiB";
+const winSha256 = "5C46E367AB265873C2C1D6FBA3B4F32D720ACFE03D5D52F9F5DA5BFA0564BD03";
+const macInstallerName = "Stellara.Work-0.9.2-arm64.dmg";
+const macSize = "144.6 MiB";
+const macSha256 = "225C70E36C43B5426F2C5C5726BACA7DA722B1BD98C7F269B5BD7BD3EF9EFC5D";
+const macX64InstallerName = "Stellara.Work-0.9.2-x64.dmg";
+const macX64Size = "146.3 MiB";
+const macX64Sha256 = "DE926EFAEB8088CB578FA09ECCDC8951BDBB55935C247FBA8876D82E7D74BF8B";
 
 const releaseNotes = [
-  "项目与会话分组、搜索、重命名和导出",
-  "三栏紧凑工作台与可切换工作区模式",
-  "文件读写、命令执行、Diff 与结果卡片",
-  "危险操作审批顶部条与计划模式",
-  "模型管理、Skills 和可配置快捷键",
+  "Responses API 与 Anthropic Messages 双协议模型连接",
+  "Context Hub 上下文检查点与任务门禁",
+  "会话级子代理协调与角色并发（研究/构建/验证）",
+  "克制动效系统：菜单、页面、状态与微交互",
+  "新增 DeepSeek-V4-Flash、Qwen3.8-Max、GLM-5.3 模型预设",
 ];
 
 export function DownloadPanel() {
@@ -50,7 +53,7 @@ export function DownloadPanel() {
       <section className="download-hero">
         <div className="page-shell download-hero__grid">
           <div className="download-hero__copy">
-            <span className="eyebrow"><span className="status-dot" aria-hidden="true" />v0.9 内测版</span>
+            <span className="eyebrow"><span className="status-dot" aria-hidden="true" />v0.9.2 内测版</span>
             <h1>下载 Stellara Work</h1>
             <p className="download-hero__lead">
               为 Windows 与 macOS 打造的本地优先桌面 Agent。安装后选择模型和工作目录，即可开始第一个任务。
@@ -65,16 +68,16 @@ export function DownloadPanel() {
                 <Download aria-hidden="true" size={19} />
                 前往下载
               </a>
-              <span>Windows x64 与 macOS (arm64) · 2026-08-18</span>
+              <span>Windows x64 与 macOS (arm64 / x64) · 2026-08-28</span>
             </div>
             <div className="download-feedback" role="status">
               <CheckCircle2 aria-hidden="true" size={17} />
-              v0.9.1 已开放下载，安装包通过 GitHub Releases 提供。
+              v0.9.2 已开放下载，安装包通过 GitHub Releases 提供。
             </div>
             <ul className="download-chips" aria-label="版本摘要">
               <li><span className="download-chip__dot" aria-hidden="true" />Windows x64 <strong>可下载</strong></li>
               <li><span className="download-chip__dot" aria-hidden="true" />macOS (arm64) <strong>可下载</strong></li>
-              <li>版本 <strong>0.9.1</strong></li>
+              <li>版本 <strong>0.9.2</strong></li>
             </ul>
           </div>
 
@@ -87,7 +90,7 @@ export function DownloadPanel() {
       <section className="platform-section section page-shell" aria-labelledby="platform-title">
         <div className="section-heading section-heading--split">
           <div><span className="section-kicker">可用平台</span><h2 id="platform-title">选择你的系统</h2></div>
-          <p>v0.9 提供 Windows x64 与 macOS (arm64) 安装包；Linux 尚未提供。</p>
+          <p>v0.9.2 提供 Windows x64 与 macOS (arm64 / x64) 安装包；Linux 尚未提供。</p>
         </div>
         <div className="platform-grid">
           <article className="platform-card platform-card--available">
@@ -112,7 +115,7 @@ export function DownloadPanel() {
               <span className="availability">可下载</span>
             </div>
             <h3>macOS</h3>
-            <p>Apple 芯片 · 需 macOS 12 或更高版本。</p>
+            <p>Apple 芯片与 Intel · 需 macOS 12 或更高版本。</p>
             <a
               className="platform-card__link"
               href={releaseUrl}
@@ -137,14 +140,14 @@ export function DownloadPanel() {
       <section className="version-section section section--soft" aria-labelledby="version-title">
         <div className="page-shell">
           <span className="section-kicker">版本信息</span>
-          <h2 id="version-title" className="version-title">v0.9.0 内测版</h2>
+          <h2 id="version-title" className="version-title">v0.9.2 内测版</h2>
           <p className="version-lead">这一版本已经完成从项目、会话到执行与审批的桌面工作闭环。</p>
           <div className="version-layout">
             <article className="version-card">
               <span className="version-card__badge">内测版</span>
-              <h3 className="version-card__num">v0.9.0</h3>
+              <h3 className="version-card__num">v0.9.2</h3>
               <dl className="version-card__meta">
-                <div><dt>发布日期</dt><dd>2026-08-16</dd></div>
+                <div><dt>发布日期</dt><dd>2026-08-28</dd></div>
               </dl>
               <div className="version-card__status">
                 <span className="version-card__ok"><Check aria-hidden="true" size={14} />已通过本地构建验证</span>
@@ -155,7 +158,7 @@ export function DownloadPanel() {
             <article className="changelog-card">
               <div className="changelog-card__head">
                 <h3>本次更新</h3>
-                <small>2026-08-16</small>
+                <small>2026-08-28</small>
               </div>
               <ul className="release-notes">
                 {releaseNotes.map((note) => (
@@ -170,9 +173,10 @@ export function DownloadPanel() {
                 <h3>安装信息</h3>
               </div>
               <dl>
-                <div><dt><Monitor aria-hidden="true" size={18} />系统</dt><dd>Windows x64 · macOS (arm64)</dd></div>
+                <div><dt><Monitor aria-hidden="true" size={18} />系统</dt><dd>Windows x64 · macOS (arm64 / x64)</dd></div>
                 <div><dt><Laptop aria-hidden="true" size={18} />Windows 安装包</dt><dd>{winInstallerName} · {winSize}</dd></div>
                 <div><dt><Apple aria-hidden="true" size={18} />macOS 安装包</dt><dd>{macInstallerName} · {macSize}</dd></div>
+                <div><dt><Apple aria-hidden="true" size={18} />macOS (Intel) 安装包</dt><dd>{macX64InstallerName} · {macX64Size}</dd></div>
                 <div className="install-card__hash">
                   <dt><Clipboard aria-hidden="true" size={18} />Windows SHA-256</dt>
                   <dd>
@@ -190,6 +194,16 @@ export function DownloadPanel() {
                     <button type="button" onClick={() => copyHash("mac", macSha256)} aria-label="复制 macOS SHA-256 校验值">
                       {copiedKey === "mac" ? <Check aria-hidden="true" size={14} /> : <Clipboard aria-hidden="true" size={14} />}
                       {copiedKey === "mac" ? "已复制" : "复制"}
+                    </button>
+                  </dd>
+                </div>
+                <div className="install-card__hash">
+                  <dt><Clipboard aria-hidden="true" size={18} />macOS (Intel) SHA-256</dt>
+                  <dd>
+                    <code className="install-card__hash-code">{macX64Sha256}</code>
+                    <button type="button" onClick={() => copyHash("macx64", macX64Sha256)} aria-label="复制 macOS (Intel) SHA-256 校验值">
+                      {copiedKey === "macx64" ? <Check aria-hidden="true" size={14} /> : <Clipboard aria-hidden="true" size={14} />}
+                      {copiedKey === "macx64" ? "已复制" : "复制"}
                     </button>
                   </dd>
                 </div>

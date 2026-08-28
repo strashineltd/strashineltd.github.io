@@ -428,7 +428,7 @@ export function DocsExplorer() {
             <div className="docs-hero__stats" aria-label="文档概况">
               <span><strong>{docArticles.length}</strong> 个主题</span>
               <span><strong>{sectionCount}</strong> 个章节</span>
-              <span><strong>v0.9.1</strong> 当前版本</span>
+              <span><strong>v0.9.2</strong> 当前版本</span>
             </div>
           </div>
           <div className="docs-search-wrap">
@@ -700,7 +700,7 @@ export function DocsExplorer() {
             ))}
             <div className="docs-version-note">
               <BookOpen aria-hidden="true" size={14} />
-              <span>适用于 Stellara Work v0.9.1</span>
+              <span>适用于 Stellara Work v0.9.2</span>
             </div>
           </aside>
         )}
