@@ -303,7 +303,10 @@ export function DocsExplorer() {
   }, [filtered, focusedIndex, next, previous]);
 
   // Sidebar: sticky while hero is visible, then switch to fixed so it never
-  // scrolls away when reaching the bottom of the page
+  // scrolls away when reaching the bottom of the page.
+  // 滚动处理统一 rAF 节流 + 值守卫：避免每个 scroll 事件同步强制布局
+  // （getBoundingClientRect / scrollHeight / clientHeight）并重复写内联样式，
+  // 否则惯性滚动时每帧多次重排会导致侧边目录闪烁。
   useEffect(() => {
     const sidebarEl = sidebarRef.current;
     const wrapEl = sidebarEl?.parentElement as HTMLElement | null;
@@ -314,13 +317,19 @@ export function DocsExplorer() {
     const mq = window.matchMedia("(max-width: 860px)");
     const layoutEl = document.querySelector(".docs-layout") as HTMLElement | null;
     let fixed = false;
+    let raf = 0;
+
+    // 值守卫：仅在实际变化时写样式，避免每帧无意义的重排。
+    function setStyle(prop: "left" | "width" | "top" | "height", value: string) {
+      if (sidebar.style[prop] !== value) sidebar.style[prop] = value;
+    }
 
     function release() {
       sidebar.classList.remove("docs-sidebar--fixed");
-      sidebar.style.left = "";
-      sidebar.style.width = "";
-      sidebar.style.top = "";
-      sidebar.style.height = "";
+      setStyle("left", "");
+      setStyle("width", "");
+      setStyle("top", "");
+      setStyle("height", "");
       fixed = false;
     }
 
@@ -329,7 +338,7 @@ export function DocsExplorer() {
       if (max <= 0) return;
       if (!layoutEl) return;
       if (wrap.getBoundingClientRect().top > 92) {
-        sidebar.scrollTop = 0;
+        if (sidebar.scrollTop !== 0) sidebar.scrollTop = 0;
         return;
       }
       const lr = layoutEl.getBoundingClientRect();
@@ -338,7 +347,8 @@ export function DocsExplorer() {
       const total = distance + Math.max(lr.bottom - viewportH, 0);
       if (total <= 0) return;
       const progress = Math.min(Math.max(distance / total, 0), 1);
-      sidebar.scrollTop = max * progress;
+      const nextTop = max * progress;
+      if (Math.abs(sidebar.scrollTop - nextTop) > 0.5) sidebar.scrollTop = nextTop;
     }
 
     function updatePosition() {
@@ -350,37 +360,43 @@ export function DocsExplorer() {
       const shouldFix = wrapRect.top <= 92;
       if (shouldFix && !fixed) {
         sidebar.classList.add("docs-sidebar--fixed");
-        sidebar.style.left = `${wrapRect.left}px`;
-        sidebar.style.width = `${wrapRect.width}px`;
+        setStyle("left", `${wrapRect.left}px`);
+        setStyle("width", `${wrapRect.width}px`);
         fixed = true;
       } else if (!shouldFix && fixed) {
         release();
+        return;
       } else if (fixed) {
-        sidebar.style.left = `${wrapRect.left}px`;
-        sidebar.style.width = `${wrapRect.width}px`;
+        setStyle("left", `${wrapRect.left}px`);
+        setStyle("width", `${wrapRect.width}px`);
         const lr = layoutEl ? layoutEl.getBoundingClientRect() : null;
         if (lr && lr.bottom < 92 + sidebar.offsetHeight) {
           const available = Math.max(0, lr.bottom - 92);
-          sidebar.style.top = "92px";
-          sidebar.style.height = `${available}px`;
+          setStyle("top", "92px");
+          setStyle("height", `${available}px`);
         } else {
-          sidebar.style.top = "92px";
-          sidebar.style.height = "";
+          setStyle("top", "92px");
+          setStyle("height", "");
         }
       }
       syncScroll();
     }
 
-    function handleResize() {
-      updatePosition();
+    function handleScrollOrResize() {
+      if (raf) return;
+      raf = window.requestAnimationFrame(() => {
+        raf = 0;
+        updatePosition();
+      });
     }
 
     updatePosition();
-    window.addEventListener("scroll", updatePosition, { passive: true });
-    window.addEventListener("resize", handleResize);
+    window.addEventListener("scroll", handleScrollOrResize, { passive: true });
+    window.addEventListener("resize", handleScrollOrResize);
     return () => {
-      window.removeEventListener("scroll", updatePosition);
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("scroll", handleScrollOrResize);
+      window.removeEventListener("resize", handleScrollOrResize);
+      if (raf) window.cancelAnimationFrame(raf);
     };
   }, []);
 
