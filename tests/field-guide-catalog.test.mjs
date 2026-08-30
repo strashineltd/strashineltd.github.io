@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
+import { fieldGuideCatalog } from "../app/content/field-guide/catalog.ts";
 import {
   assertValidCatalog,
   validateCatalog,
@@ -238,4 +239,30 @@ test("assertValidCatalog throws one error containing every issue path", () => {
       return true;
     },
   );
+});
+
+test("core route has four outcome volumes totaling 45 minutes", () => {
+  assert.deepEqual(fieldGuideCatalog.volumes.map((volume) => volume.id), [
+    "prepare-device",
+    "connect-intelligence",
+    "first-outcome",
+    "reliable-work",
+  ]);
+  assert.deepEqual(fieldGuideCatalog.volumes.map((volume) => volume.estimatedMinutes), [8, 12, 12, 13]);
+  assert.equal(fieldGuideCatalog.volumes.reduce((sum, volume) => sum + volume.estimatedMinutes, 0), 45);
+});
+
+test("provider facts match v0.9.2 protocols", () => {
+  const providers = Object.fromEntries(fieldGuideCatalog.providers.map((provider) => [provider.id, provider]));
+  assert.deepEqual(providers.deepseek.presetLabels, ["DeepSeek-V4-Pro", "DeepSeek-V4-Flash"]);
+  assert.equal(providers.qwen.baseUrl, "https://dashscope.aliyuncs.com/compatible-mode/v1");
+  assert.equal(providers.glm.baseUrl, "https://open.bigmodel.cn/api/v1");
+  assert.equal(providers.kimi.baseUrl, "https://api.moonshot.cn");
+  assert.equal(providers.minimax.baseUrl, "https://api.minimax.io/v1");
+  assert.equal(providers["custom-anthropic"].wireApi, "anthropic");
+  assert.ok(fieldGuideCatalog.providers.filter((provider) => provider.id !== "custom-anthropic").every((provider) => provider.wireApi === "responses"));
+});
+
+test("catalog has no structural issues", () => {
+  assert.deepEqual(validateCatalog(fieldGuideCatalog), []);
 });
