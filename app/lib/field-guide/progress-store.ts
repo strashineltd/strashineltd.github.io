@@ -2,9 +2,12 @@ import type {
   GuideProgress,
   LearningStep,
   ManualTheme,
+  PlatformId,
+  ProviderId,
   StepProgress,
   ValidationResult,
 } from "../../content/field-guide/types.ts";
+import { platformOptions, providerOptions } from "../../content/field-guide/profile-options.ts";
 
 export const FIELD_GUIDE_STORAGE_KEY = "stellara.field-guide.progress.v1";
 
@@ -20,16 +23,8 @@ export type SaveResult = { ok: true } | { ok: false; reason: "unavailable" };
 
 type StepRef = Pick<LearningStep, "id" | "contentVersion">;
 
-const PLATFORM_IDS = ["windows-x64", "macos-arm64", "macos-x64"] as const;
-const PROVIDER_IDS = [
-  "deepseek",
-  "qwen",
-  "glm",
-  "kimi",
-  "minimax",
-  "custom-responses",
-  "custom-anthropic",
-] as const;
+const PLATFORM_IDS: readonly PlatformId[] = platformOptions.map((option) => option.id);
+const PROVIDER_IDS: readonly ProviderId[] = providerOptions.map((option) => option.id);
 const THEMES: readonly ManualTheme[] = ["system", "light", "night"];
 const STATUSES: readonly StepProgress["status"][] = ["in-progress", "completed", "review"];
 const VALIDATION_RESULTS: readonly ValidationResult[] = ["passed", "failed"];
@@ -109,7 +104,7 @@ export function reconcileProgress(
     if (record === undefined) continue;
     if (record.contentVersion === step.contentVersion) {
       steps[step.id] = record;
-    } else {
+    } else if (record.status === "completed") {
       const stale: StepProgress = {
         contentVersion: step.contentVersion,
         status: "review",
@@ -118,6 +113,8 @@ export function reconcileProgress(
         stale.validationResult = record.validationResult;
       }
       steps[step.id] = stale;
+    } else {
+      steps[step.id] = { ...record, contentVersion: step.contentVersion };
     }
   }
   return { ...state, steps };
@@ -152,6 +149,10 @@ export function recordValidation(
   step: StepRef,
   result: ValidationResult,
 ): GuideProgress {
+  const existing = state.steps[step.id];
+  if (existing !== undefined && existing.contentVersion > step.contentVersion) {
+    return state;
+  }
   const record: StepProgress =
     result === "passed"
       ? { contentVersion: step.contentVersion, status: "completed", validationResult: "passed" }

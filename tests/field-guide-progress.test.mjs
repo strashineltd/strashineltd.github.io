@@ -76,6 +76,46 @@ test("recordValidation failed keeps the step in-progress with a failed result", 
   assert.deepEqual(failed.steps["connect.verify"], { contentVersion: 1, status: "in-progress", validationResult: "failed" });
 });
 
+test("stale in-progress records keep their status instead of entering review", () => {
+  const state = createEmptyProgress();
+  state.steps["connect.verify"] = { contentVersion: 1, status: "in-progress", validationResult: "failed" };
+  const reconciled = reconcileProgress(state, { steps: [{ id: "connect.verify", contentVersion: 2 }] });
+  assert.deepEqual(reconciled.steps["connect.verify"], { contentVersion: 2, status: "in-progress", validationResult: "failed" });
+  const acknowledged = acknowledgeReview(reconciled, { id: "connect.verify", contentVersion: 2 });
+  assert.deepEqual(acknowledged.steps["connect.verify"], { contentVersion: 2, status: "in-progress", validationResult: "failed" });
+});
+
+test("reconcileProgress preserves unrelated state fields", () => {
+  const state = createEmptyProgress();
+  state.catalogVersion = "2026.1";
+  state.profile = { platform: "macos-arm64", provider: "qwen" };
+  state.routeId = "core:macos-arm64:qwen";
+  state.activeStepId = "prepare.install";
+  state.theme = "night";
+  state.steps["prepare.install"] = { contentVersion: 1, status: "completed" };
+  const reconciled = reconcileProgress(state, { steps: [{ id: "prepare.install", contentVersion: 1 }] });
+  assert.equal(reconciled.catalogVersion, "2026.1");
+  assert.deepEqual(reconciled.profile, { platform: "macos-arm64", provider: "qwen" });
+  assert.equal(reconciled.routeId, "core:macos-arm64:qwen");
+  assert.equal(reconciled.activeStepId, "prepare.install");
+  assert.equal(reconciled.theme, "night");
+  assert.deepEqual(reconciled.steps["prepare.install"], { contentVersion: 1, status: "completed" });
+});
+
+test("completeStep drops an existing validationResult", () => {
+  const state = createEmptyProgress();
+  state.steps["connect.verify"] = { contentVersion: 1, status: "completed", validationResult: "passed" };
+  const completed = completeStep(state, { id: "connect.verify", contentVersion: 1 });
+  assert.deepEqual(completed.steps["connect.verify"], { contentVersion: 1, status: "completed" });
+});
+
+test("recordValidation ignores a stale step ref and keeps the newer record", () => {
+  const state = createEmptyProgress();
+  state.steps["connect.verify"] = { contentVersion: 2, status: "in-progress", validationResult: "failed" };
+  const result = recordValidation(state, { id: "connect.verify", contentVersion: 1 }, "passed");
+  assert.deepEqual(result.steps["connect.verify"], { contentVersion: 2, status: "in-progress", validationResult: "failed" });
+});
+
 test("acknowledgeReview only changes the matching current-version review record", () => {
   const state = createEmptyProgress();
   state.steps["connect.verify"] = { contentVersion: 2, status: "review", validationResult: "passed" };
