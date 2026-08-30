@@ -94,7 +94,10 @@ export function validateCatalog(catalog: FieldGuideCatalog): CatalogIssue[] {
     }
   }
   for (const step of catalog.steps) {
-    if (step.estimatedMinutes <= 0) {
+    if (
+      !Number.isFinite(step.estimatedMinutes) ||
+      step.estimatedMinutes <= 0
+    ) {
       issues.push({
         code: "invalid-duration",
         path: `steps.${step.id}.estimatedMinutes`,

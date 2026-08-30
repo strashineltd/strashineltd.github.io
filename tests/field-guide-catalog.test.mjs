@@ -174,6 +174,27 @@ test("catalog rejects repeated sections, non-positive time, and duration mismatc
   );
 });
 
+test("catalog rejects non-finite step times", () => {
+  const issues = validateCatalog({
+    ...emptyCatalog,
+    steps: [
+      makeStep({ id: "nan-duration", estimatedMinutes: Number.NaN }),
+      makeStep({
+        id: "infinite-duration",
+        estimatedMinutes: Number.POSITIVE_INFINITY,
+      }),
+    ],
+  });
+
+  assert.deepEqual(
+    issues.map((issue) => `${issue.code}:${issue.path}`).sort(),
+    [
+      "invalid-duration:steps.infinite-duration.estimatedMinutes",
+      "invalid-duration:steps.nan-duration.estimatedMinutes",
+    ],
+  );
+});
+
 test("assertValidCatalog throws one error containing every issue path", () => {
   const repeatedSection = {
     id: "instructions",
