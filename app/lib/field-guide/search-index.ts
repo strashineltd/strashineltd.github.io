@@ -165,7 +165,7 @@ export function searchFieldGuide(
   query: string,
   options: { currentStepIds: string[] },
 ): SearchResult[] {
-  const normalized = query.trim().toLowerCase();
+  const normalized = query.trim().toLowerCase().replace(/\s+/g, " ");
   if (normalized === "") {
     return index.map((entry) => ({ ...entry, score: 0, inCurrentRoute: false }));
   }

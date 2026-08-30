@@ -70,6 +70,27 @@ test("blank query ignores the current route and keeps every entry unscored", () 
   assert.ok(results.every((result) => result.score === 0 && !result.inCurrentRoute));
 });
 
+test("whitespace-only queries keep the full browsable fallback identical to blank", () => {
+  const index = buildSearchIndex(fieldGuideCatalog);
+  const blank = searchFieldGuide(index, "", { currentStepIds: [] });
+  const whitespace = searchFieldGuide(index, " \t\n ", { currentStepIds: [] });
+  assert.deepEqual(whitespace, blank);
+  assert.equal(whitespace.length, index.length);
+  assert.ok(whitespace.every((result) => result.score === 0 && !result.inCurrentRoute));
+});
+
+test("interior whitespace runs collapse so a double-space query matches the single-space results", () => {
+  const catalog = makeCatalog({
+    steps: [step("s.key", "invalid key", "body")],
+  });
+  const index = buildSearchIndex(catalog);
+  const single = searchFieldGuide(index, "invalid key", { currentStepIds: [] });
+  const doubled = searchFieldGuide(index, "invalid  key", { currentStepIds: [] });
+  assert.deepEqual(doubled, single);
+  assert.equal(single.length, 1);
+  assert.equal(single[0].id, "s.key");
+});
+
 test("buildSearchIndex emits exactly one document per step, diagnostic and glossary entry", () => {
   const index = buildSearchIndex(fieldGuideCatalog);
   assert.equal(
