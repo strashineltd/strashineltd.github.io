@@ -62,7 +62,11 @@ export function generateRoute(
   const stepById = new Map(catalog.steps.map((step) => [step.id, step]));
   const volumes = catalog.volumes.map((volume) => ({
     ...volume,
-    steps: volume.stepIds.map((stepId) => resolveStep(stepById.get(stepId)!, profile)),
+    steps: volume.stepIds.map((stepId) => {
+      const step = stepById.get(stepId);
+      if (step === undefined) throw new Error(`unknown step: ${stepId}`);
+      return resolveStep(step, profile);
+    }),
   }));
   const steps = volumes.flatMap((volume) => volume.steps);
   const totalMinutes = steps.reduce(
@@ -74,7 +78,7 @@ export function generateRoute(
     profile,
     volumes,
     steps,
-    sideTracks: catalog.sideTracks,
+    sideTracks: [...catalog.sideTracks],
     totalMinutes,
   };
 }

@@ -128,3 +128,24 @@ test("getNextStepId treats completion at a stale content version as incomplete",
   };
   assert.equal(getNextStepId(route, progress), first.id);
 });
+
+test("getNextStepId treats review as incomplete until acknowledged at the current version", () => {
+  const route = generateRoute(fieldGuideCatalog, { platform: "windows-x64", provider: "deepseek" });
+  const first = route.steps[0];
+  const review = { [first.id]: { contentVersion: first.contentVersion, status: "review" } };
+  assert.equal(getNextStepId(route, review), first.id);
+  const acknowledged = { [first.id]: { contentVersion: first.contentVersion, status: "completed" } };
+  assert.equal(getNextStepId(route, acknowledged), "prepare.install");
+});
+
+test("route generation is deterministic and never mutates the catalog", () => {
+  const profile = { platform: "windows-x64", provider: "deepseek" };
+  const snapshot = fieldGuideCatalog.sideTracks.map((track) => ({ id: track.id, stepIds: track.stepIds }));
+  const first = generateRoute(fieldGuideCatalog, profile);
+  const second = generateRoute(fieldGuideCatalog, profile);
+  assert.equal(JSON.stringify(first), JSON.stringify(second));
+  assert.deepEqual(
+    fieldGuideCatalog.sideTracks.map((track) => ({ id: track.id, stepIds: track.stepIds })),
+    snapshot,
+  );
+});
