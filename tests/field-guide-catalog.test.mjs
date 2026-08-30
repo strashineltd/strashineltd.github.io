@@ -314,6 +314,8 @@ test("catalog root and profile records match the v0.9.2 contract", () => {
 });
 
 test("core volumes and steps match the exact ordered route table", () => {
+  const coreSteps = fieldGuideCatalog.steps.filter((step) => step.volumeId !== null);
+
   assert.deepEqual(fieldGuideCatalog.volumes.map((volume) => ({
     id: volume.id,
     estimatedMinutes: volume.estimatedMinutes,
@@ -350,7 +352,7 @@ test("core volumes and steps match the exact ordered route table", () => {
       ],
     },
   ]);
-  assert.deepEqual(fieldGuideCatalog.steps.map((step) => ({
+  assert.deepEqual(coreSteps.map((step) => ({
     id: step.id,
     volumeId: step.volumeId,
     estimatedMinutes: step.estimatedMinutes,
@@ -375,11 +377,12 @@ test("core volumes and steps match the exact ordered route table", () => {
 
 test("core steps keep required content and block-level personalization", () => {
   const actionBlockTypes = new Set(["steps", "fields", "checklist", "callout"]);
-  const stepIds = fieldGuideCatalog.steps.map((step) => step.id);
+  const coreSteps = fieldGuideCatalog.steps.filter((step) => step.volumeId !== null);
+  const stepIds = coreSteps.map((step) => step.id);
   let audienceBlockCount = 0;
 
   assert.equal(new Set(stepIds).size, 14);
-  for (const step of fieldGuideCatalog.steps) {
+  for (const step of coreSteps) {
     assert.equal(Object.hasOwn(step, "audience"), false, `${step.id} carries whole-step audience`);
     const blocks = step.sections.flatMap((section) => {
       assert.equal(Object.hasOwn(section, "audience"), false, `${step.id} section carries audience`);
@@ -395,6 +398,101 @@ test("core steps keep required content and block-level personalization", () => {
     }
   }
   assert.ok(audienceBlockCount > 0);
+});
+
+test("optional tracks cover every major v0.9.2 reference area", () => {
+  assert.deepEqual(fieldGuideCatalog.sideTracks.map((track) => track.id), [
+    "models-context",
+    "workflow-tools",
+    "extensions",
+    "security-data",
+    "troubleshooting",
+    "release-reference",
+  ]);
+  const searchable = JSON.stringify(fieldGuideCatalog).replaceAll("\\\\", "\\");
+  for (const fact of [
+    "256K、512K 或 1M",
+    "90%",
+    "research",
+    "build",
+    "verify",
+    "fileScopes",
+    "Context Hub",
+    "Chat Completions 已移除",
+    "Skills",
+    "MCP",
+    "17 个默认快捷键",
+    "%APPDATA%\\Stellara Work",
+    "~/Library/Application Support/Stellara Work",
+    "Electron 43.2.0",
+  ]) assert.match(searchable, new RegExp(fact.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  assert.doesNotMatch(searchable, /支持 Chat Completions|不支持 Intel|minimaxi\.com|Electron 31/);
+});
+
+test("optional track steps are focused, searchable, and structurally complete", () => {
+  const actionBlockTypes = new Set(["steps", "fields", "checklist", "callout"]);
+  const trackStepIds = fieldGuideCatalog.sideTracks.flatMap((track) => {
+    assert.ok(track.stepIds.length >= 2 && track.stepIds.length <= 5, `${track.id} step count`);
+    return track.stepIds;
+  });
+  const trackSteps = fieldGuideCatalog.steps.filter((step) => step.volumeId === null);
+
+  assert.ok(trackStepIds.length > 0);
+  assert.deepEqual(trackSteps.map((step) => step.id), trackStepIds);
+  assert.equal(new Set(trackStepIds).size, trackStepIds.length);
+  for (const step of trackSteps) {
+    assert.ok(Number.isFinite(step.estimatedMinutes) && step.estimatedMinutes > 0, `${step.id} duration`);
+    assert.ok(step.searchTerms.length > 0 && step.searchTerms.every((term) => term.trim()), `${step.id} aliases`);
+    assert.equal(Object.hasOwn(step, "audience"), false, `${step.id} carries whole-step audience`);
+    assert.equal(Object.hasOwn(step, "relatedTrackIds"), false, `${step.id} links to a core step`);
+    const blocks = step.sections.flatMap((section) => {
+      assert.equal(Object.hasOwn(section, "audience"), false, `${step.id} section carries audience`);
+      return section.blocks;
+    });
+    assert.ok(blocks.some((block) => block.type === "prose"), `${step.id} missing prose`);
+    assert.ok(
+      blocks.some((block) => actionBlockTypes.has(block.type)),
+      `${step.id} missing an action block`,
+    );
+  }
+});
+
+test("glossary and core links make every side track discoverable", () => {
+  const requiredTerms = [
+    "Responses API",
+    "Anthropic Messages",
+    "Context Hub",
+    "checkpoint",
+    "task gate",
+    "approval",
+    "working directory",
+    "subagent",
+    "Skills",
+    "MCP",
+    "memory scope",
+    "reduced motion",
+  ];
+  const trackIds = new Set(fieldGuideCatalog.sideTracks.map((track) => track.id));
+  const coreSteps = fieldGuideCatalog.steps.filter((step) => step.volumeId !== null);
+
+  assert.ok(fieldGuideCatalog.glossary.length >= requiredTerms.length);
+  for (const term of requiredTerms) {
+    const entry = fieldGuideCatalog.glossary.find((item) => item.term === term);
+    assert.ok(entry, `missing glossary term: ${term}`);
+    assert.ok(entry.definition.trim(), `${term} missing definition`);
+    assert.ok(entry.aliases.length > 0, `${term} missing aliases`);
+  }
+  for (const step of coreSteps) {
+    for (const trackId of step.relatedTrackIds ?? []) {
+      assert.ok(trackIds.has(trackId), `${step.id} has invalid track ${trackId}`);
+    }
+  }
+  for (const trackId of trackIds) {
+    assert.ok(
+      coreSteps.some((step) => step.relatedTrackIds?.includes(trackId)),
+      `${trackId} is not linked from a core step`,
+    );
+  }
 });
 
 test("catalog has no structural issues", () => {
