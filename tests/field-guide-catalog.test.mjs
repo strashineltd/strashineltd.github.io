@@ -31,6 +31,14 @@ function makeStep(overrides = {}) {
   };
 }
 
+function blocksForProvider(stepId, providerId) {
+  const step = fieldGuideCatalog.steps.find((item) => item.id === stepId);
+  assert.ok(step, `missing step: ${stepId}`);
+  return step.sections
+    .flatMap((section) => section.blocks)
+    .filter((block) => !block.audience?.providers || block.audience.providers.includes(providerId));
+}
+
 test("catalog emits stable codes and paths for duplicate ids", () => {
   const volume = {
     id: "prepare",
@@ -265,4 +273,49 @@ test("provider facts match v0.9.2 protocols", () => {
 
 test("catalog has no structural issues", () => {
   assert.deepEqual(validateCatalog(fieldGuideCatalog), []);
+});
+
+test("Kimi content reflects its non-executable v0.9.2 preset", () => {
+  const blocks = [
+    ...blocksForProvider("connect.choose-service", "kimi"),
+    ...blocksForProvider("connect.enter-settings", "kimi"),
+  ];
+  const content = JSON.stringify(blocks);
+
+  assert.ok(blocks.some((block) => block.type === "callout" && block.tone === "warning"));
+  assert.match(content, /当前不可执行/);
+  assert.match(content, /不能完成连接验证/);
+  assert.match(content, /选择可执行的提供商/);
+  assert.doesNotMatch(content, /测试并执行/);
+});
+
+test("custom Anthropic validation uses the Settings-only setup path", () => {
+  const blocks = blocksForProvider("connect.verify", "custom-anthropic");
+  const content = JSON.stringify(blocks);
+
+  assert.ok(blocks.some((block) =>
+    block.type === "steps" && block.audience?.providers?.includes("custom-anthropic"),
+  ));
+  assert.match(content, /设置 → 模型/);
+  assert.match(content, /添加模型/);
+  assert.match(content, /自定义模型/);
+  assert.match(content, /Anthropic Messages/);
+  assert.doesNotMatch(content, /首次引导|完成配置/);
+});
+
+test("memory saves are reviewed outside the standard approval prompt", () => {
+  const step = fieldGuideCatalog.steps.find((item) => item.id === "reliable.approvals");
+  assert.ok(step);
+  const memoryItems = step.sections
+    .flatMap((section) => section.blocks)
+    .filter((block) => block.type === "checklist")
+    .flatMap((block) => block.items)
+    .filter((item) => item.includes("memory_save"));
+  const content = memoryItems.join("\n");
+
+  assert.equal(memoryItems.length, 1);
+  assert.match(content, /memory_save 不会显示标准的逐次审批提示/);
+  assert.match(content, /记忆中心/);
+  assert.match(content, /删除/);
+  assert.doesNotMatch(content, /批准|允许/);
 });

@@ -36,7 +36,7 @@ export const connectIntelligenceSteps: LearningStep[] = [
               "DeepSeek：DeepSeek-V4-Pro 或 DeepSeek-V4-Flash",
               "Qwen：Qwen3.8-Max",
               "GLM：GLM-5.3 或 GLM-5.2",
-              "Kimi：Kimi-K3",
+              "Kimi：Kimi-K3（v0.9.2 保留配置，当前不可执行）",
               "MiniMax：MiniMax-M3",
               "自定义 · Responses API：使用服务方提供的模型名与地址",
               "自定义 · Anthropic Messages：使用兼容 Messages 的模型名与地址",
@@ -46,7 +46,7 @@ export const connectIntelligenceSteps: LearningStep[] = [
             type: "callout",
             tone: "note",
             title: "当前协议",
-            body: "Responses API 是当前选择。v0.9.2 会按 Responses 协议测试并执行，不会回退到其他接口格式。",
+            body: "Responses API 是当前选择。这个徽标说明当前路线采用 Responses 请求格式；v0.9.2 不会回退到其他接口。",
             audience: {
               providers: [
                 "deepseek",
@@ -121,13 +121,11 @@ export const connectIntelligenceSteps: LearningStep[] = [
             ],
           },
           {
-            type: "fields",
+            type: "callout",
+            tone: "warning",
+            title: "Kimi-K3 当前不可执行",
             audience: { providers: ["kimi"] },
-            items: [
-              { label: "Base URL", value: "https://api.moonshot.cn" },
-              { label: "模型预设", value: "Kimi-K3" },
-              { label: "协议", value: "Responses API" },
-            ],
+            body: "v0.9.2 保留 Kimi-K3 配置，但将它标记为 incompatible 和当前不可执行。这个预设不能完成连接验证；请返回模型服务选择，选择可执行的提供商。修改 Kimi 的 Base URL 或模型字段不能绕过这项运行时限制。",
           },
           {
             type: "fields",
@@ -180,6 +178,15 @@ export const connectIntelligenceSteps: LearningStep[] = [
           },
           {
             type: "steps",
+            audience: {
+              providers: [
+                "deepseek",
+                "qwen",
+                "glm",
+                "minimax",
+                "custom-responses",
+              ],
+            },
             items: [
               {
                 title: "在应用内提交配置",
@@ -194,6 +201,31 @@ export const connectIntelligenceSteps: LearningStep[] = [
                 detail: "按最接近的现象排查，修复后回到本步骤再次运行同一项连接测试。",
               },
             ],
+          },
+          {
+            type: "steps",
+            audience: { providers: ["custom-anthropic"] },
+            items: [
+              {
+                title: "从模型设置开始",
+                detail: "在 Stellara Work 中打开“设置 → 模型 → 添加模型”。",
+              },
+              {
+                title: "明确选择接口协议",
+                detail: "选择“自定义模型”预设，将“接口协议”设为“Anthropic Messages API”，再在应用内填写服务地址、模型名与凭证。",
+              },
+              {
+                title: "保存并读取反馈",
+                detail: "保存新增模型并等待应用完成连接测试；回到手册时只记录通过状态或非敏感错误摘要。",
+              },
+            ],
+          },
+          {
+            type: "callout",
+            tone: "warning",
+            title: "先更换模型服务",
+            body: "Kimi-K3 在 v0.9.2 中当前不可执行，不能完成这项连接验证。请返回模型服务选择，选择可执行的提供商。",
+            audience: { providers: ["kimi"] },
           },
           {
             type: "callout",
