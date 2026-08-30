@@ -31,11 +31,14 @@ function makeStep(overrides = {}) {
   };
 }
 
-function blocksForProvider(stepId, providerId) {
+function blocksForStep(stepId) {
   const step = fieldGuideCatalog.steps.find((item) => item.id === stepId);
   assert.ok(step, `missing step: ${stepId}`);
-  return step.sections
-    .flatMap((section) => section.blocks)
+  return step.sections.flatMap((section) => section.blocks);
+}
+
+function blocksForProvider(stepId, providerId) {
+  return blocksForStep(stepId)
     .filter((block) => !block.audience?.providers || block.audience.providers.includes(providerId));
 }
 
@@ -249,44 +252,213 @@ test("assertValidCatalog throws one error containing every issue path", () => {
   );
 });
 
-test("core route has four outcome volumes totaling 45 minutes", () => {
-  assert.deepEqual(fieldGuideCatalog.volumes.map((volume) => volume.id), [
-    "prepare-device",
-    "connect-intelligence",
-    "first-outcome",
-    "reliable-work",
+test("catalog root and profile records match the v0.9.2 contract", () => {
+  assert.equal(fieldGuideCatalog.version, "0.9.2");
+  assert.equal(Object.isFrozen(fieldGuideCatalog), true);
+  assert.deepEqual(fieldGuideCatalog.platforms, [
+    { id: "windows-x64", label: "Windows x64", shortLabel: "Windows x64" },
+    { id: "macos-arm64", label: "macOS · Apple 芯片", shortLabel: "Apple 芯片" },
+    { id: "macos-x64", label: "macOS · Intel", shortLabel: "Intel" },
   ]);
-  assert.deepEqual(fieldGuideCatalog.volumes.map((volume) => volume.estimatedMinutes), [8, 12, 12, 13]);
+  assert.deepEqual(fieldGuideCatalog.providers, [
+    {
+      id: "deepseek",
+      label: "DeepSeek",
+      presetLabels: ["DeepSeek-V4-Pro", "DeepSeek-V4-Flash"],
+      baseUrl: "https://api.deepseek.com",
+      wireApi: "responses",
+    },
+    {
+      id: "qwen",
+      label: "Qwen",
+      presetLabels: ["Qwen3.8-Max"],
+      baseUrl: "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      wireApi: "responses",
+    },
+    {
+      id: "glm",
+      label: "GLM",
+      presetLabels: ["GLM-5.3", "GLM-5.2"],
+      baseUrl: "https://open.bigmodel.cn/api/v1",
+      wireApi: "responses",
+    },
+    {
+      id: "kimi",
+      label: "Kimi",
+      presetLabels: ["Kimi-K3"],
+      baseUrl: "https://api.moonshot.cn",
+      wireApi: "responses",
+    },
+    {
+      id: "minimax",
+      label: "MiniMax",
+      presetLabels: ["MiniMax-M3"],
+      baseUrl: "https://api.minimax.io/v1",
+      wireApi: "responses",
+    },
+    {
+      id: "custom-responses",
+      label: "自定义 · Responses API",
+      presetLabels: ["自定义模型"],
+      baseUrl: null,
+      wireApi: "responses",
+    },
+    {
+      id: "custom-anthropic",
+      label: "自定义 · Anthropic Messages",
+      presetLabels: ["自定义模型"],
+      baseUrl: null,
+      wireApi: "anthropic",
+    },
+  ]);
+});
+
+test("core volumes and steps match the exact ordered route table", () => {
+  assert.deepEqual(fieldGuideCatalog.volumes.map((volume) => ({
+    id: volume.id,
+    estimatedMinutes: volume.estimatedMinutes,
+    stepIds: volume.stepIds,
+  })), [
+    {
+      id: "prepare-device",
+      estimatedMinutes: 8,
+      stepIds: ["prepare.choose-build", "prepare.install", "prepare.first-launch"],
+    },
+    {
+      id: "connect-intelligence",
+      estimatedMinutes: 12,
+      stepIds: ["connect.choose-service", "connect.enter-settings", "connect.verify"],
+    },
+    {
+      id: "first-outcome",
+      estimatedMinutes: 12,
+      stepIds: [
+        "outcome.choose-workspace",
+        "outcome.write-brief",
+        "outcome.follow-execution",
+        "outcome.review-result",
+      ],
+    },
+    {
+      id: "reliable-work",
+      estimatedMinutes: 13,
+      stepIds: [
+        "reliable.approvals",
+        "reliable.context",
+        "reliable.review",
+        "reliable.complete",
+      ],
+    },
+  ]);
+  assert.deepEqual(fieldGuideCatalog.steps.map((step) => ({
+    id: step.id,
+    volumeId: step.volumeId,
+    estimatedMinutes: step.estimatedMinutes,
+  })), [
+    { id: "prepare.choose-build", volumeId: "prepare-device", estimatedMinutes: 2 },
+    { id: "prepare.install", volumeId: "prepare-device", estimatedMinutes: 4 },
+    { id: "prepare.first-launch", volumeId: "prepare-device", estimatedMinutes: 2 },
+    { id: "connect.choose-service", volumeId: "connect-intelligence", estimatedMinutes: 3 },
+    { id: "connect.enter-settings", volumeId: "connect-intelligence", estimatedMinutes: 5 },
+    { id: "connect.verify", volumeId: "connect-intelligence", estimatedMinutes: 4 },
+    { id: "outcome.choose-workspace", volumeId: "first-outcome", estimatedMinutes: 3 },
+    { id: "outcome.write-brief", volumeId: "first-outcome", estimatedMinutes: 4 },
+    { id: "outcome.follow-execution", volumeId: "first-outcome", estimatedMinutes: 3 },
+    { id: "outcome.review-result", volumeId: "first-outcome", estimatedMinutes: 2 },
+    { id: "reliable.approvals", volumeId: "reliable-work", estimatedMinutes: 3 },
+    { id: "reliable.context", volumeId: "reliable-work", estimatedMinutes: 3 },
+    { id: "reliable.review", volumeId: "reliable-work", estimatedMinutes: 4 },
+    { id: "reliable.complete", volumeId: "reliable-work", estimatedMinutes: 3 },
+  ]);
   assert.equal(fieldGuideCatalog.volumes.reduce((sum, volume) => sum + volume.estimatedMinutes, 0), 45);
 });
 
-test("provider facts match v0.9.2 protocols", () => {
-  const providers = Object.fromEntries(fieldGuideCatalog.providers.map((provider) => [provider.id, provider]));
-  assert.deepEqual(providers.deepseek.presetLabels, ["DeepSeek-V4-Pro", "DeepSeek-V4-Flash"]);
-  assert.equal(providers.qwen.baseUrl, "https://dashscope.aliyuncs.com/compatible-mode/v1");
-  assert.equal(providers.glm.baseUrl, "https://open.bigmodel.cn/api/v1");
-  assert.equal(providers.kimi.baseUrl, "https://api.moonshot.cn");
-  assert.equal(providers.minimax.baseUrl, "https://api.minimax.io/v1");
-  assert.equal(providers["custom-anthropic"].wireApi, "anthropic");
-  assert.ok(fieldGuideCatalog.providers.filter((provider) => provider.id !== "custom-anthropic").every((provider) => provider.wireApi === "responses"));
+test("core steps keep required content and block-level personalization", () => {
+  const actionBlockTypes = new Set(["steps", "fields", "checklist", "callout"]);
+  const stepIds = fieldGuideCatalog.steps.map((step) => step.id);
+  let audienceBlockCount = 0;
+
+  assert.equal(new Set(stepIds).size, 14);
+  for (const step of fieldGuideCatalog.steps) {
+    assert.equal(Object.hasOwn(step, "audience"), false, `${step.id} carries whole-step audience`);
+    const blocks = step.sections.flatMap((section) => {
+      assert.equal(Object.hasOwn(section, "audience"), false, `${step.id} section carries audience`);
+      return section.blocks;
+    });
+    assert.ok(blocks.some((block) => block.type === "prose"), `${step.id} missing prose`);
+    assert.ok(
+      blocks.some((block) => actionBlockTypes.has(block.type)),
+      `${step.id} missing an action block`,
+    );
+    for (const block of blocks) {
+      if (block.audience) audienceBlockCount += 1;
+    }
+  }
+  assert.ok(audienceBlockCount > 0);
 });
 
 test("catalog has no structural issues", () => {
   assert.deepEqual(validateCatalog(fieldGuideCatalog), []);
 });
 
-test("Kimi content reflects its non-executable v0.9.2 preset", () => {
-  const blocks = [
-    ...blocksForProvider("connect.choose-service", "kimi"),
-    ...blocksForProvider("connect.enter-settings", "kimi"),
+test("connection diagnostics match the exact return contract", () => {
+  const expectedDiagnostics = [
+    { id: "connection.unauthorized", symptom: "未授权或凭证无效" },
+    { id: "connection.endpoint", symptom: "找不到地址或协议不匹配" },
+    { id: "connection.timeout", symptom: "请求超时或网络不可达" },
+    { id: "connection.rate-limit", symptom: "请求频率或额度受限" },
+    { id: "connection.unknown", symptom: "其他错误" },
   ];
-  const content = JSON.stringify(blocks);
+  const expectedIds = expectedDiagnostics.map((diagnostic) => diagnostic.id);
 
-  assert.ok(blocks.some((block) => block.type === "callout" && block.tone === "warning"));
-  assert.match(content, /当前不可执行/);
-  assert.match(content, /不能完成连接验证/);
-  assert.match(content, /选择可执行的提供商/);
-  assert.doesNotMatch(content, /测试并执行/);
+  assert.deepEqual(fieldGuideCatalog.diagnostics.map(({ id, symptom }) => ({ id, symptom })), expectedDiagnostics);
+  for (const diagnostic of fieldGuideCatalog.diagnostics) {
+    assert.equal(diagnostic.returnStepId, "connect.verify");
+    assert.ok(diagnostic.steps.length > 0, `${diagnostic.id} has no checks`);
+    for (const check of diagnostic.steps) {
+      assert.ok(check.instruction.trim(), `${diagnostic.id} has an empty instruction`);
+      assert.ok(check.expected.trim(), `${diagnostic.id} has an empty expected result`);
+    }
+  }
+
+  const verifyStep = fieldGuideCatalog.steps.find((step) => step.id === "connect.verify");
+  assert.ok(verifyStep?.validation);
+  assert.deepEqual(verifyStep.validation.failureDiagnosticIds, expectedIds);
+});
+
+test("Kimi warnings replace executable setup blocks without suppressing validation", () => {
+  const kimiSteps = [
+    { id: "connect.choose-service", excludedBlockType: null },
+    { id: "connect.enter-settings", excludedBlockType: "fields" },
+    { id: "connect.verify", excludedBlockType: "steps" },
+  ];
+
+  for (const { id, excludedBlockType } of kimiSteps) {
+    const blocks = blocksForProvider(id, "kimi");
+    const content = JSON.stringify(blocks);
+
+    assert.match(content, /Kimi-K3/);
+    assert.match(content, /当前不可执行/);
+    assert.doesNotMatch(content, /测试并执行/);
+    if (excludedBlockType) {
+      const allBlocks = blocksForStep(id);
+      assert.ok(allBlocks.some((block) =>
+        block.type === excludedBlockType
+        && block.audience?.providers
+        && !block.audience.providers.includes("kimi"),
+      ));
+      assert.equal(blocks.some((block) => block.type === excludedBlockType), false);
+      assert.ok(blocks.some((block) =>
+        block.type === "callout"
+        && block.tone === "warning"
+        && block.audience?.providers?.includes("kimi"),
+      ));
+      assert.match(content, /选择可执行的提供商/);
+    }
+  }
+
+  const verifyStep = fieldGuideCatalog.steps.find((step) => step.id === "connect.verify");
+  assert.ok(verifyStep?.validation);
 });
 
 test("custom Anthropic validation uses the Settings-only setup path", () => {
