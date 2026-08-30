@@ -118,7 +118,22 @@ export function validateCatalog(catalog: FieldGuideCatalog): CatalogIssue[] {
         message: `重复章节 ID：${id}`,
       });
     }
-    for (const id of step.relatedTrackIds ?? []) {
+    const trackLinks = step.relatedTrackIds ?? [];
+    if (step.volumeId !== null && trackLinks.length === 0) {
+      issues.push({
+        code: "missing-track-links",
+        path: `steps.${step.id}.relatedTrackIds`,
+        message: "核心步骤缺少支线链接",
+      });
+    }
+    for (const id of duplicates(trackLinks)) {
+      issues.push({
+        code: "duplicate-track-link",
+        path: `steps.${step.id}.relatedTrackIds`,
+        message: `重复的支线链接：${id}`,
+      });
+    }
+    for (const id of trackLinks) {
       if (!trackIds.has(id)) {
         issues.push({
           code: "missing-track-reference",

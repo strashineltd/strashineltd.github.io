@@ -31,6 +31,16 @@ function makeStep(overrides = {}) {
   };
 }
 
+/**
+ * JSON.stringify 会把内容中的反斜杠编码成两字符转义序列 \\。
+ * 在按原文匹配 %APPDATA%\Stellara Work 这类路径前，先把转义序列还原为
+ * 单个反斜杠；内容中合法的双反斜杠（如 UNC 前缀）会被还原为同样数量的
+ * 反斜杠，不会发生二次折叠。
+ */
+function collapseJsonEscapedBackslashes(text) {
+  return text.replaceAll("\\\\", "\\");
+}
+
 function blocksForStep(stepId) {
   const step = fieldGuideCatalog.steps.find((item) => item.id === stepId);
   assert.ok(step, `missing step: ${stepId}`);
@@ -158,6 +168,14 @@ test("catalog rejects repeated sections, non-positive time, and duration mismatc
   };
   const issues = validateCatalog({
     ...emptyCatalog,
+    sideTracks: [
+      {
+        id: "repair",
+        title: "Troubleshooting",
+        summary: "Resolve setup problems",
+        stepIds: [],
+      },
+    ],
     volumes: [
       {
         id: "prepare",
@@ -171,6 +189,7 @@ test("catalog rejects repeated sections, non-positive time, and duration mismatc
       makeStep({
         volumeId: "prepare",
         sections: [repeatedSection, repeatedSection],
+        relatedTrackIds: ["repair"],
       }),
       makeStep({ id: "invalid-duration", estimatedMinutes: 0 }),
     ],
@@ -205,6 +224,49 @@ test("catalog rejects non-finite step times", () => {
       "invalid-duration:steps.nan-duration.estimatedMinutes",
     ],
   );
+});
+
+test("catalog rejects core steps without track links and duplicate track links", () => {
+  const issues = validateCatalog({
+    ...emptyCatalog,
+    volumes: [
+      {
+        id: "core",
+        title: "Core",
+        outcome: "Launch the application",
+        estimatedMinutes: 6,
+        stepIds: ["core.missing", "core.empty", "core.duplicate"],
+      },
+    ],
+    sideTracks: [
+      { id: "models-context", title: "Models", summary: "M", stepIds: [] },
+      { id: "security-data", title: "Security", summary: "S", stepIds: [] },
+    ],
+    steps: [
+      makeStep({ id: "core.missing", volumeId: "core" }),
+      makeStep({ id: "core.empty", volumeId: "core", relatedTrackIds: [] }),
+      makeStep({
+        id: "core.duplicate",
+        volumeId: "core",
+        relatedTrackIds: ["models-context", "security-data", "models-context"],
+      }),
+    ],
+  });
+
+  assert.deepEqual(
+    issues.map((issue) => `${issue.code}:${issue.path}`).sort(),
+    [
+      "duplicate-track-link:steps.core.duplicate.relatedTrackIds",
+      "missing-track-links:steps.core.empty.relatedTrackIds",
+      "missing-track-links:steps.core.missing.relatedTrackIds",
+    ],
+  );
+
+  const trackStepIssues = validateCatalog({
+    ...emptyCatalog,
+    steps: [makeStep({ id: "track.ok" })],
+  });
+  assert.deepEqual(trackStepIssues, []);
 });
 
 test("assertValidCatalog throws one error containing every issue path", () => {
@@ -384,6 +446,7 @@ test("core steps keep required content and block-level personalization", () => {
   assert.equal(new Set(stepIds).size, 14);
   for (const step of coreSteps) {
     assert.equal(Object.hasOwn(step, "audience"), false, `${step.id} carries whole-step audience`);
+    assert.ok(step.relatedTrackIds?.length > 0, `${step.id} missing track links`);
     const blocks = step.sections.flatMap((section) => {
       assert.equal(Object.hasOwn(section, "audience"), false, `${step.id} section carries audience`);
       return section.blocks;
@@ -409,7 +472,7 @@ test("optional tracks cover every major v0.9.2 reference area", () => {
     "troubleshooting",
     "release-reference",
   ]);
-  const searchable = JSON.stringify(fieldGuideCatalog).replaceAll("\\\\", "\\");
+  const searchable = collapseJsonEscapedBackslashes(JSON.stringify(fieldGuideCatalog));
   for (const fact of [
     "256K、512K 或 1M",
     "90%",

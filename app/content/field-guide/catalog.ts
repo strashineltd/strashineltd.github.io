@@ -34,7 +34,23 @@ const sourceCoreSteps: LearningStep[] = [
   ...reliableWorkSteps,
 ];
 
-const relatedTracksByStep: Record<string, string[]> = {
+type CoreStepId =
+  | "prepare.choose-build"
+  | "prepare.install"
+  | "prepare.first-launch"
+  | "connect.choose-service"
+  | "connect.enter-settings"
+  | "connect.verify"
+  | "outcome.choose-workspace"
+  | "outcome.write-brief"
+  | "outcome.follow-execution"
+  | "outcome.review-result"
+  | "reliable.approvals"
+  | "reliable.context"
+  | "reliable.review"
+  | "reliable.complete";
+
+const relatedTracksByStep = {
   "prepare.choose-build": ["release-reference"],
   "prepare.install": ["troubleshooting", "security-data", "release-reference"],
   "prepare.first-launch": ["troubleshooting", "security-data"],
@@ -49,11 +65,11 @@ const relatedTracksByStep: Record<string, string[]> = {
   "reliable.context": ["models-context", "workflow-tools", "extensions"],
   "reliable.review": ["workflow-tools", "extensions"],
   "reliable.complete": ["workflow-tools", "release-reference"],
-};
+} satisfies Record<CoreStepId, string[]>;
 
 export const coreSteps: LearningStep[] = sourceCoreSteps.map((step) => ({
   ...step,
-  relatedTrackIds: relatedTracksByStep[step.id],
+  relatedTrackIds: relatedTracksByStep[step.id as CoreStepId],
 }));
 
 export const fieldGuideCatalog: FieldGuideCatalog = Object.freeze({
