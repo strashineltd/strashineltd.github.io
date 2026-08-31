@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { FieldGuideHeader } from "./FieldGuideHeader";
 import { ProfileSetup } from "./ProfileSetup";
 import { RouteBook } from "./RouteBook";
@@ -7,6 +8,23 @@ import { useFieldGuideState } from "./useFieldGuideState";
 
 export function FieldManual() {
   const { state, dispatch } = useFieldGuideState();
+  const pendingFocus = useRef<"route" | "setup" | null>(null);
+  const routeHeading = useRef<HTMLHeadingElement>(null);
+  const setupHeading = useRef<HTMLHeadingElement>(null);
+
+  useEffect(() => {
+    if (pendingFocus.current === "route" && state.route) {
+      routeHeading.current?.focus();
+      pendingFocus.current = null;
+    } else if (
+      pendingFocus.current === "setup" &&
+      !state.route &&
+      state.storageMode !== "corrupt"
+    ) {
+      setupHeading.current?.focus();
+      pendingFocus.current = null;
+    }
+  }, [state.route, state.storageMode]);
 
   return (
     <main
@@ -23,20 +41,27 @@ export function FieldManual() {
       ) : null}
       {state.storageMode === "corrupt" ? (
         <section className="manual-storage-error" role="alert">
-          <h2>本地进度无法读取</h2>
+          <h1>本地进度无法读取</h1>
           <p>我们没有自动清除数据。确认后可重新开始。</p>
           <button
-            onClick={() => dispatch({ type: "confirm-corrupt-reset" })}
+            onClick={() => {
+              pendingFocus.current = "setup";
+              dispatch({ type: "confirm-corrupt-reset" });
+            }}
             type="button"
           >
             重置本地进度
           </button>
         </section>
       ) : state.route ? (
-        <RouteBook route={state.route} />
+        <RouteBook headingRef={routeHeading} route={state.route} />
       ) : (
         <ProfileSetup
-          onCreate={(profile) => dispatch({ type: "set-profile", profile })}
+          headingRef={setupHeading}
+          onCreate={(profile) => {
+            pendingFocus.current = "route";
+            dispatch({ type: "set-profile", profile });
+          }}
         />
       )}
     </main>

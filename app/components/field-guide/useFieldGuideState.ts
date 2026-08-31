@@ -52,6 +52,14 @@ const initialState: FieldGuideState = {
   storageIntent: null,
 };
 
+function getBrowserStorage() {
+  try {
+    return window.localStorage;
+  } catch {
+    return null;
+  }
+}
+
 function restoreRoute(progress: GuideProgress) {
   if (!progress.profile) return { progress, route: null };
   const route = generateRoute(fieldGuideCatalog, progress.profile);
@@ -135,6 +143,7 @@ export function fieldGuideReducer(
     case "storage-unavailable":
       return {
         ...state,
+        hydrated: true,
         storageMode: "unavailable",
         storageIntent: null,
       };
@@ -169,16 +178,26 @@ export function useFieldGuideState() {
   const [state, dispatch] = useReducer(fieldGuideReducer, initialState);
 
   useEffect(() => {
-    dispatch({ type: "hydrate", result: loadProgress(window.localStorage) });
+    const storage = getBrowserStorage();
+    if (!storage) {
+      dispatch({ type: "storage-unavailable" });
+      return;
+    }
+    dispatch({ type: "hydrate", result: loadProgress(storage) });
   }, []);
 
   useEffect(() => {
     if (!state.hydrated || state.storageMode !== "ready") return;
+    const storage = getBrowserStorage();
+    if (!storage) {
+      dispatch({ type: "storage-unavailable" });
+      return;
+    }
     if (state.storageIntent === "save") {
-      const result = saveProgress(window.localStorage, state.progress);
+      const result = saveProgress(storage, state.progress);
       if (!result.ok) dispatch({ type: "storage-unavailable" });
     } else if (state.storageIntent === "clear") {
-      const result = clearProgress(window.localStorage);
+      const result = clearProgress(storage);
       if (!result.ok) dispatch({ type: "storage-unavailable" });
     }
   }, [state.hydrated, state.progress, state.storageIntent, state.storageMode]);

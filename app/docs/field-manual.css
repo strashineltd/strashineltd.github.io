@@ -174,7 +174,9 @@
 }
 
 .manual-choice input:focus-visible + span,
-.field-manual button:focus-visible {
+.field-manual button:focus-visible,
+#manual-route-title:focus-visible,
+#manual-setup-title:focus-visible {
   outline: 3px solid var(--manual-accent);
   outline-offset: 3px;
 }

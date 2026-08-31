@@ -1,11 +1,13 @@
+import type { Ref } from "react";
 import { fieldGuideCatalog } from "../../content/field-guide/catalog.ts";
 import type { GeneratedRoute } from "../../lib/field-guide/route-engine.ts";
 
 type RouteBookProps = {
+  headingRef?: Ref<HTMLHeadingElement>;
   route: GeneratedRoute;
 };
 
-export function RouteBook({ route }: RouteBookProps) {
+export function RouteBook({ headingRef, route }: RouteBookProps) {
   const platform = fieldGuideCatalog.platforms.find(
     (option) => option.id === route.profile.platform,
   );
@@ -20,7 +22,9 @@ export function RouteBook({ route }: RouteBookProps) {
           <p className="manual-kicker">
             {platform?.label} · {provider?.label}
           </p>
-          <h1 id="manual-route-title">准备好你的工作环境</h1>
+          <h1 id="manual-route-title" ref={headingRef} tabIndex={-1}>
+            准备好你的工作环境
+          </h1>
           <p>从设备准备开始，沿着四个成果完成第一次可靠交付。</p>
         </div>
         <strong className="manual-route__time">{route.totalMinutes} 分钟</strong>

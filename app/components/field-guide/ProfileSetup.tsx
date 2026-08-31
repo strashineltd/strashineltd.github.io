@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, type FormEvent, type Ref } from "react";
 import {
   platformOptions,
   providerOptions,
@@ -12,10 +12,11 @@ import type {
 } from "../../content/field-guide/types.ts";
 
 type ProfileSetupProps = {
+  headingRef?: Ref<HTMLHeadingElement>;
   onCreate: (profile: LearnerProfile) => void;
 };
 
-export function ProfileSetup({ onCreate }: ProfileSetupProps) {
+export function ProfileSetup({ headingRef, onCreate }: ProfileSetupProps) {
   const [platform, setPlatform] = useState<PlatformId | "">("");
   const [provider, setProvider] = useState<ProviderId | "">("");
 
@@ -29,7 +30,9 @@ export function ProfileSetup({ onCreate }: ProfileSetupProps) {
     <section className="manual-setup" aria-labelledby="manual-setup-title">
       <div className="manual-setup__intro">
         <p className="manual-kicker">准备环境 · 约 45 分钟</p>
-        <h1 id="manual-setup-title">为你编排一份现场手册</h1>
+        <h1 id="manual-setup-title" ref={headingRef} tabIndex={-1}>
+          为你编排一份现场手册
+        </h1>
         <p>
           先确认设备与模型服务，我们会把安装、连接、首次成果和可靠交付整理成一条连续路线。
         </p>
