@@ -7,11 +7,13 @@ import type { DiagnosticBranch } from "../../content/field-guide/types.ts";
 type DiagnosticFlowProps = {
   branch: DiagnosticBranch;
   onReturnToValidation: () => void;
+  onOpenSearch?: () => void;
 };
 
 export function DiagnosticFlow({
   branch,
   onReturnToValidation,
+  onOpenSearch,
 }: DiagnosticFlowProps) {
   const [checkIndex, setCheckIndex] = useState(0);
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -56,7 +58,13 @@ export function DiagnosticFlow({
         </button>
         {isFinal ? (
           <>
-            <button disabled type="button">
+            <button
+              onClick={() => {
+                if (onOpenSearch) onOpenSearch();
+                else document.dispatchEvent(new CustomEvent("manual:open-search"));
+              }}
+              type="button"
+            >
               <Search aria-hidden="true" />
               搜索其他错误
             </button>

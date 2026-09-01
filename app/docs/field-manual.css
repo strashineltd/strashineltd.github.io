@@ -817,6 +817,218 @@
   background: var(--manual-paper-deep);
 }
 
+.manual-storage-error__raw {
+  max-height: 240px;
+  margin: 12px 0;
+  padding: 12px 14px;
+  overflow: auto;
+  border: 1px solid var(--manual-rule);
+  background: rgb(43 34 28 / 94%);
+  color: #f5efe4;
+  font-size: 0.82rem;
+  white-space: pre-wrap;
+}
+
+.manual-search {
+  display: grid;
+  gap: 14px;
+}
+
+.manual-search__input {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1px solid var(--manual-rule);
+  background: var(--manual-paper-deep);
+  color: var(--manual-ink);
+}
+
+.manual-search__input:focus-visible {
+  outline: 3px solid var(--manual-accent);
+  outline-offset: 2px;
+}
+
+.manual-search__note {
+  margin: 0;
+  padding: 8px 12px;
+  border-left: 3px solid var(--manual-accent);
+  background: rgb(159 46 35 / 8%);
+  color: var(--manual-muted);
+  font-size: 0.88rem;
+}
+
+.manual-search__groups {
+  display: grid;
+  gap: 18px;
+}
+
+.manual-search__group {
+  display: grid;
+  gap: 8px;
+}
+
+.manual-search__group h3 {
+  margin: 0;
+  font-family: Georgia, "Songti SC", serif;
+  font-size: 0.95rem;
+}
+
+.manual-search__option {
+  display: grid;
+  gap: 3px;
+  padding: 10px 12px;
+  border: 1px solid var(--manual-rule);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.manual-search__option small {
+  color: var(--manual-muted);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.manual-search__option[aria-selected="true"] {
+  border-color: var(--manual-accent);
+  background: rgb(159 46 35 / 6%);
+  box-shadow: inset 3px 0 0 var(--manual-accent);
+}
+
+.manual-search__definition {
+  padding: 14px 16px;
+  border: 1px solid var(--manual-accent);
+  background: rgb(159 46 35 / 6%);
+}
+
+.manual-search__definition h3 {
+  margin: 0 0 6px;
+  font-family: Georgia, "Songti SC", serif;
+  font-size: 1rem;
+}
+
+.manual-search__definition p {
+  margin: 0;
+  line-height: 1.7;
+}
+
+.manual-settings {
+  display: grid;
+  gap: 24px;
+}
+
+.manual-settings fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.manual-settings legend {
+  margin-bottom: 12px;
+  font-family: Georgia, "Songti SC", serif;
+  font-weight: 700;
+}
+
+.manual-settings__themes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.manual-settings__themes label {
+  position: relative;
+  min-width: 0;
+}
+
+.manual-settings__themes input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.manual-settings__themes span {
+  display: block;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--manual-rule);
+  text-align: center;
+}
+
+.manual-settings__themes input:checked + span {
+  border-color: var(--manual-accent);
+  box-shadow: inset 0 0 0 1px var(--manual-accent);
+  color: var(--manual-accent);
+}
+
+.manual-settings__themes input:focus-visible + span {
+  outline: 3px solid var(--manual-accent);
+  outline-offset: 2px;
+}
+
+.manual-settings__route {
+  display: grid;
+  gap: 10px;
+}
+
+.manual-settings__route h3 {
+  margin: 0;
+  font-family: Georgia, "Songti SC", serif;
+  font-size: 1.05rem;
+}
+
+.manual-settings__route-meta {
+  margin: 0 0 4px;
+  color: var(--manual-muted);
+}
+
+.manual-settings__route button {
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid var(--manual-rule);
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+
+.manual-settings__confirm {
+  display: grid;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--manual-accent);
+  background: rgb(159 46 35 / 8%);
+}
+
+.manual-settings__confirm p {
+  margin: 0;
+  font-weight: 700;
+  line-height: 1.7;
+}
+
+.manual-settings__confirm button {
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid var(--manual-rule);
+  background: transparent;
+  color: inherit;
+}
+
+.manual-settings__confirm button:first-of-type {
+  border-color: var(--manual-accent);
+  background: var(--manual-accent);
+  color: #fff;
+  font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  .manual-settings__themes {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 760px) {
   .manual-header {
     align-items: flex-start;

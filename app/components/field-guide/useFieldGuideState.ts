@@ -41,6 +41,7 @@ export type FieldGuideAction =
   | { type: "open-diagnostic"; branchId: string }
   | { type: "return-to-validation" }
   | { type: "set-theme"; theme: ManualTheme }
+  | { type: "edit-profile" }
   | { type: "storage-unavailable" }
   | { type: "confirm-corrupt-reset" }
   | { type: "reset-route" }
@@ -175,6 +176,8 @@ export function fieldGuideReducer(
         progress: { ...state.progress, theme: action.theme },
         storageIntent: "save",
       };
+    case "edit-profile":
+      return { ...state, route: null, diagnosticBranchId: null };
     case "storage-unavailable":
       return {
         ...state,

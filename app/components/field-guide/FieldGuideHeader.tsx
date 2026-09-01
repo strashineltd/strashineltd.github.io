@@ -5,6 +5,8 @@ type FieldGuideHeaderProps = {
   route: GeneratedRoute | null;
   theme: ManualTheme;
   onOpenDirectory: () => void;
+  onOpenSearch: () => void;
+  onOpenSettings: () => void;
 };
 
 const themeLabels: Record<ManualTheme, string> = {
@@ -17,6 +19,8 @@ export function FieldGuideHeader({
   route,
   theme,
   onOpenDirectory,
+  onOpenSearch,
+  onOpenSettings,
 }: FieldGuideHeaderProps) {
   return (
     <header className="manual-header">
@@ -31,8 +35,21 @@ export function FieldGuideHeader({
             完整目录
           </button>
         ) : null}
-        <button aria-label="搜索手册" disabled={!route} type="button">
+        <button
+          aria-label="搜索手册"
+          disabled={!route}
+          onClick={onOpenSearch}
+          type="button"
+        >
           搜索
+        </button>
+        <button
+          aria-label="打开手册设置"
+          disabled={!route}
+          onClick={onOpenSettings}
+          type="button"
+        >
+          设置
         </button>
       </div>
     </header>
