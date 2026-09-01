@@ -28,6 +28,7 @@ import type { FieldGuideAction } from "./useFieldGuideState";
 
 type RouteBookProps = {
   directoryOpen: boolean;
+  diagnosticBranchId?: string | null;
   dispatch: Dispatch<FieldGuideAction>;
   headingRef?: Ref<HTMLHeadingElement>;
   onCloseDirectory: () => void;
@@ -238,6 +239,7 @@ function assignResponsiveHeading(
 
 export function RouteBook({
   directoryOpen,
+  diagnosticBranchId = null,
   dispatch,
   headingRef,
   onCloseDirectory,
@@ -383,9 +385,22 @@ export function RouteBook({
         ) : null}
 
         <LessonReader
+          activeBranchId={diagnosticBranchId}
           articleRef={articleRef}
           onAcknowledgeReview={() =>
             dispatch({ type: "acknowledge-review", step: activeStep })
+          }
+          onContinue={() =>
+            selectStep(getNextStepId(route, progress.steps) ?? activeStep.id)
+          }
+          onOpenDiagnostic={(branchId) =>
+            dispatch({ type: "open-diagnostic", branchId })
+          }
+          onRecordValidation={(result) =>
+            dispatch({ type: "record-validation", step: activeStep, result })
+          }
+          onReturnToValidation={() =>
+            dispatch({ type: "return-to-validation" })
           }
           status={activeStatus}
           step={activeStep}

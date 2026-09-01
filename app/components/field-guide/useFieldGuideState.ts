@@ -6,12 +6,14 @@ import type {
   GuideProgress,
   LearnerProfile,
   ManualTheme,
+  ValidationResult,
 } from "../../content/field-guide/types.ts";
 import {
   acknowledgeReview,
   clearProgress,
   createEmptyProgress,
   loadProgress,
+  recordValidation,
   reconcileProgress,
   saveProgress,
   type LoadProgressResult,
@@ -31,6 +33,13 @@ export type FieldGuideAction =
       type: "acknowledge-review";
       step: Pick<ResolvedStep, "id" | "contentVersion">;
     }
+  | {
+      type: "record-validation";
+      step: Pick<ResolvedStep, "id" | "contentVersion">;
+      result: ValidationResult;
+    }
+  | { type: "open-diagnostic"; branchId: string }
+  | { type: "return-to-validation" }
   | { type: "set-theme"; theme: ManualTheme }
   | { type: "storage-unavailable" }
   | { type: "confirm-corrupt-reset" }
@@ -47,6 +56,7 @@ export type FieldGuideState = {
   storageMode: StorageMode;
   corruptRaw: string | null;
   storageIntent: StorageIntent;
+  diagnosticBranchId: string | null;
 };
 
 const initialState: FieldGuideState = {
@@ -56,6 +66,7 @@ const initialState: FieldGuideState = {
   storageMode: "ready",
   corruptRaw: null,
   storageIntent: null,
+  diagnosticBranchId: null,
 };
 
 function getBrowserStorage() {
@@ -101,6 +112,7 @@ export function fieldGuideReducer(
           storageMode: "corrupt",
           corruptRaw: action.result.raw,
           storageIntent: null,
+          diagnosticBranchId: null,
         };
       }
       const restored = restoreRoute(action.result.value);
@@ -113,6 +125,7 @@ export function fieldGuideReducer(
         corruptRaw: null,
         storageIntent:
           action.result.kind === "ready" && restored.route ? "save" : null,
+        diagnosticBranchId: null,
       };
     }
     case "set-profile": {
@@ -132,6 +145,7 @@ export function fieldGuideReducer(
             getNextStepId(route, reconciled.steps) ?? route.steps[0]?.id ?? null,
         },
         storageIntent: "save",
+        diagnosticBranchId: null,
       };
     }
     case "open-step":
@@ -139,12 +153,22 @@ export function fieldGuideReducer(
         ...state,
         progress: { ...state.progress, activeStepId: action.stepId },
         storageIntent: "save",
+        diagnosticBranchId: null,
       };
     case "acknowledge-review": {
       const progress = acknowledgeReview(state.progress, action.step);
       if (progress === state.progress) return state;
       return { ...state, progress, storageIntent: "save" };
     }
+    case "record-validation": {
+      const progress = recordValidation(state.progress, action.step, action.result);
+      if (progress === state.progress) return state;
+      return { ...state, progress, storageIntent: "save" };
+    }
+    case "open-diagnostic":
+      return { ...state, diagnosticBranchId: action.branchId };
+    case "return-to-validation":
+      return { ...state, diagnosticBranchId: null };
     case "set-theme":
       return {
         ...state,
@@ -174,6 +198,7 @@ export function fieldGuideReducer(
           steps: {},
         },
         storageIntent: "save",
+        diagnosticBranchId: null,
       };
     }
     case "clear-all":

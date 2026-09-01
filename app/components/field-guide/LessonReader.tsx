@@ -1,11 +1,15 @@
 "use client";
 
-import { useState, type RefObject } from "react";
+import { useRef, useState, type RefObject } from "react";
+import { fieldGuideCatalog } from "../../content/field-guide/catalog.ts";
 import type {
   LessonBlock,
   StepProgress,
+  ValidationResult,
 } from "../../content/field-guide/types.ts";
 import type { ResolvedStep } from "../../lib/field-guide/route-engine.ts";
+import { DiagnosticFlow } from "./DiagnosticFlow";
+import { ValidationFlow } from "./ValidationFlow";
 
 type LessonReaderProps = {
   articleRef: RefObject<HTMLElement | null>;
@@ -13,7 +17,12 @@ type LessonReaderProps = {
   status?: StepProgress["status"];
   volumeNumber: number | null;
   trackTitle?: string;
+  activeBranchId: string | null;
   onAcknowledgeReview: () => void;
+  onContinue: () => void;
+  onOpenDiagnostic: (branchId: string) => void;
+  onRecordValidation: (result: ValidationResult) => void;
+  onReturnToValidation: () => void;
 };
 
 type LessonBlockViewProps = {
@@ -117,9 +126,20 @@ export function LessonReader({
   status,
   volumeNumber,
   trackTitle,
+  activeBranchId,
   onAcknowledgeReview,
+  onContinue,
+  onOpenDiagnostic,
+  onRecordValidation,
+  onReturnToValidation,
 }: LessonReaderProps) {
   const [copiedBlock, setCopiedBlock] = useState<string | null>(null);
+  const validationHeadingRef = useRef<HTMLHeadingElement>(null);
+  const activeBranch = activeBranchId
+    ? (fieldGuideCatalog.diagnostics.find(
+        (branch) => branch.id === activeBranchId,
+      ) ?? null)
+    : null;
 
   async function copyBlock(blockKey: string, content: string) {
     if (!navigator.clipboard) return;
@@ -129,6 +149,11 @@ export function LessonReader({
     } catch {
       return;
     }
+  }
+
+  function returnToValidation() {
+    onReturnToValidation();
+    window.requestAnimationFrame(() => validationHeadingRef.current?.focus());
   }
 
   return (
@@ -185,6 +210,24 @@ export function LessonReader({
           );
         })}
       </div>
+
+      {step.validation ? (
+        activeBranch ? (
+          <DiagnosticFlow
+            branch={activeBranch}
+            onReturnToValidation={returnToValidation}
+          />
+        ) : (
+          <ValidationFlow
+            headingRef={validationHeadingRef}
+            onContinue={onContinue}
+            onOpenDiagnostic={onOpenDiagnostic}
+            onRecordResult={onRecordValidation}
+            status={status}
+            step={step}
+          />
+        )
+      ) : null}
     </article>
   );
 }

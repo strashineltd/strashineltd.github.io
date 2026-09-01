@@ -62,6 +62,7 @@ export function FieldManual() {
         </section>
       ) : state.route ? (
         <RouteBook
+          diagnosticBranchId={state.diagnosticBranchId}
           directoryOpen={directoryOpen}
           dispatch={dispatch}
           headingRef={routeHeading}

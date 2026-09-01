@@ -25,3 +25,47 @@ test("mobile uses a single lesson and opens route navigation on demand", async (
   await page.getByRole("button", { name: "打开学习路线" }).click();
   await expect(page.getByRole("dialog", { name: "学习路线" })).toBeVisible();
 });
+
+test("validation failure diagnoses and passing survives reload", async ({ page }, testInfo) => {
+  await createGuide(page, "Windows x64", "DeepSeek");
+  await page.goto("/docs#connect.verify");
+  await expect(page.getByRole("article")).toContainText("在应用内验证模型连接");
+
+  const connectStepButton = () =>
+    testInfo.project.name === "mobile"
+      ? page.getByRole("dialog", { name: "学习路线" }).getByRole("button", { name: /在应用内验证模型连接/ })
+      : page.getByRole("button", { name: /在应用内验证模型连接/ });
+  const openRoute = () =>
+    testInfo.project.name === "mobile"
+      ? page.getByRole("button", { name: "打开学习路线" }).click()
+      : Promise.resolve();
+  const closeRoute = () =>
+    testInfo.project.name === "mobile"
+      ? page.getByRole("button", { name: "关闭学习路线" }).click()
+      : Promise.resolve();
+
+  await openRoute();
+  await expect(connectStepButton()).toContainText("当前");
+  await closeRoute();
+  await expect(page.getByRole("textbox")).toHaveCount(0);
+  await expect(page.getByText("API Key 始终留在 Stellara Work 中；不要粘贴到本网页。")).toBeVisible();
+
+  await page.getByRole("button", { name: "验证失败" }).click();
+  await expect(page.getByRole("alert")).toContainText("请选择应用显示的错误类型");
+  await page.getByRole("button", { name: "未授权或凭证无效" }).click();
+  await expect(page.getByRole("article")).toContainText("在应用内重新输入凭证");
+  await page.getByRole("button", { name: "问题已解决，重新验证" }).click();
+  await expect(page.getByRole("button", { name: "验证通过" })).toBeVisible();
+  await page.getByRole("button", { name: "验证通过" }).click();
+  await expect(page.getByRole("article").getByRole("status")).toContainText("本步骤已完成");
+  await expect(page.getByRole("button", { name: "继续下一步" })).toBeVisible();
+
+  await openRoute();
+  await expect(connectStepButton()).toContainText("完成");
+  await closeRoute();
+
+  await page.reload();
+  await expect(page.getByRole("article")).toContainText("在应用内验证模型连接");
+  await openRoute();
+  await expect(connectStepButton()).toContainText("完成");
+});
