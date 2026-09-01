@@ -42,7 +42,7 @@ test("glossary selection shows an inline definition", async ({ page }) => {
   await page.getByRole("button", { name: "搜索手册" }).click();
   const dialog = page.getByRole("dialog", { name: "查阅手册" });
   await dialog.getByRole("searchbox").fill("checkpoint");
-  const glossaryGroup = dialog.getByRole("group", { name: "术语" });
+  const glossaryGroup = dialog.getByRole("listbox", { name: "术语" });
   await expect(glossaryGroup.getByRole("option").first()).toContainText("checkpoint");
   await glossaryGroup.getByRole("option").first().click();
   await expect(dialog.locator(".manual-search__definition")).toContainText(

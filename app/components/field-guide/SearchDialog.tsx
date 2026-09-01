@@ -152,32 +152,29 @@ export function SearchDialog({
             <p>{selectedGlossary.summary}</p>
           </div>
         ) : null}
-        <div
-          aria-label="搜索结果"
-          className="manual-search__groups"
-          role="listbox"
-        >
+        <div className="manual-search__groups">
           {groups.map((group) => (
-            <div
+            <section
               aria-label={group.label}
               className="manual-search__group"
               key={group.key}
-              role="group"
             >
               <h3>{group.label}</h3>
-              {group.results.map((result) => (
-                <div
-                  aria-selected={activeIndex === flatIndex.get(result)}
-                  className="manual-search__option"
-                  key={result.id}
-                  onClick={() => openResult(result)}
-                  role="option"
-                >
-                  <strong>{result.title}</strong>
-                  <small>{result.summary}</small>
-                </div>
-              ))}
-            </div>
+              <div aria-label={group.label} className="manual-search__options" role="listbox">
+                {group.results.map((result) => (
+                  <div
+                    aria-selected={activeIndex === flatIndex.get(result)}
+                    className="manual-search__option"
+                    key={result.id}
+                    onClick={() => openResult(result)}
+                    role="option"
+                  >
+                    <strong>{result.title}</strong>
+                    <small>{result.summary}</small>
+                  </div>
+                ))}
+              </div>
+            </section>
           ))}
         </div>
       </div>

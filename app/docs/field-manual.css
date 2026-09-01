@@ -1,16 +1,42 @@
 .field-manual {
   --manual-paper: #f8f3e9;
-  --manual-paper-deep: #eadfce;
-  --manual-ink: #2b221c;
-  --manual-muted: #726256;
-  --manual-rule: #cdbdad;
+  --manual-paper-2: #e4d4bf;
+  --manual-ink: #281f19;
+  --manual-muted: #6c5d51;
+  --manual-rule: #cbbbac;
   --manual-accent: #9f2e23;
+  --manual-accent-contrast: #ffffff;
+  --manual-display: Georgia, "Songti SC", STSong, "Noto Serif CJK SC", SimSun, serif;
+  --manual-body: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --manual-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   min-height: 100svh;
   background:
-    linear-gradient(90deg, rgb(159 46 35 / 4%) 1px, transparent 1px) 0 0 / 28px 28px,
+    linear-gradient(90deg, color-mix(in srgb, var(--manual-accent) 4%, transparent) 1px, transparent 1px) 0 0 / 28px 28px,
     var(--manual-paper);
   color: var(--manual-ink);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif;
+  font-family: var(--manual-body);
+}
+
+.field-manual[data-manual-theme="night"] {
+  --manual-paper: #191512;
+  --manual-paper-2: #2a231e;
+  --manual-ink: #eee2d3;
+  --manual-muted: #b7a596;
+  --manual-rule: #4c4036;
+  --manual-accent: #df7765;
+  --manual-accent-contrast: #1b1613;
+}
+
+@media (prefers-color-scheme: dark) {
+  .field-manual[data-manual-theme="system"] {
+    --manual-paper: #191512;
+    --manual-paper-2: #2a231e;
+    --manual-ink: #eee2d3;
+    --manual-muted: #b7a596;
+    --manual-rule: #4c4036;
+    --manual-accent: #df7765;
+    --manual-accent-contrast: #1b1613;
+  }
 }
 
 .field-manual button,
@@ -37,7 +63,7 @@
 }
 
 .manual-brand {
-  font-family: Georgia, "Songti SC", serif;
+  font-family: var(--manual-display);
   font-size: 1.2rem;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -87,7 +113,7 @@
 .manual-route__mobile-header h1 {
   max-width: 12ch;
   margin: 14px 0 18px;
-  font-family: Georgia, "Songti SC", serif;
+  font-family: var(--manual-display);
   font-size: clamp(2.5rem, 6vw, 5.5rem);
   font-weight: 500;
   line-height: 1.02;
@@ -121,7 +147,7 @@
   padding: 30px;
   border: 1px solid var(--manual-rule);
   background: rgb(255 255 255 / 38%);
-  box-shadow: 20px 24px 0 rgb(159 46 35 / 8%);
+  box-shadow: 20px 24px 0 color-mix(in srgb, var(--manual-accent) 8%, transparent);
 }
 
 .manual-setup fieldset {
@@ -133,7 +159,7 @@
 
 .manual-setup legend {
   margin-bottom: 14px;
-  font-family: Georgia, "Songti SC", serif;
+  font-family: var(--manual-display);
   font-size: 1.08rem;
   font-weight: 700;
 }
@@ -192,7 +218,7 @@
   min-height: 52px;
   border: 1px solid var(--manual-accent);
   background: var(--manual-accent);
-  color: #fff;
+  color: var(--manual-accent-contrast);
   font-weight: 700;
 }
 
@@ -238,7 +264,7 @@
   display: inline-block;
   margin-top: 20px;
   color: var(--manual-accent);
-  font-family: Georgia, serif;
+  font-family: var(--manual-display);
   font-size: 1.4rem;
 }
 
@@ -279,7 +305,7 @@
 }
 
 .manual-volume__heading strong {
-  font-family: Georgia, "Songti SC", serif;
+  font-family: var(--manual-display);
   font-size: 1.1rem;
   font-weight: 700;
 }
@@ -331,7 +357,7 @@
 
 .manual-tracks h2 {
   margin: 0 0 8px;
-  font-family: Georgia, "Songti SC", serif;
+  font-family: var(--manual-display);
   font-size: 1.1rem;
 }
 
@@ -365,7 +391,7 @@
   margin: 0 0 16px;
   padding: 10px 14px;
   border-left: 3px solid var(--manual-accent);
-  background: var(--manual-paper-deep);
+  background: var(--manual-paper-2);
 }
 
 .manual-mobile-actions {
@@ -385,7 +411,7 @@
 .manual-lesson__header h1 {
   max-width: 18ch;
   margin: 12px 0 0;
-  font-family: Georgia, "Songti SC", serif;
+  font-family: var(--manual-display);
   font-size: clamp(1.8rem, 4vw, 3rem);
   font-weight: 500;
   line-height: 1.1;
@@ -407,7 +433,7 @@
 
 .manual-lesson__sections h2 {
   margin: 0 0 12px;
-  font-family: Georgia, "Songti SC", serif;
+  font-family: var(--manual-display);
   font-size: 1.3rem;
 }
 
@@ -465,7 +491,7 @@
 .manual-callout {
   padding: 16px 18px;
   border-left: 3px solid var(--manual-accent);
-  background: var(--manual-paper-deep);
+  background: var(--manual-paper-2);
 }
 
 .manual-callout h3 {
@@ -496,7 +522,7 @@
   padding: 10px 14px;
   border: 1px solid var(--manual-rule);
   border-bottom: 0;
-  background: var(--manual-paper-deep);
+  background: var(--manual-paper-2);
   font-size: 0.86rem;
 }
 
@@ -505,8 +531,8 @@
   padding: 16px;
   overflow-x: auto;
   border: 1px solid var(--manual-rule);
-  background: rgb(43 34 28 / 94%);
-  color: #f5efe4;
+  background: color-mix(in srgb, var(--manual-ink) 94%, transparent);
+  color: var(--manual-paper);
   font-size: 0.86rem;
   line-height: 1.6;
 }
@@ -526,7 +552,7 @@
   margin-bottom: 24px;
   padding: 14px 16px;
   border: 1px solid var(--manual-accent);
-  background: rgb(159 46 35 / 8%);
+  background: color-mix(in srgb, var(--manual-accent) 8%, transparent);
 }
 
 .manual-review-note p {
@@ -545,7 +571,7 @@
 .manual-validation h2,
 .manual-diagnostic h2 {
   margin: 0 0 14px;
-  font-family: Georgia, "Songti SC", serif;
+  font-family: var(--manual-display);
   font-size: 1.25rem;
 }
 
@@ -562,7 +588,7 @@
   margin: 0 0 18px;
   padding: 10px 12px;
   border-left: 3px solid var(--manual-accent);
-  background: rgb(159 46 35 / 8%);
+  background: color-mix(in srgb, var(--manual-accent) 8%, transparent);
   color: var(--manual-accent);
   font-size: 0.9rem;
   line-height: 1.6;
@@ -605,7 +631,7 @@
 .manual-validation__actions .manual-primary-action {
   border-color: var(--manual-accent);
   background: var(--manual-accent);
-  color: #fff;
+  color: var(--manual-accent-contrast);
   font-weight: 700;
 }
 
@@ -690,7 +716,7 @@
 .manual-diagnostic__expected {
   padding: 12px 14px;
   border-left: 3px solid var(--manual-accent);
-  background: rgb(159 46 35 / 6%);
+  background: color-mix(in srgb, var(--manual-accent) 6%, transparent);
 }
 
 .manual-diagnostic__expected strong {
@@ -713,7 +739,7 @@
   display: grid;
   place-items: center;
   padding: 24px;
-  background: rgb(43 34 28 / 46%);
+  background: color-mix(in srgb, var(--manual-ink) 46%, transparent);
 }
 
 .manual-dialog {
@@ -723,7 +749,7 @@
   max-height: 85svh;
   border: 1px solid var(--manual-rule);
   background: var(--manual-paper);
-  box-shadow: 0 24px 60px rgb(43 34 28 / 30%);
+  box-shadow: 0 24px 60px color-mix(in srgb, var(--manual-ink) 30%, transparent);
 }
 
 .manual-dialog__header {
@@ -737,7 +763,7 @@
 
 .manual-dialog__header h2 {
   margin: 0;
-  font-family: Georgia, "Songti SC", serif;
+  font-family: var(--manual-display);
   font-size: 1.2rem;
 }
 
@@ -791,7 +817,7 @@
     min-height: 44px;
     border: 1px solid var(--manual-accent);
     background: var(--manual-accent);
-    color: #fff;
+    color: var(--manual-accent-contrast);
     font-weight: 700;
   }
 
@@ -814,7 +840,7 @@
   margin: 20px auto 0;
   padding: 16px 20px;
   border: 1px solid var(--manual-rule);
-  background: var(--manual-paper-deep);
+  background: var(--manual-paper-2);
 }
 
 .manual-storage-error__raw {
@@ -823,8 +849,8 @@
   padding: 12px 14px;
   overflow: auto;
   border: 1px solid var(--manual-rule);
-  background: rgb(43 34 28 / 94%);
-  color: #f5efe4;
+  background: color-mix(in srgb, var(--manual-ink) 94%, transparent);
+  color: var(--manual-paper);
   font-size: 0.82rem;
   white-space: pre-wrap;
 }
@@ -839,7 +865,7 @@
   min-height: 44px;
   padding: 10px 14px;
   border: 1px solid var(--manual-rule);
-  background: var(--manual-paper-deep);
+  background: var(--manual-paper-2);
   color: var(--manual-ink);
 }
 
@@ -852,7 +878,7 @@
   margin: 0;
   padding: 8px 12px;
   border-left: 3px solid var(--manual-accent);
-  background: rgb(159 46 35 / 8%);
+  background: color-mix(in srgb, var(--manual-accent) 8%, transparent);
   color: var(--manual-muted);
   font-size: 0.88rem;
 }
@@ -869,7 +895,7 @@
 
 .manual-search__group h3 {
   margin: 0;
-  font-family: Georgia, "Songti SC", serif;
+  font-family: var(--manual-display);
   font-size: 0.95rem;
 }
 
@@ -890,19 +916,23 @@
 
 .manual-search__option[aria-selected="true"] {
   border-color: var(--manual-accent);
-  background: rgb(159 46 35 / 6%);
+  background: color-mix(in srgb, var(--manual-accent) 6%, transparent);
   box-shadow: inset 3px 0 0 var(--manual-accent);
+}
+
+.manual-search__option[aria-selected="true"] small {
+  color: var(--manual-ink);
 }
 
 .manual-search__definition {
   padding: 14px 16px;
   border: 1px solid var(--manual-accent);
-  background: rgb(159 46 35 / 6%);
+  background: color-mix(in srgb, var(--manual-accent) 6%, transparent);
 }
 
 .manual-search__definition h3 {
   margin: 0 0 6px;
-  font-family: Georgia, "Songti SC", serif;
+  font-family: var(--manual-display);
   font-size: 1rem;
 }
 
@@ -925,7 +955,7 @@
 
 .manual-settings legend {
   margin-bottom: 12px;
-  font-family: Georgia, "Songti SC", serif;
+  font-family: var(--manual-display);
   font-weight: 700;
 }
 
@@ -976,7 +1006,7 @@
 
 .manual-settings__route h3 {
   margin: 0;
-  font-family: Georgia, "Songti SC", serif;
+  font-family: var(--manual-display);
   font-size: 1.05rem;
 }
 
@@ -999,7 +1029,7 @@
   gap: 12px;
   padding: 14px 16px;
   border: 1px solid var(--manual-accent);
-  background: rgb(159 46 35 / 8%);
+  background: color-mix(in srgb, var(--manual-accent) 8%, transparent);
 }
 
 .manual-settings__confirm p {
@@ -1019,7 +1049,7 @@
 .manual-settings__confirm button:first-of-type {
   border-color: var(--manual-accent);
   background: var(--manual-accent);
-  color: #fff;
+  color: var(--manual-accent-contrast);
   font-weight: 700;
 }
 
@@ -1053,11 +1083,80 @@
 
   .manual-setup__form {
     padding: 20px;
-    box-shadow: 8px 10px 0 rgb(159 46 35 / 8%);
+    box-shadow: 8px 10px 0 color-mix(in srgb, var(--manual-accent) 8%, transparent);
   }
 
   .manual-choice-grid,
   .manual-choice-grid--providers {
     grid-template-columns: 1fr;
+  }
+}
+
+.field-manual {
+  font-size: 16px;
+}
+
+.manual-prose p,
+.manual-lesson__sections > section > * {
+  max-width: 42rem;
+}
+
+.manual-dialog__header button,
+.manual-settings button,
+.manual-search__option,
+.manual-settings__themes span {
+  min-height: 44px;
+}
+
+.manual-search__option {
+  cursor: pointer;
+  transition: background-color 120ms ease, transform 120ms ease;
+}
+
+.manual-search__option[aria-selected='true'],
+.manual-search__option:hover {
+  background: var(--manual-paper-2);
+}
+
+.manual-dialog-backdrop {
+  animation: manual-backdrop-in 180ms ease both;
+}
+
+.manual-dialog {
+  animation: manual-panel-in 180ms ease both;
+}
+
+@keyframes manual-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes manual-panel-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.manual-choice input:checked + span,
+.manual-step-list button,
+.manual-track__trigger,
+.manual-volume__button {
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+
+@media (max-width: 640px) {
+  .field-manual {
+    font-size: 15px;
+  }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .field-manual *,
+  .field-manual *::before,
+  .field-manual *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
