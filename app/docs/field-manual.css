@@ -1110,7 +1110,7 @@
 
 .manual-search__option {
   cursor: pointer;
-  transition: background-color 120ms ease, transform 120ms ease;
+  transition: opacity 120ms ease, transform 120ms ease;
 }
 
 .manual-search__option[aria-selected='true'],

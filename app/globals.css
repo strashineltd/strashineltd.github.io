@@ -807,6 +807,7 @@ img { display: block; max-width: 100%; }
   .version-section { padding-block: 82px; }
   .download-hero__grid { grid-template-columns: 1fr; gap: 44px; }
   .version-layout { grid-template-columns: 1fr; gap: 18px; }
+  .download-help ol { grid-template-columns: 1fr; }
 }
 @media (max-width: 640px) {
   .download-hero { padding-block: 54px 68px; }
