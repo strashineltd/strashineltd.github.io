@@ -11,3 +11,15 @@ export async function resetGuide(page: Page) {
     window.sessionStorage.setItem(marker, "done");
   }, FIELD_GUIDE_STORAGE_KEY);
 }
+
+export async function createGuide(
+  page: Page,
+  platformLabel: string,
+  providerLabel: string,
+) {
+  await resetGuide(page);
+  await page.goto("/docs");
+  await page.getByRole("radio", { name: platformLabel }).check();
+  await page.getByRole("radio", { name: providerLabel }).check();
+  await page.getByRole("button", { name: "生成我的路线" }).click();
+}

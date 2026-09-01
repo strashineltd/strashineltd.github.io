@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { FieldGuideHeader } from "./FieldGuideHeader";
 import { ProfileSetup } from "./ProfileSetup";
 import { RouteBook } from "./RouteBook";
@@ -11,6 +11,9 @@ export function FieldManual() {
   const pendingFocus = useRef<"route" | "setup" | null>(null);
   const routeHeading = useRef<HTMLHeadingElement>(null);
   const setupHeading = useRef<HTMLHeadingElement>(null);
+  const [directoryOpen, setDirectoryOpen] = useState(false);
+  const openDirectory = useCallback(() => setDirectoryOpen(true), []);
+  const closeDirectory = useCallback(() => setDirectoryOpen(false), []);
 
   useEffect(() => {
     if (pendingFocus.current === "route" && state.route) {
@@ -33,7 +36,11 @@ export function FieldManual() {
       data-hydrated={state.hydrated ? "true" : "false"}
       data-manual-theme={state.progress.theme}
     >
-      <FieldGuideHeader route={state.route} theme={state.progress.theme} />
+      <FieldGuideHeader
+        onOpenDirectory={openDirectory}
+        route={state.route}
+        theme={state.progress.theme}
+      />
       {state.storageMode === "unavailable" ? (
         <p className="manual-storage-note" role="status">
           当前为临时会话；关闭页面后进度会丢失
@@ -54,7 +61,15 @@ export function FieldManual() {
           </button>
         </section>
       ) : state.route ? (
-        <RouteBook headingRef={routeHeading} route={state.route} />
+        <RouteBook
+          directoryOpen={directoryOpen}
+          dispatch={dispatch}
+          headingRef={routeHeading}
+          onCloseDirectory={closeDirectory}
+          onOpenDirectory={openDirectory}
+          progress={state.progress}
+          route={state.route}
+        />
       ) : (
         <ProfileSetup
           headingRef={setupHeading}
@@ -64,6 +79,7 @@ export function FieldManual() {
           }}
         />
       )}
+      <div className="manual-dialog-root" data-guide-dialog-root />
     </main>
   );
 }

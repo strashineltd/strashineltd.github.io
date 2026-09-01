@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { FIELD_GUIDE_STORAGE_KEY } from "../../app/lib/field-guide/progress-store";
 import { resetGuide } from "./helpers";
 
-test("first visit creates a personalized field guide", async ({ page }) => {
+test("first visit creates a personalized field guide", async ({ page }, testInfo) => {
   await resetGuide(page);
   await page.goto("/docs");
   await expect(page.getByText("Stellara Field Notes")).toBeVisible();
@@ -17,7 +17,11 @@ test("first visit creates a personalized field guide", async ({ page }) => {
   });
   await expect(routeHeading).toBeVisible();
   await expect(routeHeading).toBeFocused();
-  await expect(page.getByText("45 分钟")).toBeVisible();
+  if (testInfo.project.name === "mobile") {
+    await expect(page.getByText("四卷核心路线")).toBeVisible();
+  } else {
+    await expect(page.getByText("45 分钟", { exact: true })).toBeVisible();
+  }
 });
 
 test("saved profile restores the route after reload", async ({ page }) => {

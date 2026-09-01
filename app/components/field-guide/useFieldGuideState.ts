@@ -8,6 +8,7 @@ import type {
   ManualTheme,
 } from "../../content/field-guide/types.ts";
 import {
+  acknowledgeReview,
   clearProgress,
   createEmptyProgress,
   loadProgress,
@@ -19,12 +20,17 @@ import {
   generateRoute,
   getNextStepId,
   type GeneratedRoute,
+  type ResolvedStep,
 } from "../../lib/field-guide/route-engine.ts";
 
 export type FieldGuideAction =
   | { type: "hydrate"; result: LoadProgressResult }
   | { type: "set-profile"; profile: LearnerProfile }
   | { type: "open-step"; stepId: string }
+  | {
+      type: "acknowledge-review";
+      step: Pick<ResolvedStep, "id" | "contentVersion">;
+    }
   | { type: "set-theme"; theme: ManualTheme }
   | { type: "storage-unavailable" }
   | { type: "confirm-corrupt-reset" }
@@ -134,6 +140,11 @@ export function fieldGuideReducer(
         progress: { ...state.progress, activeStepId: action.stepId },
         storageIntent: "save",
       };
+    case "acknowledge-review": {
+      const progress = acknowledgeReview(state.progress, action.step);
+      if (progress === state.progress) return state;
+      return { ...state, progress, storageIntent: "save" };
+    }
     case "set-theme":
       return {
         ...state,

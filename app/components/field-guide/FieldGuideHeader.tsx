@@ -4,6 +4,7 @@ import type { GeneratedRoute } from "../../lib/field-guide/route-engine.ts";
 type FieldGuideHeaderProps = {
   route: GeneratedRoute | null;
   theme: ManualTheme;
+  onOpenDirectory: () => void;
 };
 
 const themeLabels: Record<ManualTheme, string> = {
@@ -12,7 +13,11 @@ const themeLabels: Record<ManualTheme, string> = {
   night: "夜间版",
 };
 
-export function FieldGuideHeader({ route, theme }: FieldGuideHeaderProps) {
+export function FieldGuideHeader({
+  route,
+  theme,
+  onOpenDirectory,
+}: FieldGuideHeaderProps) {
   return (
     <header className="manual-header">
       <div>
@@ -21,6 +26,11 @@ export function FieldGuideHeader({ route, theme }: FieldGuideHeaderProps) {
       </div>
       <div className="manual-header__tools">
         <span className="manual-theme-status">{themeLabels[theme]}</span>
+        {route ? (
+          <button onClick={onOpenDirectory} type="button">
+            完整目录
+          </button>
+        ) : null}
         <button aria-label="搜索手册" disabled={!route} type="button">
           搜索
         </button>
