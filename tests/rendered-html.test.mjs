@@ -6,20 +6,37 @@ async function render(path = "/") {
   workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}-${path}`);
   const { default: worker } = await import(workerUrl.href);
 
-  return worker.fetch(
+  const env = {
+    ASSETS: {
+      fetch: async () => new Response("Not found", { status: 404 }),
+    },
+  };
+  const ctx = {
+    waitUntil() {},
+    passThroughOnException() {},
+  };
+
+  let response = await worker.fetch(
     new Request(`http://localhost${path}`, {
       headers: { accept: "text/html", host: "localhost" },
     }),
-    {
-      ASSETS: {
-        fetch: async () => new Response("Not found", { status: 404 }),
-      },
-    },
-    {
-      waitUntil() {},
-      passThroughOnException() {},
-    },
+    env,
+    ctx,
   );
+
+  while ([301, 302, 307, 308].includes(response.status)) {
+    const location = response.headers.get("location");
+    if (!location) break;
+    response = await worker.fetch(
+      new Request(new URL(location, "http://localhost").href, {
+        headers: { accept: "text/html", host: "localhost" },
+      }),
+      env,
+      ctx,
+    );
+  }
+
+  return response;
 }
 
 test("server-renders the Stellara Work homepage", async () => {
