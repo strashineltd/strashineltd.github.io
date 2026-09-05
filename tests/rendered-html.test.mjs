@@ -40,12 +40,13 @@ test("server-renders the documentation route", async () => {
   const response = await render("/docs");
   assert.equal(response.status, 200);
   const html = await response.text();
-  assert.match(html, /Stellara Work 文档/);
-  assert.match(html, /<strong>22<\/strong> 个主题/);
-  assert.match(html, /安装与首次启动/);
-  assert.match(html, /通过 GitHub Releases 发布/);
-  assert.match(html, /工作目录/);
-  assert.match(html, /适用于 Stellara Work v0\.9\.2/);
+  assert.match(html, /Stellara Field Notes/);
+  assert.match(html, /为你编排一份现场手册/);
+  assert.match(html, /准备环境/);
+  assert.match(html, /数据仅保存在当前浏览器/);
+  assert.match(html, /data-field-guide/);
+  assert.doesNotMatch(html, /<strong>22<\/strong> 个主题/);
+  assert.doesNotMatch(html, /class="docs-hero/);
 });
 
 test("server-renders the download route with verified release metadata", async () => {
