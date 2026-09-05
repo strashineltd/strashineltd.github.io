@@ -780,10 +780,17 @@
   .manual-book {
     grid-template-columns: 360px minmax(0, 640px);
     gap: 56px;
+    align-items: start;
   }
 
   .manual-book__route {
     display: block;
+    position: sticky;
+    top: 32px;
+    max-height: calc(100vh - 64px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    padding-right: 8px;
   }
 
   .manual-route__mobile-header,

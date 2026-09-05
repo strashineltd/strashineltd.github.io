@@ -11,6 +11,15 @@ test("desktop shows the route on the left and lesson on the right", async ({ pag
   await expect(page.getByRole("article")).toContainText("选择模型服务");
 });
 
+test("desktop sidebar is sticky and scrollable while reading", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "desktop sticky navigation belongs to the desktop project");
+  await createGuide(page, "Windows x64", "DeepSeek");
+  const nav = page.getByRole("navigation", { name: "学习路线" });
+  await expect(nav).toBeVisible();
+  const position = await nav.evaluate((el) => getComputedStyle(el).position);
+  expect(position).toBe("sticky");
+});
+
 test("an obsolete step hash returns to the route with an explanation", async ({ page }) => {
   await createGuide(page, "Windows x64", "DeepSeek");
   await page.goto("/docs#retired.step");
