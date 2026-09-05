@@ -780,17 +780,27 @@
   .manual-book {
     grid-template-columns: 360px minmax(0, 640px);
     gap: 56px;
-    align-items: start;
   }
 
   .manual-book__route {
     display: block;
-    position: sticky;
-    top: 32px;
     max-height: calc(100vh - 64px);
     overflow-y: auto;
     scrollbar-width: thin;
     padding-right: 8px;
+  }
+
+  .manual-book__route.is-pinned {
+    position: fixed;
+    top: 32px;
+    left: calc((100vw - min(1180px, 100vw - 48px)) / 2);
+    width: 360px;
+  }
+
+  .manual-book__reader {
+    grid-column: 2;
+    min-width: 0;
+    min-height: calc(100vh - 64px);
   }
 
   .manual-route__mobile-header,

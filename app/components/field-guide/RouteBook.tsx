@@ -248,7 +248,9 @@ export function RouteBook({
   route,
 }: RouteBookProps) {
   const [routeMessage, setRouteMessage] = useState<string | null>(null);
+  const [pinned, setPinned] = useState(false);
   const articleRef = useRef<HTMLElement>(null);
+  const bookRef = useRef<HTMLElement>(null);
   const directoryInitialFocusRef = useRef<HTMLButtonElement>(null);
   const platform = fieldGuideCatalog.platforms.find(
     (option) => option.id === route.profile.platform,
@@ -327,6 +329,31 @@ export function RouteBook({
     };
   }, [route.id]);
 
+  useEffect(() => {
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const desktop = window.matchMedia("(min-width: 1024px)").matches;
+      const top = bookRef.current?.getBoundingClientRect().top ?? 0;
+      setPinned((prev) => {
+        const next = desktop && top < -16;
+        return prev === next ? prev : next;
+      });
+    };
+    const schedule = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(update);
+    };
+    schedule();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+    };
+  }, [route.id]);
+
   if (!activeStep) return null;
 
   const volumeIndex = route.volumes.findIndex((volume) =>
@@ -338,8 +365,11 @@ export function RouteBook({
   const activeStatus = progress.steps[activeStep.id]?.status;
 
   return (
-    <section className="manual-book">
-      <nav aria-label="学习路线" className="manual-book__route">
+    <section className="manual-book" ref={bookRef}>
+      <nav
+        aria-label="学习路线"
+        className={pinned ? "manual-book__route is-pinned" : "manual-book__route"}
+      >
         <header className="manual-route__header">
           <p className="manual-kicker">
             {platform?.label} · {provider?.label}

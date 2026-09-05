@@ -11,13 +11,21 @@ test("desktop shows the route on the left and lesson on the right", async ({ pag
   await expect(page.getByRole("article")).toContainText("选择模型服务");
 });
 
-test("desktop sidebar is sticky and scrollable while reading", async ({ page }, testInfo) => {
-  test.skip(testInfo.project.name !== "desktop", "desktop sticky navigation belongs to the desktop project");
+test("desktop sidebar pins while reading and unpins at top", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "desktop pinned navigation belongs to the desktop project");
   await createGuide(page, "Windows x64", "DeepSeek");
   const nav = page.getByRole("navigation", { name: "学习路线" });
   await expect(nav).toBeVisible();
-  const position = await nav.evaluate((el) => getComputedStyle(el).position);
-  expect(position).toBe("sticky");
+  const navTop = () =>
+    nav.evaluate((el) => Math.round(el.getBoundingClientRect().top));
+  expect(await navTop()).toBeGreaterThan(100);
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await expect.poll(navTop, { timeout: 5000 }).toBeLessThanOrEqual(34);
+  expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+  const pinnedTop = await navTop();
+  expect(pinnedTop).toBeGreaterThanOrEqual(30);
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expect.poll(navTop, { timeout: 5000 }).toBeGreaterThan(100);
 });
 
 test("an obsolete step hash returns to the route with an explanation", async ({ page }) => {
