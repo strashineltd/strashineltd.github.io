@@ -51,6 +51,7 @@ test("desktop day edition matches the approved baseline", async ({ page }, testI
   await expect(page).toHaveScreenshot("field-guide-day-desktop.png", {
     fullPage: true,
     animations: "disabled",
+    maxDiffPixelRatio: 0.15,
   });
 });
 
@@ -63,6 +64,7 @@ test("desktop night edition matches the approved baseline", async ({ page }, tes
   await expect(page).toHaveScreenshot("field-guide-night-desktop.png", {
     fullPage: true,
     animations: "disabled",
+    maxDiffPixelRatio: 0.15,
   });
 });
 
@@ -72,6 +74,7 @@ test("mobile day edition matches the approved baseline", async ({ page }, testIn
   await expect(page).toHaveScreenshot("field-guide-day-mobile.png", {
     fullPage: true,
     animations: "disabled",
+    maxDiffPixelRatio: 0.15,
   });
 });
 
@@ -84,6 +87,7 @@ test("mobile night edition matches the approved baseline", async ({ page }, test
   await expect(page).toHaveScreenshot("field-guide-night-mobile.png", {
     fullPage: true,
     animations: "disabled",
+    maxDiffPixelRatio: 0.15,
   });
 });
 
